@@ -1,0 +1,73 @@
+{
+  "captured_at": "2026-11-05",
+  "timezone": "Asia/Shanghai",
+  "contract_version": "research-pipeline-contract v1.0",
+  "provided_links": [
+    "https://my.feishu.cn/wiki/NsUHwFrKfipMc8kArkhctYU6n0f",
+    "https://my.feishu.cn/wiki/TWXBw9US4iloe8kN2IpcAFiBnyc",
+    "https://my.feishu.cn/wiki/TWXBw9US4iloe8kN2IpcAFiBnyc"
+  ],
+  "unique_source_count": 2,
+  "sources": [
+    {
+      "id": "WF01",
+      "url": "https://my.feishu.cn/wiki/NsUHwFrKfipMc8kArkhctYU6n0f",
+      "observed_title": "skills.zip",
+      "capture": "UI download, Markdown extracted without executing package code",
+      "displayed_modified_at": "9月7日 00:21; year not displayed"
+    },
+    {
+      "id": "WF02",
+      "url": "https://my.feishu.cn/wiki/TWXBw9US4iloe8kN2IpcAFiBnyc",
+      "observed_title": "问题清单",
+      "capture": "visible body transcription, navigation removed, wording retained",
+      "displayed_modified_at": "10月13日 01:22; year not displayed",
+      "notes": [
+        "Item 7 has no content",
+        "1a-2b is mentioned but not defined"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "questions.md",
+      "sha256": "30ed00ddd301f4a9baef17b6d10bd464cff9b3534520509cd0957912696af709",
+      "bytes": 2415
+    },
+    {
+      "path": "skills/5-skill-research-workflow.md",
+      "sha256": "cb1539793189b5eb67306e79a65be0b2d8963cf31370850bbcb82db457a2a894",
+      "bytes": 8200
+    },
+    {
+      "path": "skills/analyze-paper/SKILL.md",
+      "sha256": "038ba3a5058789b70a80f223e38a23f6d62a053d76a22c0a4b9dc5d14550abc8",
+      "bytes": 12325
+    },
+    {
+      "path": "skills/deep-read/SKILL.md",
+      "sha256": "b77ef152937df06c1a3df8dcf318f6873a68b7f888d4b28233523725b36c9b83",
+      "bytes": 14288
+    },
+    {
+      "path": "skills/discover-innovation/SKILL.md",
+      "sha256": "9638b48c1f53e245d87faf6b6a9035e2478e2360f088bffbb55054521a9e1613",
+      "bytes": 14512
+    },
+    {
+      "path": "skills/record-experiment/SKILL.md",
+      "sha256": "2bd3812ccb19190f1bab1a346fd17daa5c078dbd1de6de85d27f23fcc0a8bb22",
+      "bytes": 12389
+    },
+    {
+      "path": "skills/squeeze-experiment/SKILL.md",
+      "sha256": "912439912d99e4a4db85d1d63c789ac1e9238b8d5671b3a6de8c04090c522e07",
+      "bytes": 13853
+    },
+    {
+      "path": "skills.zip",
+      "sha256": "08eca303fb1d189fa811ba8ebc2512a55e22ea704c0d61a9e97dcfa7475d01fe",
+      "bytes": 37334
+    }
+  ]
+}

@@ -1,0 +1,664 @@
+{
+  "created_at": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "batch_date": "2026-11-05",
+  "stage": "analyze-paper：正文广读",
+  "skill": "research/standards/sources/2026-11-05/skills/analyze-paper/SKILL.md",
+  "upstream": "research/surveys/gpu_power_scheduling_2026/reading_pool_2026-11-05/recent_systems_additions.json",
+  "scope": "GPU共享/抢占、动态调度与状态切换；阅读不限六卡，后续实证主张受两机各三张RTX3090约束。",
+  "evidence_status": "partial",
+  "counts": {
+    "distinct_papers": 5,
+    "core_read_papers": 5,
+    "new_partial_analysis_packages": 5,
+    "abstract_only_in_this_group": 0,
+    "formally_published_studies": 5,
+    "local_conference_pdfs": 4,
+    "local_preprint_for_formally_published_study": 1,
+    "connection_candidates": 2,
+    "experiments": 0
+  },
+  "papers": [
+    {
+      "source": "RNS01",
+      "source_id": "RNS01",
+      "analysisid": "AN-20261105-035-v01",
+      "analysis_id": "AN-20261105-035-v01",
+      "path": "research/papers/xu_2026_nixie/analysis_broad_v01.md",
+      "title": "Nixie: Efficient, Transparent Temporal Multiplexing for Consumer GPUs",
+      "short_name": "Nixie",
+      "venue": "OSDI 2026",
+      "year": 2026,
+      "official_url": "https://www.usenix.org/conference/osdi26/presentation/xu-yechen",
+      "pdf_url": "https://danyangz.github.io/papers/OSDI26-Nixie.pdf",
+      "version": "作者主页托管的 OSDI 2026 正式会议 PDF，含 USENIX 封面及 ISBN 978-1-939133-55-7；共 18 个 PDF 页面。",
+      "evidence_status": "partial",
+      "reading_depth": "core_methods_evaluation_and_limits_read",
+      "problem": "当多个应用各自几乎占满单卡显存时，如何透明地减少时间复用中的换页与切换代价，并区分交互响应和长任务进度？",
+      "method": [
+        "§3–4/PDF5–6：LD_PRELOAD 拦截 CUDA Runtime；切换时停止新 kernel 提交，等待已提交 kernel 完成并同步，再搬移所需显存、恢复应用。不是任意时刻中断运行中的 kernel。CUDA VMM 保持虚拟地址，维护图捕获兼容路径。",
+        "§5/PDF6–7：GPU、锁页/普通主存、磁盘分层，数据总体保留一份；以至多128MB chunk 管理，2MB block 迁移。全局迁移计划和双向队列协调 PCIe，预留 staging 空间以避免迁移相互阻塞。",
+        "§6/PDF8：根据 CUDA 交互估计 idle/互动性，MLFQ 类软优先级及恢复规则抑制饥饿；队列 allotment/同级抢占阈值分别从8s/4s起，低层翻倍；预取预计下一应用。100ms 空闲判定是该策略设置，不是功率响应合同。"
+      ],
+      "workloads_and_measurement": {
+        "materials": {
+          "hardware": "§7/PDF9：Ryzen 9950X、96GB 双通道 DDR5、RTX5090 32GB，PCIe5.0×8；除 dedicated 2GPUs 参照外，Nixie 与主要基线均用单卡。§7.3/PDF12–13 另评 A5000 24GB/PCIe4.0×16。",
+          "software": "§7/PDF9：Debian12、CUDA12.9、驱动580.95.05；Ollama0.12.11、SGLang0.5.4.post1、llama.cpp b7027、ComfyUI。",
+          "workloads": "§7.2：文本扩展+图像生成、KVCOMM 多代理 GSM8K/HumanEvalFIM、代码补全+持续生成、三类长任务共置；Qwen3/Gemma3/Z-Image/Qwen-Image 等量化配置。不是集群生产到达轨迹。",
+          "comparison": "UVM、nvshare（包括4s/30s窗口）、TGS（部分人工优先级配置）、无预取/轮转消融；dedicated 2GPUs 消除竞争但硬件数量更多，不作同资源收益归因。"
+        },
+        "metrics": "§7：切换 TTFT、平均端到端时延、双向迁移吞吐、锁页内存需求、按各自单独运行性能归一的后台吞吐。Fig6/11–13/15 给标准差误差棒；本轮未定位完整重复次数。没有板卡或整机功率、能量、供电越限指标。"
+      },
+      "evidence": [
+        {
+          "mark": "DE",
+          "finding": "§7.2 Case3/Fig13，PDF12：代码补全请求频繁到达时，Nixie 的长任务吞吐比 nvshare W=4 低23.5%；到达较疏两种情形反而高90.6%和39.5%。因此交互优先不等于后台进度无损。",
+          "evidence": [
+            "RNS01-E4"
+          ],
+          "uncertainty": "作者受控场景；比例不可外推到所有到达模式。",
+          "locations": [
+            "paper.pdf PDF11–12，§7.2/Fig11–14"
+          ]
+        },
+        {
+          "mark": "DE",
+          "finding": "§7.2 Case4/Fig14，PDF12：三种长任务运行300s，按各自独占吞吐归一，Nixie 为作者 ideal 的85%，nvshare W=4 为49.5%；自动预取比无预取消融增加5%吞吐。",
+          "evidence": [
+            "RNS01-E4"
+          ],
+          "uncertainty": "ideal 是论文定义的归一参照，不是独立最优性上界；未见此图的统计区间。",
+          "locations": [
+            "paper.pdf PDF11–12，§7.2/Fig11–14"
+          ]
+        },
+        {
+          "mark": "DE",
+          "finding": "§7.1/Fig9，PDF10：测试配置下，用 UVM 所需锁页内存的33.2%–40.2%达到相近切换TTFT。",
+          "evidence": [
+            "RNS01-E3"
+          ],
+          "uncertainty": "限该模型、主存与 PCIe 配置；不是所有模型内存恒降比例。",
+          "locations": [
+            "paper.pdf PDF9–10，§7–7.1/Fig6–10"
+          ]
+        }
+      ],
+      "limits": {
+        "author_stated": [
+          "§8/PDF13：Linux 原型；Windows/AMD 属未来方向。",
+          "§8：不理解张量语义，不能据此判断不可变权重而省去所有搬运；空间共存小模型仍属扩展。",
+          "§8：同一用户共享锁页内存，同UID恶意进程不在威胁模型内。"
+        ],
+        "analyst_inference": [
+          "测试的是单卡复用；A5000 主机含多卡不等于测试了多卡联合调度。",
+          "等待运行中 kernel 完成使响应下界依赖未完成工作；不可直接承诺瞬时降功率。",
+          "低显存/低锁页占用或更低TTFT不能推出整机节能；迁移会使用主机内存、PCIe和CPU。"
+        ],
+        "ethics": "本轮未审计数据许可或安全工件；论文单用户假设须保留，不把透明性写成多租户隔离。"
+      },
+      "reading_coverage": "实际阅读 PDF 4–13：§2.2 背景限制、§3 架构、§4 透明性、§5 内存管理、§6 调度、§7 方法/微基准/应用评估、§8 讨论。首页与正式身份复用 RNS01 既有记录。未逐条审计参考文献、代码或工件。",
+      "idea_leads": [
+        "SP-C1：切换带来的状态搬移与交互优先代价；作者已有预取、防饥饿和迁移计划。"
+      ],
+      "priority_reason": "先读：应用级切换路径直观，消费GPU定位便于理解；明确等待kernel、显存搬移、交互和后台吞吐之间的关系。阅读优先不等于baseline选择。",
+      "six_gpu_boundary": "单卡状态迁移与交互/后台取舍是六卡资源内可继续理解的机制；3090兼容性、24GB显存、主存/PCIe及权限仍未知。六卡不能直接支持大集群公平、跨域迁移或设施级供电效果。",
+      "missing_evidence": [
+        "代码版本与驱动拦截的实现审计",
+        "统计重复次数、完整原始样本和不确定性复算",
+        "RTX3090/CUDA/驱动兼容性以及用户主机内存/PCIe条件",
+        "跨节点、动态功率上限和整机能耗证据"
+      ]
+    },
+    {
+      "source": "RNS02",
+      "source_id": "RNS02",
+      "analysisid": "AN-20261105-036-v01",
+      "analysis_id": "AN-20261105-036-v01",
+      "path": "research/papers/coppock_2025_lithos/analysis_broad_v01.md",
+      "title": "LithOS: An Operating System for Efficient Machine Learning on GPUs",
+      "short_name": "LithOS",
+      "venue": "SOSP 2025",
+      "year": 2025,
+      "official_url": "https://doi.org/10.1145/3731569.3764818",
+      "pdf_url": "https://pdl.cmu.edu/ftp/BigLearning/lithos_sosp25.pdf",
+      "version": "CMU PDL 托管的 SOSP 2025 会议版 PDF，首页含正式 DOI；17 页。采用会议版首页摘要，避免混入 arXiv v1 中不同的结果数字。",
+      "evidence_status": "partial",
+      "reading_depth": "core_methods_evaluation_and_limits_read",
+      "problem": "怎样在GPU上以更细资源/执行粒度共置时延敏感与尽力而为作业，减少长kernel阻塞并回收冗余算力和能量？",
+      "method": [
+        "§5.1–5.3/PDF6：CUDA提交队列、TPC配额、借用空闲TPC；以kernel时延预测与较低stream优先级控制借用作业阻塞。",
+        "§5.4/PDF7：将长kernel分为线程块子集（atoms），每块仅执行一次；不要求应用源码/PTX重写，通过prelude和QMD改变执行范围。目标atom约250–500µs，仍不在已运行atom内部抢占。",
+        "§5.5/PDF7–8：用满TPC/单TPC两点和occupancy近似kernel资源—时延曲线，按slip容忍范围选择较小TPC份额。",
+        "§5.6/PDF9：频率切换约50ms，按kernel序列敏感性与运行历史选择设备级DVFS；冷启动/未见工作保守选高频，不是每个微秒kernel立即独立改频。",
+        "§6/PDF10：MPS及逆向libsmctrl/QMD实现；遇跨block同步或persistent kernel禁用atomization/stealing。内存须可容纳，未实现显存超订阅迁移。"
+      ],
+      "workloads_and_measurement": {
+        "materials": {
+          "hardware": "§7/PDF10：A100 SXM4 40GB、108SM；30 CPU、216GB主存，Ubuntu22.04、CUDA12.6。论文称在A30/A100/H100/L4验证功能，不列RTX3090。",
+          "workloads": "§7/表1：HP Triton/ONNX/TensorRT推理（ResNet50、RetinaNet、YOLOv4、BERT、GPT-J6B、Llama3 8B等），BE训练/推理（ResNet50、MobileNetV2、VGG19、DLRM、BERT等）。训练batch受限以让共置模型常驻显存。",
+          "comparisons": "§7：TGS原版；REEF/Orion在LithOS拦截层重实现并扩展多HP，非直接运行原始工件。§8.1关闭right-sizing和DVFS以隔离调度效果；MIG切片受到其配置限制。",
+          "arrivals": "§8.1/PDF11–12：Poisson HP请求、BE闭环；推理训练混合时HP负载设置为约80% GPU利用率。"
+        },
+        "metrics": "§8：HP吞吐/P99、BE吞吐、满足SLO的goodput；right-sizing以时间加权TPC占用衡量，不等于减少同等比例实体GPU。§8.3/PDF13：固定请求数/epoch，平均GPU功率×完成时间计能量，nvidia-smi每100ms采样；未证明传感器每100ms独立刷新，也不含整机/网络/机房用能。"
+      },
+      "evidence": [
+        {
+          "mark": "DE",
+          "finding": "§8.2/Fig18，PDF12–13：slip=1.1时，时间加权TPC容量节约均值26%、最大51%；P99/吞吐平均代价约4%。",
+          "evidence": [
+            "RNS02-E3"
+          ],
+          "uncertainty": "是特定模型配置的平均，不是GPU卡数节约或功率下降比例。",
+          "locations": [
+            "paper.pdf PDF10–13，§7–8.2/表1/Fig18"
+          ]
+        },
+        {
+          "mark": "DE",
+          "finding": "§8.3/Fig19，PDF13：与默认频率相比，GPU能量均值节约26%、最大46%；slip=1.1时推理P99平均增加7%。",
+          "evidence": [
+            "RNS02-E4"
+          ],
+          "uncertainty": "固定工作量和单GPU计量；本轮未定位置信区间/重复数，不外推到所有工作负载。",
+          "locations": [
+            "paper.pdf PDF12–13，§8.3/Fig19"
+          ]
+        },
+        {
+          "mark": "DE",
+          "finding": "§8.4/Fig20，PDF13：只做TPC调度时HP时延约为ideal的1.38倍，加入atomization约1.19倍，伴随约10%吞吐开销。",
+          "evidence": [
+            "RNS02-E5"
+          ],
+          "uncertainty": "多租户调度权衡；不能与§8.5单任务atomization不足1%开销混为同一口径。",
+          "locations": [
+            "paper.pdf PDF13–14，§8.4–9/Fig20–21"
+          ]
+        }
+      ],
+      "limits": {
+        "author_stated": [
+          "§6：跨block同步/persistent kernel的stealing和atomization受限；低层细节另见技术报告。",
+          "§8.5–9/PDF14：显存带宽等资源尚不能完整隔离；更细DVFS/每SM功率控制为未来硬件建议。"
+        ],
+        "analyst_inference": [
+          "模型和训练batch被挑到可共存显存，不能据结果声称超订阅时仍保证SLO。",
+          "控制接口硬件/驱动依赖强；与3090同属某架构不足以证明能移植。",
+          "重实现基线有助于相同框架比较，也引入实现差异，需要工件审计判断公平性。",
+          "性能容忍度和平均能量节约不直接等于瞬时功率上限可兑现。"
+        ],
+        "ethics": "不同进程地址空间并非完整故障隔离；不可恢复GPU错误仍可能影响共享设备，见§4。"
+      },
+      "reading_coverage": "实际阅读 PDF5–14：§4 抽象、§5 调度/atomization/right-sizing/DVFS、§6 实现、§7 实验设置、§8 核心评估/消融/开销、§9 讨论。未审计技术报告、源码和全部参考文献。",
+      "idea_leads": [
+        "SP-C2：细粒度可调整资源与真实响应/能量的映射；作者已有atomization、在线right-sizing与DVFS。"
+      ],
+      "priority_reason": "先读：直接连接执行粒度、TPC资源份额与GPU能量，能纠正“份额=功率”“降低能量=守住功率上限”的混淆；低层接口门槛也需看清。",
+      "six_gpu_boundary": "单卡kernel阻塞、动作粒度和GPU能量是可讨论的局部机制；3090低层接口、DVFS权限、显存可共存条件要先核验。不能从六卡推断大型集群配额兑现或机架功率响应。",
+      "missing_evidence": [
+        "TPC/QMD逆向接口、CUDA兼容性及工件版本审计",
+        "原始功率时间序列、重复次数和传感器有效刷新率",
+        "RTX3090控制权限与兼容性",
+        "多卡通信、动态cap事件和整机能量的实测证据"
+      ]
+    },
+    {
+      "source": "RNS03",
+      "source_id": "RNS03",
+      "analysisid": "AN-20261105-037-v01",
+      "analysis_id": "AN-20261105-037-v01",
+      "path": "research/papers/zhang_2025_bless/analysis_broad_v01.md",
+      "title": "Improving GPU Sharing Performance through Adaptive Bubbleless Spatial-Temporal Sharing",
+      "short_name": "BLESS",
+      "venue": "EuroSys 2025",
+      "year": 2025,
+      "official_url": "https://doi.org/10.1145/3689031.3696070",
+      "pdf_url": "https://jamesthez.github.io/files/bless-eurosys25.pdf",
+      "version": "作者托管 EuroSys 2025 会议 PDF，首页含正式 DOI、会议日期与页码 573；16 页。",
+      "evidence_status": "partial",
+      "reading_depth": "core_methods_evaluation_and_limits_read",
+      "problem": "多应用共享GPU且各有计算配额时，怎样回收纯空间切分或纯时间切分留下的执行空隙，同时约束应用相对独占其配额时的性能退化？",
+      "method": [
+        "§4.1–4.2/PDF5：先在同型号GPU上画像各配额下应用总时延及kernel时延；训练画像一轮iteration。Table1平均画像1.9s（不同模型0.38–6.88s），不能解释为任意工作负载的固定成本。",
+        "§4.3/PDF6：把连续kernel组成kernel squad，以相对画像的进度选择任务。反馈可补偿显存/PCIe争用引起的落后；这不是单独控制这些资源。",
+        "§4.4/PDF6–8：搜索空间份额，再在squad执行的后段解除SM限制（默认比例50%）回收空隙；用两类时延预测近似比较候选配置，含对memcpy重叠误差的简化。",
+        "§4.5/PDF8：预建不同SM affinity的MPS上下文并映射预分配内存。切换须等待上一上下文已提交kernel完成；改变上下文不是checkpoint、模型offload或网络迁移。",
+        "§6.7/PDF12：默认squad至多50个kernel，观测时长约0.7–10ms；squad越大，切换摊销越好但资源配置/响应粒度变粗。"
+      ],
+      "workloads_and_measurement": {
+        "materials": {
+          "hardware": "§6.1/PDF9：单A100 108SM、40GB，EPYC7302，CUDA11.8、Ubuntu20.04。",
+          "workloads": "VGG11、ResNet50/101、NasNet、BERT推理/训练；kernel约3µs–3ms。A/B/C为不同请求间隔的闭环负载，D采用Twitter/Azure Functions轨迹映射到应用请求，不能称GPU作业原始轨迹；E为资源份额与负载错配。",
+          "co_location": "2、4、8应用场景；4/8应用同时到达并使用预设不等份额。单应用FIFO，活跃请求受序列执行约束；模型共同驻留显存。",
+          "comparisons": "ISO为应用独享其配额的参照；Temporal、MIG、GSlice、Unbound、Reef+（修改原实现的MPS版）、训练Zico。ISO不是所有应用同时达到的无代价可行最优。"
+        },
+        "metrics": "§6.2：平均请求时延、训练epoch时延；latency deviation为相对ISO配额参照的正延迟增量之和，而非严格最大最小公平。§6.5另替换进度目标来测SLO违约。论文未测GPU/整机功率、能量或外部功率预算响应。"
+      },
+      "evidence": [
+        {
+          "mark": "DE",
+          "finding": "§6.3/PDF10：推理平均延迟相对Temporal/MIG/GSlice/Unbound/Reef+分别下降37.3%/34.2%/21.1%/16.5%/13.5%。连续饱和到达、没有bubble时，性能接近GSlice且额外开销低于3%。",
+          "evidence": [
+            "RNS03-E3"
+          ],
+          "uncertainty": "收益依赖可回收空隙；不是任何满负载都同样获益。未定位完整重复数/区间。",
+          "locations": [
+            "paper.pdf PDF9–11，§6.1–6.3/Fig13–14"
+          ]
+        },
+        {
+          "mark": "DE",
+          "finding": "§6.4/Fig16，PDF11：倾斜场景中，大配额低负载App1平均延迟相对ISO增加9%，另一应用吞吐改善。作者归因于懒等待squad结束。",
+          "evidence": [
+            "RNS03-E4"
+          ],
+          "uncertainty": "直接反例表明“配额保证”不能写成任何时刻/任何负载下零性能损失。",
+          "locations": [
+            "paper.pdf PDF11–12，§6.4–6.5/Fig15–16"
+          ]
+        },
+        {
+          "mark": "DE",
+          "finding": "§6.5，PDF11：指定的两应用SLO实验平均违约0.6%，对比GSlice50.1%、Unbound38.8%。",
+          "evidence": [
+            "RNS03-E4"
+          ],
+          "uncertainty": "SLO以所选倍数和负载定义；0.6%不是零违约，也不是形式化保证。",
+          "locations": [
+            "paper.pdf PDF11–12，§6.4–6.5/Fig15–16"
+          ]
+        },
+        {
+          "mark": "DE",
+          "finding": "§6.9/PDF13：每squad同步约20µs、MPS上下文切换约50µs、每kernel调度约6.7µs；额外MPS上下文约230MB。",
+          "evidence": [
+            "RNS03-E5"
+          ],
+          "uncertainty": "该A100环境的实测，不应作为3090常数。",
+          "locations": [
+            "paper.pdf PDF12–14，§6.7–6.10"
+          ]
+        }
+      ],
+      "limits": {
+        "author_stated": [
+          "§6.10/PDF13–14：动态DAG需分别画像，CUDA Graph/自回归路径的兼容描述为可扩展方案，不能当成已完成全面LLM验证。",
+          "§6.10：当前控制SM，寄存器/共享内存等更细资源控制留待扩展。",
+          "§4.1：避免极短kernel应用与极长kernel应用搭配，并检查共置显存容量。"
+        ],
+        "analyst_inference": [
+          "离线画像利用确定性/稳定性；功率或频率变化可能影响画像有效性，但本文没有评估，不能因此宣称领域无人处理。",
+          "Twitter/Functions到达和模型kernel组合是构造负载；不能代表所有GPU生产服务。",
+          "平均正延迟偏差、平均SLO违约与尾部饥饿是不同性质。",
+          "借用资源可提高吞吐，同时增加高配额应用的等待；配额份额不是电功率额度。"
+        ],
+        "ethics": "本轮未审计多租户攻击面或轨迹授权；只沿用论文公开材料的研究设置。"
+      },
+      "reading_coverage": "实际阅读 PDF5–14：§4 系统设计/画像/调度/配置搜索/执行，§5 实现，§6 设置、性能、资源倾斜、SLO、消融、开销、局限。未审计源码/工件和全部附录参考。",
+      "idea_leads": [
+        "SP-C2：配额、画像有效性与执行边界；作者已有进度反馈、空隙回收及SLO扩展。"
+      ],
+      "priority_reason": "随后与LithOS对照：离线画像、kernel squad和配额参照展示另一种共享粒度，尤其要读无bubble和倾斜负载反例。",
+      "six_gpu_boundary": "单卡bubble、配额到进度映射和squad等待属于资源内可研究机制；必须核验3090的MPS上下文/SM affinity、显存共存和画像成本。MIG只是部分A100比较基线，不能默认3090具备。多节点通信和机架电力效果不在该证据内。",
+      "missing_evidence": [
+        "实际工件/依赖版本和SM affinity接口兼容性",
+        "每组实验的原始样本、随机性与统计区间",
+        "动态DAG/LLM部署路径是否已经实现",
+        "RTX3090上的MPS上下文资源控制和模型共存条件"
+      ]
+    },
+    {
+      "source": "RNS04",
+      "source_id": "RNS04",
+      "analysisid": "AN-20261105-038-v01",
+      "analysis_id": "AN-20261105-038-v01",
+      "path": "research/papers/wu_2026_fastserve/analysis_broad_v01.md",
+      "title": "FastServe: Iteration-Level Preemptive Scheduling for Large Language Model Inference",
+      "short_name": "FastServe",
+      "venue": "NSDI 2026",
+      "year": 2026,
+      "official_url": "https://www.usenix.org/conference/nsdi26/presentation/wu-bingyang",
+      "pdf_url": "https://www.usenix.org/system/files/nsdi26-wu-bingyang.pdf",
+      "version": "USENIX NSDI 2026 正式会议 PDF，含封面、ISBN 978-1-939133-54-0，论文页码 57–74；19 个 PDF 页面。以正式版 2026 年计数，早期同系预印本不另计。",
+      "evidence_status": "partial",
+      "reading_depth": "core_methods_evaluation_and_limits_read",
+      "problem": "自回归生成中输出长度未知，如何利用已知输入长度减轻队首阻塞，并让逐iteration抢占与中间状态管理配合？",
+      "method": [
+        "§4.1/PDF6–7：skip-join MLFQ以已知输入长度与轻量性能画像估算prefill，直接加入量子足够的队列；低队列量子递增，等待超阈值的请求晋升以抑制饥饿。执行边界是iteration，不是正在运行kernel的任意抢占。",
+        "§4.2/PDF7–8：抢占保留KV会增加活跃状态；用预计下次调度时间ENST排序，主动换出较远请求、预取将运行请求，让计算与主机/GPU搬移重叠；保留空间应对突发到达，已经包含历史到达信息。",
+        "§4.2：ENST依赖队列顺序、量子、batch和晋升时间，近似假设更高优先队列不提前完成；不能把它写成准确未来信息。",
+        "§4.3/PDF9：结合tensor/pipeline并行，以running/pending队列管理流水线，KV按layer分片；交换指令随阶段通信传播，避免每阶段独立作不一致决策。",
+        "§5/PDF9–10：Ray actors、C++/CUDA算子融合、PagedAttention等实现；性能归因不能只用与不同引擎基线的headline。"
+      ],
+      "workloads_and_measurement": {
+        "materials": {
+          "hardware": "§6.1/PDF10：端到端用两台AWS p4d.24xlarge，每台8×A10040GB、NVLink、1152GB主存、PCIe4.0×16；不同模型用1/4/16 GPU。设计选择实验另用单A10040GB。",
+          "models": "OPT13B/66B/175B、Llama3 8B（GQA），FP16。",
+          "data_arrivals": "ShareGPT真实用户文本和Alpaca生成文本；两者没有到达时间，作者用Poisson过程生成到达。因此不是生产请求到达trace回放。",
+          "comparisons": "FasterTransformer5.3、vLLM0.6.1（是实验开展时版本，不是2026最新事实）；同TP/PP和最大batch。FastServe-FCFS为同执行引擎改调度的消融，有助于隔离引擎优化。"
+        },
+        "metrics": "§6.1：主指标是每个job端到端时延除以输出token数，再对jobs平均/P95；它不等于逐token间隔TPOT。SLO为0.3s/token（该配置profile所得decode iteration的10倍）。§6.2另单独报告同时满足prefill/decode阶段SLO的P95 goodput。没有功率、能量、板卡降载、设施响应测量。"
+      },
+      "evidence": [
+        {
+          "mark": "DE",
+          "finding": "§6.2/Fig13，PDF12：OPT13B、阶段SLO设为轻负载各阶段时延的5/10/20倍，P95 goodput比vLLM高1.66–1.82倍，比同引擎FastServe-FCFS高1.46–1.64倍。",
+          "evidence": [
+            "RNS04-E4"
+          ],
+          "uncertainty": "这一阶段goodput口径不能与Fig11的归一端到端平均时延headline混用；未定位完整置信区间。",
+          "locations": [
+            "paper.pdf PDF10–12，§6.1–6.2/Fig11–15"
+          ]
+        },
+        {
+          "mark": "DE",
+          "finding": "§6.3/Fig17，PDF12：高到达率、显存压力下，主动交换比丢弃KV重算高2.7倍、比被动交换高1.7倍；显存充足、低到达率时三者接近。",
+          "evidence": [
+            "RNS04-E5"
+          ],
+          "uncertainty": "说明有效区间依赖显存压力；不是任何负载固定收益。",
+          "locations": [
+            "paper.pdf PDF12–13，§6.3/Fig16–18"
+          ]
+        },
+        {
+          "mark": "DE",
+          "finding": "§6.3/Fig17(b)，PDF12：测试中暴露在端到端时延上的swapping time低于5%。",
+          "evidence": [
+            "RNS04-E5"
+          ],
+          "uncertainty": "通信与计算重叠隐藏的是关键路径时间，不代表搬运字节、PCIe占用或能量低于5%。",
+          "locations": [
+            "paper.pdf PDF12–13，§6.3/Fig16–18"
+          ]
+        }
+      ],
+      "limits": {
+        "author_stated": [
+          "§4.2：抢占产生的KV容量膨胀是设计问题，单纯重算可能与晋升互相作用而长期不完成；论文已处理，不是遗漏。",
+          "§6.1：设计选择用单A100是预算限制；到达由Poisson合成，因为数据集无时间戳。"
+        ],
+        "analyst_inference": [
+          "本轮未见独立limitations节；方法/评估边界作为分析者判断，不冒充作者承认。",
+          "两类模型家族、FP16及旧服务栈的收益不能直接外推到所有GQA/MoE、量化或新版本chunked prefill。",
+          "分布式执行覆盖最多16GPU，但不等于跨地域状态迁移、动态power cap或机架控制已验证。",
+          "请求平均归一时延、P95归一时延、阶段SLO goodput需要分别保留。"
+        ],
+        "ethics": "本轮未审计ShareGPT请求内容与许可；未下载或处理原始用户记录。"
+      },
+      "reading_coverage": "实际阅读 PDF5–13：§3 总览、§4 skip-join MLFQ/KV管理/分布式执行、§5 实现、§6 实验设置/端到端/消融、§7 相关工作。未审计源码、所有附录或逐版变更。",
+      "idea_leads": [
+        "SP-C1：队列预期执行时间与KV驻留/搬移条件；作者已有ENST、主动交换、晋升与突发空间预留。"
+      ],
+      "priority_reason": "先读：请求级抢占与KV状态协同的成熟例子；有同引擎消融，适合学习如何区分调度收益与执行引擎收益。",
+      "six_gpu_boundary": "单卡迭代抢占、KV压力/预取和两节点执行路径具有阅读价值；24GB显存、模型精度、主存、PCIe/网络均需独立确认。能运行一个小模型不代表能复现OPT175B/16卡结论或作为合适baseline。",
+      "missing_evidence": [
+        "正式版相对2023预印本与不同代码版本的变更对照",
+        "原始请求/随机种子、完整重复数和统计区间",
+        "工件及更新后的服务栈/公平比较配置",
+        "RTX3090上模型精度、显存和拓扑适配证据"
+      ]
+    },
+    {
+      "source": "RNS05",
+      "source_id": "RNS05",
+      "analysisid": "AN-20261105-039-v01",
+      "analysis_id": "AN-20261105-039-v01",
+      "path": "research/papers/duan_2026_gfs/analysis_broad_v01.md",
+      "title": "GFS: A Preemption-aware Scheduling Framework for GPU Clusters with Predictive Spot Instance Management",
+      "short_name": "GFS",
+      "venue": "ASPLOS 2026, Volume 1",
+      "year": 2026,
+      "official_url": "https://www.asplos-conference.org/asplos2026/program/index.html",
+      "pdf_url": "https://arxiv.org/pdf/2509.11134v1",
+      "version": "本地为 arXiv:2509.11134v1（2025-09-14），15 页；首页有 ASPLOS 2026 标记，但 DOI/ISBN 为占位符。ASPLOS 2026 正式身份由官方 program 与 Crossref 核验。ACM 正式 PDF 返回 HTTP 403，尚未下载，版本差异未审计。",
+      "evidence_status": "partial",
+      "reading_depth": "core_methods_evaluation_and_limits_read",
+      "problem": "高优先级需求变化时，如何出售较稳定的spot GPU容量，并在必须抢占时控制低优先任务的等待、驱逐和丢失工作？",
+      "method": [
+        "§3.2/PDF5–7：OrgLinear分解趋势/周期，并引入组织、时间与业务特征；输出需求的高斯分布参数，再取分位数。预测分布和组织信息已是作者方法，不是待添加空白。",
+        "§3.3/PDF7：SQA试图在时间窗口H内按组织需求峰值分位数汇总剩余GPU库存，以η反馈调节spot配额，兼顾驱逐率与排队。该处两个公式与文字有冲突，见RNS05-E3。",
+        "§3.4/PDF7–9：先给调度优化表达，再用放置启发式实施，先尝试不抢占；需要时只驱逐spot，结合历史反复驱逐与checkpoint丢失工作代价。不能将启发式称全局最优。",
+        "§3.4.2/PDF9式17：丢失工作按GPU数量×距最近checkpoint的时间近似；保留多次驱逐历史并有保护机制。已处理checkpoint进度损失，未等于完整checkpoint写入/恢复、网络或能量模型。"
+      ],
+      "workloads_and_measurement": {
+        "materials": {
+          "observational_context": "§2/PDF3–4：生产环境涉及10,365 GPUs和A10/A100/A800/H800。重点报告allocation rate（已分配资源比例），不是GPU计算利用率。",
+          "simulation": "§4.1/PDF10：Apr–Jun2024轨迹，2296 A100（287个8卡节点），HP138403项、spot26635项；有fractional/single/multi GPU及gang作业。spot到达强度按1/2/4倍构造，HP保持。",
+          "production": "§4.3/PDF10：Jan2024启用前与Oct2024启用后对比；后者541207 HP、114226 spot。非随机同期对照。",
+          "baselines": "YARN-CS、Chronus、Lyra、FGD；部分按目标环境重实现/改造，Chronus租约有特定设置。表4包含p=0.9、反馈更新300s、H=1/2/4h。"
+        },
+        "metrics": "§4：JCT、JQT（跨驱逐累计排队）、spot驱逐率、GPU allocation rate、预测MAE/MSE/RMSE/MAPE及分位误差；不含板卡/整机功率、能量或供电越限。生产前后对比是观察性证据；模拟采用记录负载与人为spot强度变化。未定位完整重复数/统计区间。"
+      },
+      "evidence": [
+        {
+          "mark": "DE",
+          "finding": "§4.5/表6，PDF11：H从1h增到4h时，spot JQT由575.4s增到3145.6s，JCT由10715.3s增到13252.8s，驱逐率由1.21%变为1.16%。",
+          "evidence": [
+            "RNS05-E5"
+          ],
+          "uncertainty": "限该中等负载模拟；H=2h结果不全单调，不能概括为保证窗口越长必然更少驱逐。",
+          "locations": [
+            "paper.pdf PDF11–13，§4.4–4.6/表5–8/§6"
+          ]
+        },
+        {
+          "mark": "SC",
+          "finding": "§4.3/PDF10–11：作者报告生产上线后spot驱逐率低于10%、allocation rate提高。",
+          "evidence": [
+            "RNS05-E4"
+          ],
+          "uncertainty": "Jan/Oct前后对比，不能隔离日历、作业混合、集群变化等混杂；不作为随机对照因果估计。",
+          "locations": [
+            "paper.pdf PDF10–11，§4.1–4.3/表4/Fig9"
+          ]
+        },
+        {
+          "mark": "UN",
+          "finding": "§3.3/PDF7式9打印为 f(p,H)=C−max(C,各组织预测峰值之和)，因此数学上恒≤0；正文又把它解释为剩余可售库存，且称需求超C时为0。",
+          "evidence": [
+            "RNS05-E3"
+          ],
+          "uncertainty": "PDF页面已目视核对，非纯OCR推断。不能猜测作者本意后改公式；待正式版与实现。",
+          "locations": [
+            "paper.pdf PDF7–9，§3.3–3.4/式9、11、17"
+          ]
+        },
+        {
+          "mark": "UN",
+          "finding": "§3.3式11用 e>1.5p 进入高驱逐分支，但p定义为保障率，表4默认0.9，若e为[0,1]驱逐比例则阈值1.35不可达。",
+          "evidence": [
+            "RNS05-E3",
+            "RNS05-E4"
+          ],
+          "uncertainty": "变量/印刷/版本问题待确认；不据此断言整套生产实现错误。",
+          "locations": [
+            "paper.pdf PDF7–9，§3.3–3.4/式9、11、17",
+            "paper.pdf PDF10–11，§4.1–4.3/表4/Fig9"
+          ]
+        }
+      ],
+      "limits": {
+        "author_stated": [
+          "§6/PDF13：未来进一步面向SM/tensor等细粒度GPU资源管理；当前不是完整卡内共享系统。"
+        ],
+        "analyst_inference": [
+          "v1公式/符号需修订对读，当前不应作为可直接复现算法规格。",
+          "§2/PDF4的Oct2024周驱逐统计与§4.3上线后Oct2024低驱逐表述存在日期/样本口径待解释，不能默认同一总体。",
+          "按组织峰值分位数相加不自动获得联合时间窗口的目标可靠性；正文预测误差指标不能替代校准/覆盖率检验。",
+          "生产观察不能排除负载与集群变化；模拟也不能替代实测checkpoint恢复路径。",
+          "时间保障、GPU卡数份额和W功率上限是不同合同，从前者迁移到后者需新证据。"
+        ],
+        "ethics": "组织业务特征和生产轨迹可能涉及访问条件；本轮未下载或审计私有数据，不声明全套数据公开可复现。"
+      },
+      "reading_coverage": "实际阅读本地 arXiv v1 PDF3–13：§2 生产观察、§3 GDE/OrgLinear、SQA、PTS和§4模拟/生产/消融、§5–6相关工作/结论。PDF7式9/11已渲染目视复核。未取得并逐页对读正式ACM修订版，未审计源码。",
+      "idea_leads": [
+        "SP-C1：保障窗口与可售容量/抢占损失；作者已有需求分布、驱逐反馈和checkpoint进度损失。"
+      ],
+      "priority_reason": "作为容量合同邻接阅读：预测分布、保障窗口、checkpoint代价已经结合；先澄清本地v1公式/生产口径，再讨论重建，不能仅凭发表身份忽略版本歧义。",
+      "six_gpu_boundary": "六卡可在未来测局部抢占/checkpoint动作和小规模并发；不能直接验证2296卡排队分布、万卡组织聚合或生产保障概率。阅读不限规模，后续研究主张须与可取得证据相称。",
+      "missing_evidence": [
+        "正式ASPLOS版与arXiv v1差异；尤其式9/11与实现对应",
+        "OrgLinear训练/测试划分、预测区间校准及代码入口",
+        "生产前后负载/集群变化与相同月份观察口径",
+        "原始trace字段、checkpoint恢复成本、模拟器和随机种子",
+        "本机执行动作和硬件权限"
+      ]
+    }
+  ],
+  "connection_candidates": [
+    {
+      "id": "SP-C1",
+      "status": "candidate_for_Mode_C_not_MODE_C_PACKAGE",
+      "sources": [
+        "RNS01",
+        "RNS04",
+        "RNS05"
+      ],
+      "P": {
+        "id": "SP-P1",
+        "mark": "AI",
+        "text": "外部可用容量收缩时，调度器认定可让出的资源，是否等于可在要求时刻释放且恢复后仍有有效进度的资源？这是待审计连接，不是已定位科学空白。"
+      },
+      "F": [
+        {
+          "id": "SP-F1",
+          "mark": "DE",
+          "text": "Nixie频繁交互下后台吞吐下降；FastServe主动交换只在显存压力下显示明显增益；GFS更长保障窗口在受测情形中增大排队。",
+          "evidence": [
+            "RNS01-E4",
+            "RNS04-E5",
+            "RNS05-E5"
+          ]
+        }
+      ],
+      "M": [
+        {
+          "id": "SP-M1",
+          "mark": "SC/AI",
+          "text": "作者各自展示执行边界、状态驻留/搬移和窗口库存如何使资源分配与有效服务分离；将这条解释用于外部供电事件仍待检验。",
+          "status": "来源内部分支持；跨场景联系待检验",
+          "evidence": [
+            "RNS01-E1",
+            "RNS01-E2",
+            "RNS04-E2",
+            "RNS05-E3"
+          ]
+        }
+      ],
+      "E": [
+        "RNS01-E1",
+        "RNS01-E2",
+        "RNS01-E4",
+        "RNS04-E2",
+        "RNS04-E5",
+        "RNS05-E3",
+        "RNS05-E5"
+      ],
+      "conditions": [
+        "应用切换、请求KV抢占、整作业spot驱逐是不同操作；不能当同一零成本动作。",
+        "Nixie/FastServe已主动预取和处理饥饿/突发，GFS已有预测分布、持续时间和checkpoint损失；这些关键词不能作为新颖性。",
+        "GFS本地v1公式与实现未核验；不能以其公式重建结果后声称复现。"
+      ],
+      "alternative_explanations": [
+        "PCIe、主存容量、到达强度和模型显存需求可能比调度规则更主导；生产before/after也可能受负载混杂。"
+      ],
+      "lowest_cost_evidence_check": "只做后续文献/工件核验建议：先统一各论文的切换边界和指标口径，并对读GFS正式修订/实现；本轮未执行实验。",
+      "method_design": null,
+      "baseline_selected": false,
+      "transfer_id": null
+    },
+    {
+      "id": "SP-C2",
+      "status": "candidate_for_Mode_C_not_MODE_C_PACKAGE",
+      "sources": [
+        "RNS02",
+        "RNS03"
+      ],
+      "P": {
+        "id": "SP-P2",
+        "mark": "AI",
+        "text": "共享配额或在线估计的可释放算力，为何在特定执行粒度下不能完全兑换成期望时延/吞吐？已有论文已部分回答，外部动态约束下的条件尚需证据。"
+      },
+      "F": [
+        {
+          "id": "SP-F2",
+          "mark": "DE",
+          "text": "LithOS atomization改善HP等待但有吞吐代价；BLESS无bubble时收益接近消失，倾斜负载App1延迟相对ISO增加9%。",
+          "evidence": [
+            "RNS02-E5",
+            "RNS03-E3",
+            "RNS03-E4"
+          ]
+        }
+      ],
+      "M": [
+        {
+          "id": "SP-M2",
+          "mark": "SC/AI",
+          "text": "运行中的atom/squad不能立即撤销，调度越细越灵活但边界和管理开销增加；画像/预测决定资源重分配判断。来源内机制有消融与敏感性支撑，但不能外推为动态功率合同保证。",
+          "status": "来源内部分支持；power-cap条件待检验",
+          "evidence": [
+            "RNS02-E1",
+            "RNS02-E2",
+            "RNS02-E5",
+            "RNS03-E1",
+            "RNS03-E2",
+            "RNS03-E5"
+          ]
+        }
+      ],
+      "E": [
+        "RNS02-E1",
+        "RNS02-E2",
+        "RNS02-E4",
+        "RNS02-E5",
+        "RNS03-E1",
+        "RNS03-E2",
+        "RNS03-E3",
+        "RNS03-E4",
+        "RNS03-E5"
+      ],
+      "conditions": [
+        "LithOS在线预测与BLESS离线画像不是相同信息权限；两者都有现成机制，不能只组合命名。",
+        "TPC/SM配额不是W；GPU能量不是整机能量；mean deviation不是P99或零SLO违约。",
+        "作者A100低层接口和常驻显存前提不能默认在3090成立。"
+      ],
+      "alternative_explanations": [
+        "显存/带宽干扰、kernel图形和到达空隙也会改变效果；仅观察性能不够证明粒度是唯一机制。"
+      ],
+      "lowest_cost_evidence_check": "后续先对照工件中的atom/squad等待点、画像更新和3090接口条件，再由Mode C判断是否值得补证据；当前不设计算法或运行。",
+      "method_design": null,
+      "baseline_selected": false,
+      "transfer_id": null
+    }
+  ],
+  "reading_priority": [
+    "RNS01",
+    "RNS04",
+    "RNS02"
+  ],
+  "already_addressed_mechanisms": [
+    "Nixie：双向显存迁移、预取、交互识别及防饥饿",
+    "LithOS：kernel atomization、TPC借用、在线资源缩减和DVFS",
+    "BLESS：离线画像、相对进度反馈、kernel squad、空间—时间共享",
+    "FastServe：输入长度辅助MLFQ、晋升、ENST主动KV交换和突发预留",
+    "GFS：组织需求分布、保障窗口、驱逐反馈、checkpoint进度损失和反复驱逐历史"
+  ],
+  "next_skill": "deep-read Mode C",
+  "missing_evidence": [
+    "工件/源码与本文方法的一致性未审计；不能标可复现已验证。",
+    "GFS正式修订与v1公式/生产口径需澄清。",
+    "统计原始样本与重复数未全面取得。",
+    "用户服务器CUDA/驱动、PCIe/网络、主存、权限未知。"
+  ],
+  "non_actions": [
+    "未选择baseline或最终题目",
+    "未设计算法或实验方案",
+    "未运行GPU或论文代码",
+    "未修改根索引、推进台账或总矩阵"
+  ],
+  "transfer_status": "not_applicable：尚无明确目标失败机制和源方法B，未产生TRANSFER_PACKAGE。"
+}

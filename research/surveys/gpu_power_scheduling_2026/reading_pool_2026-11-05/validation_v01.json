@@ -1,0 +1,12 @@
+{
+  "checked_on": "2026-11-05",
+  "papers": 32,
+  "new_analysis_packages": 13,
+  "reused_analysis_packages": 1,
+  "abstract_or_metadata_screened": 18,
+  "local_links_checked": 90,
+  "hashed_pdfs_checked": 4,
+  "duplicate_titles": 0,
+  "experiments_run": 0,
+  "result": "passed"
+}

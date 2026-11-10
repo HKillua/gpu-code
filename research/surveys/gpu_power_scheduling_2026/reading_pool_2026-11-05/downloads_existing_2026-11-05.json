@@ -1,0 +1,1643 @@
+{
+  "artifact_type": "maintenance_pdf_acquisition",
+  "date": "2026-11-05",
+  "timezone": "Asia/Shanghai",
+  "scope": "原 manifest_v01.json 的 32 项正式发表阅读池。PDF 取得状态与阅读深度分别记录。",
+  "upstream": "manifest_v01.json",
+  "verification_method": "PyMuPDF 可打开，检查页数；将第一页提取文字标准化后匹配完整题名及第一作者，并记录其余作者的匹配情况。页眉版式异常由人工复核。",
+  "papers": [
+    {
+      "source_id": "LP01",
+      "title": "Zeus: Understanding and Optimizing GPU Energy Consumption of DNN Training",
+      "local_pdf": "research/papers/you_2023_zeus/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 22,
+      "title_verified": true,
+      "version": "2023 正式出版社/会议 PDF",
+      "source_url": "https://www.usenix.org/system/files/nsdi23-you.pdf",
+      "final_url": "https://www.usenix.org/system/files/nsdi23-you.pdf",
+      "attempts": [
+        {
+          "url": "https://www.usenix.org/system/files/nsdi23-you.pdf",
+          "http_status": 200,
+          "final_url": "https://www.usenix.org/system/files/nsdi23-you.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:29+08:00",
+      "title_in_pdf": "Zeus: Understanding and Optimizing GPU Energy Consumption of DNN Training",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Jie You",
+        "Jae-Won Chung",
+        "Mosharaf Chowdhury"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "",
+      "original_pdf_url": "https://www.usenix.org/system/files/nsdi23-you.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "publisher_pdf",
+      "version_note": "出版社或会议公开文件；首页/封面题名、作者和会议版本已核。"
+    },
+    {
+      "source_id": "LP02",
+      "title": "Characterizing Power Management Opportunities for LLMs in the Cloud",
+      "local_pdf": "research/papers/patel_2024_polca/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 16,
+      "title_verified": true,
+      "version": "ACM ASPLOS 2024, Volume 3 2024 作者或会议组织者公开排版稿",
+      "source_url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2024/03/GPU_Power_ASPLOS_24.pdf",
+      "final_url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2024/03/GPU_Power_ASPLOS_24.pdf",
+      "attempts": [
+        {
+          "url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2024/03/GPU_Power_ASPLOS_24.pdf",
+          "http_status": 200,
+          "final_url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2024/03/GPU_Power_ASPLOS_24.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:29+08:00",
+      "title_in_pdf": "Characterizing Power Management Opportunities for LLMs in the Cloud",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Pratyush Patel",
+        "Esha Choukse",
+        "Chaojie Zhang",
+        "Íñigo Goiri",
+        "Brijesh Warrier",
+        "Nithish Mahalingam",
+        "Ricardo Bianchini"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "Characterizing Power Management Opportunities for LLMs in the Cloud",
+      "original_pdf_url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2024/03/GPU_Power_ASPLOS_24.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "author_or_organizer_public_copy",
+      "version_note": "首页会议/期刊及版权/DOI 标记已核；未与出版社下载副本逐字比对。"
+    },
+    {
+      "source_id": "LP03",
+      "title": "DynamoLLM: Designing LLM Inference Clusters for Performance and Energy Efficiency",
+      "local_pdf": "research/papers/stojkovic_2025_dynamollm/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 15,
+      "title_verified": true,
+      "version": "IEEE HPCA 2025 2025 作者或会议组织者公开排版稿",
+      "source_url": "https://iacoma.cs.uiuc.edu/iacoma-papers/hpca25_2.pdf",
+      "final_url": "https://iacoma.cs.uiuc.edu/iacoma-papers/hpca25_2.pdf",
+      "attempts": [
+        {
+          "url": "https://iacoma.cs.uiuc.edu/iacoma-papers/hpca25_2.pdf",
+          "http_status": 200,
+          "final_url": "https://iacoma.cs.uiuc.edu/iacoma-papers/hpca25_2.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:29+08:00",
+      "title_in_pdf": "DynamoLLM: Designing LLM Inference Clusters for Performance and Energy Efficiency",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Jovan Stojkovic",
+        "Chaojie Zhang",
+        "Íñigo Goiri",
+        "Josep Torrellas",
+        "Esha Choukse"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "",
+      "original_pdf_url": "https://iacoma.cs.uiuc.edu/iacoma-papers/hpca25_2.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "author_or_organizer_public_copy",
+      "version_note": "首页会议/期刊及版权/DOI 标记已核；未与出版社下载副本逐字比对。"
+    },
+    {
+      "source_id": "LP04",
+      "title": "Reducing Energy Bloat in Large Model Training",
+      "local_pdf": "research/papers/chung_2024_perseus/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 24,
+      "title_verified": true,
+      "version": "ACM SOSP 2024 2024 作者或会议组织者公开排版稿",
+      "source_url": "https://symbioticlab.org/publications/files/perseus%3Asosp24/perseus-sosp24.pdf",
+      "final_url": "https://symbioticlab.org/publications/files/perseus%3Asosp24/perseus-sosp24.pdf",
+      "attempts": [
+        {
+          "url": "https://symbioticlab.org/publications/files/perseus%3Asosp24/perseus-sosp24.pdf",
+          "http_status": 200,
+          "final_url": "https://symbioticlab.org/publications/files/perseus%3Asosp24/perseus-sosp24.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:29+08:00",
+      "title_in_pdf": "Reducing Energy Bloat in Large Model Training",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Jae-Won Chung",
+        "Yile Gu",
+        "Insu Jang",
+        "Luoxi Meng",
+        "Nikhil Bansal",
+        "Mosharaf Chowdhury"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "Reducing Energy Bloat in Large Model Training",
+      "original_pdf_url": "https://symbioticlab.org/publications/files/perseus%3Asosp24/perseus-sosp24.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "author_or_organizer_public_copy",
+      "version_note": "首页会议/期刊及版权/DOI 标记已核；未与出版社下载副本逐字比对。"
+    },
+    {
+      "source_id": "LP05",
+      "title": "TAPAS: Thermal- and Power-Aware Scheduling for LLM Inference in Cloud Platforms",
+      "local_pdf": "research/papers/stojkovic_2025_tapas/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 16,
+      "title_verified": true,
+      "version": "ACM ASPLOS 2025, Volume 2 2025 作者或会议组织者公开排版稿",
+      "source_url": "https://iacomaweb.web.engr.illinois.edu/iacoma-papers/asplos25_2.pdf",
+      "final_url": "https://iacomaweb.web.engr.illinois.edu/iacoma-papers/asplos25_2.pdf",
+      "attempts": [
+        {
+          "url": "https://iacomaweb.web.engr.illinois.edu/iacoma-papers/asplos25_2.pdf",
+          "http_status": 200,
+          "final_url": "https://iacomaweb.web.engr.illinois.edu/iacoma-papers/asplos25_2.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:29+08:00",
+      "title_in_pdf": "TAPAS: Thermal- and Power-Aware Scheduling for LLM Inference in Cloud Platforms",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Jovan Stojkovic",
+        "Chaojie Zhang",
+        "Íñigo Goiri",
+        "Esha Choukse",
+        "Haoran Qiu",
+        "Rodrigo Fonseca",
+        "Josep Torrellas",
+        "Ricardo Bianchini"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "TAPAS: Thermal- and Power-Aware Scheduling for LLM Inference in Cloud Platforms",
+      "original_pdf_url": "https://iacomaweb.web.engr.illinois.edu/iacoma-papers/asplos25_2.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "author_or_organizer_public_copy",
+      "version_note": "首页会议/期刊及版权/DOI 标记已核；未与出版社下载副本逐字比对。"
+    },
+    {
+      "source_id": "LP06",
+      "title": "Kareus: Joint Reduction of Dynamic and Static Energy in Large Model Training",
+      "local_pdf": "research/papers/wu_2026_kareus/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 21,
+      "title_verified": true,
+      "version": "2026 正式出版社/会议 PDF",
+      "source_url": "https://www.usenix.org/system/files/osdi26-wu-ruofan.pdf",
+      "final_url": "https://www.usenix.org/system/files/osdi26-wu-ruofan.pdf",
+      "attempts": [
+        {
+          "url": "https://www.usenix.org/system/files/osdi26-wu-ruofan.pdf",
+          "http_status": 200,
+          "final_url": "https://www.usenix.org/system/files/osdi26-wu-ruofan.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:29+08:00",
+      "title_in_pdf": "Kareus: Joint Reduction of Dynamic and Static Energy in Large Model Training",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Ruofan Wu",
+        "Jae-Won Chung",
+        "Mosharaf Chowdhury"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "",
+      "original_pdf_url": "https://www.usenix.org/system/files/osdi26-wu-ruofan.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "publisher_pdf",
+      "version_note": "出版社或会议公开文件；首页/封面题名、作者和会议版本已核。"
+    },
+    {
+      "source_id": "LP07",
+      "title": "The ML.ENERGY Benchmark: Toward Automated Inference Energy Measurement and Optimization",
+      "local_pdf": "research/papers/chung_2025_ml_energy_benchmark/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 29,
+      "title_verified": true,
+      "version": "2025 正式出版社/会议 PDF",
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/9dc510e3d7b0b3b2a58ffed7a3ad6b0f-Paper-Datasets_and_Benchmarks_Track.pdf",
+      "final_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/9dc510e3d7b0b3b2a58ffed7a3ad6b0f-Paper-Datasets_and_Benchmarks_Track.pdf",
+      "attempts": [
+        {
+          "url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/9dc510e3d7b0b3b2a58ffed7a3ad6b0f-Paper-Datasets_and_Benchmarks_Track.pdf",
+          "http_status": 200,
+          "final_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/9dc510e3d7b0b3b2a58ffed7a3ad6b0f-Paper-Datasets_and_Benchmarks_Track.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:34+08:00",
+      "title_in_pdf": "The ML.ENERGY Benchmark: Toward Automated Inference Energy Measurement and Optimization",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Jae-Won Chung",
+        "Jeff J. Ma",
+        "Ruofan Wu",
+        "Jiachen Liu",
+        "Oh Jun Kweon",
+        "Yuxuan Xia",
+        "Zhiyu Wu",
+        "Mosharaf Chowdhury"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "",
+      "original_pdf_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/9dc510e3d7b0b3b2a58ffed7a3ad6b0f-Paper-Datasets_and_Benchmarks_Track.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "publisher_pdf",
+      "version_note": "出版社或会议公开文件；首页/封面题名、作者和会议版本已核。"
+    },
+    {
+      "source_id": "LP08",
+      "title": "PctoDL: Adaptive GPU Throughput Optimization for Deep Learning Inference with Power Constraints",
+      "local_pdf": null,
+      "status": "unavailable_via_checked_public_routes",
+      "pages": null,
+      "title_verified": false,
+      "version": null,
+      "source_url": "https://dl.acm.org/doi/pdf/10.1145/3805802",
+      "final_url": "https://dl.acm.org/doi/pdf/10.1145/3805802",
+      "attempts": [
+        {
+          "url": "https://dl.acm.org/doi/pdf/10.1145/3805802",
+          "http_status": 403,
+          "final_url": "https://dl.acm.org/doi/pdf/10.1145/3805802",
+          "content_type": "text/html; charset=UTF-8",
+          "result": "failed",
+          "error": "curl: (56) The requested URL returned error: 403"
+        },
+        {
+          "action": "ordinary_browser_access",
+          "url": "https://dl.acm.org/doi/10.1145/3805802",
+          "result": "security_verification_page",
+          "note": "未处理验证码、登录或绕过访问控制。"
+        },
+        {
+          "action": "check_author_repository",
+          "url": "https://github.com/wuooo339/PctoDL",
+          "result": "no_pdf_in_public_tree",
+          "note": "检查公开 README、递归文件树和 releases。"
+        },
+        {
+          "action": "check_author_releases",
+          "url": "https://github.com/wuooo339/PctoDL/releases",
+          "result": "no_releases"
+        },
+        {
+          "action": "search_public_author_or_preprint_copy",
+          "query": "PctoDL exact title / PDF / arXiv / Meng Hao",
+          "result": "no_downloadable_author_copy_found"
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:34+08:00",
+      "original_pdf_url": "https://dl.acm.org/doi/pdf/10.1145/3805802",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": false,
+      "all_pages_readable": false,
+      "author_verified": false,
+      "listed_authors_verified": false,
+      "document_kind": null,
+      "failure_reason": "出版社 PDF 返回 HTTP 403，普通浏览器停留在安全验证页；作者公开代码仓库未提供 PDF 或 release。本轮尚未取得该文 PDF。"
+    },
+    {
+      "source_id": "LS01",
+      "title": "Tiresias: A GPU Cluster Manager for Distributed Deep Learning",
+      "local_pdf": "research/papers/gu_2019_tiresias/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 17,
+      "title_verified": true,
+      "version": "2019 正式出版社/会议 PDF",
+      "source_url": "https://www.usenix.org/system/files/nsdi19-gu.pdf",
+      "final_url": "https://www.usenix.org/system/files/nsdi19-gu.pdf",
+      "attempts": [
+        {
+          "url": "https://www.usenix.org/system/files/nsdi19-gu.pdf",
+          "http_status": 200,
+          "final_url": "https://www.usenix.org/system/files/nsdi19-gu.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:36+08:00",
+      "title_in_pdf": "Tiresias: A GPU Cluster Manager for Distributed Deep Learning",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Juncheng Gu",
+        "Mosharaf Chowdhury",
+        "Kang G. Shin",
+        "Yibo Zhu",
+        "Myeongjae Jeon",
+        "Junjie Qian",
+        "Hongqiang Liu",
+        "Chuanxiong Guo"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "",
+      "original_pdf_url": "https://www.usenix.org/system/files/nsdi19-gu.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "publisher_pdf",
+      "version_note": "出版社或会议公开文件；首页/封面题名、作者和会议版本已核。"
+    },
+    {
+      "source_id": "LS02",
+      "title": "Themis: Fair and Efficient GPU Cluster Scheduling",
+      "local_pdf": "research/papers/mahajan_2020_themis/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 17,
+      "title_verified": true,
+      "version": "2020 正式出版社/会议 PDF",
+      "source_url": "https://www.usenix.org/system/files/nsdi20-paper-mahajan.pdf",
+      "final_url": "https://www.usenix.org/system/files/nsdi20-paper-mahajan.pdf",
+      "attempts": [
+        {
+          "url": "https://www.usenix.org/system/files/nsdi20-paper-mahajan.pdf",
+          "http_status": 200,
+          "final_url": "https://www.usenix.org/system/files/nsdi20-paper-mahajan.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:37+08:00",
+      "title_in_pdf": "Themis: Fair and Efficient GPU Cluster Scheduling",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Kshiteej Mahajan",
+        "Arjun Balasubramanian",
+        "Arjun Singhvi",
+        "Shivaram Venkataraman",
+        "Aditya Akella",
+        "Amar Phanishayee",
+        "Shuchi Chawla"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "themis.pdf",
+      "original_pdf_url": "https://www.usenix.org/system/files/nsdi20-paper-mahajan.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "publisher_pdf",
+      "version_note": "出版社或会议公开文件；首页/封面题名、作者和会议版本已核。"
+    },
+    {
+      "source_id": "LS03",
+      "title": "Pollux: Co-adaptive Cluster Scheduling for Goodput-Optimized Deep Learning",
+      "local_pdf": "research/papers/qiao_2021_pollux/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 19,
+      "title_verified": true,
+      "version": "2021 正式出版社/会议 PDF",
+      "source_url": "https://www.usenix.org/system/files/osdi21-qiao.pdf",
+      "final_url": "https://www.usenix.org/system/files/osdi21-qiao.pdf",
+      "attempts": [
+        {
+          "url": "https://www.usenix.org/system/files/osdi21-qiao.pdf",
+          "http_status": 200,
+          "final_url": "https://www.usenix.org/system/files/osdi21-qiao.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:42+08:00",
+      "title_in_pdf": "Pollux: Co-adaptive Cluster Scheduling for Goodput-Optimized Deep Learning",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Aurick Qiao",
+        "Sang Keun Choe",
+        "Suhas Jayaram Subramanya",
+        "Willie Neiswanger",
+        "Qirong Ho",
+        "Hao Zhang",
+        "Gregory R. Ganger",
+        "Eric P. Xing"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "",
+      "original_pdf_url": "https://www.usenix.org/system/files/osdi21-qiao.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "publisher_pdf",
+      "version_note": "出版社或会议公开文件；首页/封面题名、作者和会议版本已核。"
+    },
+    {
+      "source_id": "LS04",
+      "title": "Gandiva: Introspective Cluster Scheduling for Deep Learning",
+      "local_pdf": "research/papers/xiao_2018_gandiva/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 17,
+      "title_verified": true,
+      "version": "2018 正式出版社/会议 PDF",
+      "source_url": "https://www.usenix.org/system/files/osdi18-xiao.pdf",
+      "final_url": "https://www.usenix.org/system/files/osdi18-xiao.pdf",
+      "attempts": [
+        {
+          "url": "https://www.usenix.org/system/files/osdi18-xiao.pdf",
+          "http_status": 200,
+          "final_url": "https://www.usenix.org/system/files/osdi18-xiao.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:42+08:00",
+      "title_in_pdf": "Gandiva: Introspective Cluster Scheduling for Deep Learning",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Wencong Xiao",
+        "Romil Bhardwaj",
+        "Ramachandran Ramjee",
+        "Muthian Sivathanu",
+        "Nipun Kwatra",
+        "Zhenhua Han",
+        "Pratyush Patel",
+        "Xuan Peng",
+        "Hanyu Zhao",
+        "Quanlu Zhang",
+        "Fan Yang",
+        "Lidong Zhou"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "",
+      "original_pdf_url": "https://www.usenix.org/system/files/osdi18-xiao.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "publisher_pdf",
+      "version_note": "出版社或会议公开文件；首页/封面题名、作者和会议版本已核。"
+    },
+    {
+      "source_id": "LS05",
+      "title": "Heterogeneity-Aware Cluster Scheduling Policies for Deep Learning Workloads",
+      "local_pdf": "research/papers/narayanan_2020_gavel/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 19,
+      "title_verified": true,
+      "version": "2020 正式出版社/会议 PDF",
+      "source_url": "https://www.usenix.org/system/files/osdi20-narayanan_deepak.pdf",
+      "final_url": "https://www.usenix.org/system/files/osdi20-narayanan_deepak.pdf",
+      "attempts": [
+        {
+          "url": "https://www.usenix.org/system/files/osdi20-narayanan_deepak.pdf",
+          "http_status": 200,
+          "final_url": "https://www.usenix.org/system/files/osdi20-narayanan_deepak.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:42+08:00",
+      "title_in_pdf": "Heterogeneity-Aware Cluster Scheduling Policies for Deep Learning Workloads",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Deepak Narayanan",
+        "Keshav Santhanam",
+        "Fiodar Kazhamiaka",
+        "Amar Phanishayee",
+        "Matei Zaharia"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "",
+      "original_pdf_url": "https://www.usenix.org/system/files/osdi20-narayanan_deepak.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "publisher_pdf",
+      "version_note": "出版社或会议公开文件；首页/封面题名、作者和会议版本已核。"
+    },
+    {
+      "source_id": "LS06",
+      "title": "Sia: Heterogeneity-aware, goodput-optimized ML-cluster scheduling",
+      "local_pdf": "research/papers/subramanya_2023_sia/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 16,
+      "title_verified": true,
+      "version": "SOSP 2023 作者或会议组织者公开排版稿",
+      "source_url": "https://suhasjs.github.io/files/sia-sosp23.pdf",
+      "final_url": "https://suhasjs.github.io/files/sia-sosp23.pdf",
+      "attempts": [
+        {
+          "url": "https://suhasjs.github.io/files/sia-sosp23.pdf",
+          "http_status": 200,
+          "final_url": "https://suhasjs.github.io/files/sia-sosp23.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:43+08:00",
+      "title_in_pdf": "Sia: Heterogeneity-aware, goodput-optimized ML-cluster scheduling",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Suhas Jayaram Subramanya",
+        "Daiyaan Arfeen",
+        "Shouxu Lin",
+        "Aurick Qiao",
+        "Zhihao Jia",
+        "Gregory R. Ganger"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "Sia: Heterogeneity-aware, goodput-optimized ML-cluster scheduling",
+      "original_pdf_url": "https://suhasjs.github.io/files/sia-sosp23.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "author_or_organizer_public_copy",
+      "version_note": "首页会议/期刊及版权/DOI 标记已核；未与出版社下载副本逐字比对。"
+    },
+    {
+      "source_id": "LS07",
+      "title": "When will my ML Job finish? Toward providing Completion Time Estimates through Predictability-Centric Scheduling",
+      "local_pdf": "research/papers/bin_faisal_2024_pcs/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 20,
+      "title_verified": true,
+      "version": "2024 正式出版社/会议 PDF",
+      "source_url": "https://www.usenix.org/system/files/osdi24-bin-faisal.pdf",
+      "final_url": "https://www.usenix.org/system/files/osdi24-bin-faisal.pdf",
+      "attempts": [
+        {
+          "url": "https://www.usenix.org/system/files/osdi24-bin-faisal.pdf",
+          "http_status": 200,
+          "final_url": "https://www.usenix.org/system/files/osdi24-bin-faisal.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:47+08:00",
+      "title_in_pdf": "When will my ML Job finish? Toward providing Completion Time Estimates through Predictability-Centric Scheduling",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Abdullah Bin Faisal",
+        "Noah Martin",
+        "Hafiz Mohsin Bashir",
+        "Swaminathan Lamelas",
+        "Fahad R. Dogar"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "",
+      "original_pdf_url": "https://www.usenix.org/system/files/osdi24-bin-faisal.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "publisher_pdf",
+      "version_note": "出版社或会议公开文件；首页/封面题名、作者和会议版本已核。"
+    },
+    {
+      "source_id": "LS08",
+      "title": "Heterogeneity at Hyperscale: Characterization and Scheduling of Large Production AI Clusters at Alibaba (Operational Systems)",
+      "local_pdf": "research/papers/li_2026_spotgpu/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 18,
+      "title_verified": true,
+      "version": "2026 正式出版社/会议 PDF",
+      "source_url": "https://www.usenix.org/system/files/osdi26-li-suyi.pdf",
+      "final_url": "https://www.usenix.org/system/files/osdi26-li-suyi.pdf",
+      "attempts": [
+        {
+          "url": "https://www.usenix.org/system/files/osdi26-li-suyi.pdf",
+          "http_status": 200,
+          "final_url": "https://www.usenix.org/system/files/osdi26-li-suyi.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:47+08:00",
+      "title_in_pdf": "Heterogeneity at Hyperscale: Characterization and Scheduling of Large Production AI Clusters at Alibaba",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Suyi Li",
+        "Lingyun Yang",
+        "Haoxuan Yu",
+        "Sheng Yao",
+        "Tianyuan Wu",
+        "Xiaoxiao Jiang",
+        "Hanfeng Lu",
+        "Kangjin Wang",
+        "Chenhao Wang",
+        "Shenglin Xu",
+        "Lun Wang",
+        "Qingyang Duan",
+        "Shenghao Liang",
+        "Xiu Lin",
+        "Meng Zhang",
+        "Wenchao Wu",
+        "Yinghao Yu",
+        "Guodong Yang",
+        "Liping Zhang",
+        "Wei Wang"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "",
+      "original_pdf_url": "https://www.usenix.org/system/files/osdi26-li-suyi.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "publisher_pdf",
+      "version_note": "出版社或会议公开文件；首页/封面题名、作者和会议版本已核。"
+    },
+    {
+      "source_id": "LN01",
+      "title": "CASSINI: Network-Aware Job Scheduling in Machine Learning Clusters",
+      "local_pdf": "research/papers/rajasekaran_2024_cassini/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 19,
+      "title_verified": true,
+      "version": "2024 正式出版社/会议 PDF",
+      "source_url": "https://www.usenix.org/system/files/nsdi24-rajasekaran.pdf",
+      "final_url": "https://www.usenix.org/system/files/nsdi24-rajasekaran.pdf",
+      "attempts": [
+        {
+          "url": "https://www.usenix.org/system/files/nsdi24-rajasekaran.pdf",
+          "http_status": 200,
+          "final_url": "https://www.usenix.org/system/files/nsdi24-rajasekaran.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:49+08:00",
+      "title_in_pdf": "CASSINI: Network-Aware Job Scheduling in Machine Learning Clusters",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Sudarsanan Rajasekaran",
+        "Manya Ghobadi",
+        "Aditya Akella"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "",
+      "original_pdf_url": "https://www.usenix.org/system/files/nsdi24-rajasekaran.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "publisher_pdf",
+      "version_note": "出版社或会议公开文件；首页/封面题名、作者和会议版本已核。"
+    },
+    {
+      "source_id": "LN02",
+      "title": "ElasticFlow: An Elastic Serverless Training Platform for Distributed Deep Learning",
+      "local_pdf": "research/papers/gu_2023_elasticflow/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 15,
+      "title_verified": true,
+      "version": "ASPLOS 2023 作者或会议组织者公开排版稿",
+      "source_url": "https://gudiandian.github.io/attaches/asplos23/asplosb23main-p360.pdf",
+      "final_url": "https://gudiandian.github.io/attaches/asplos23/asplosb23main-p360.pdf",
+      "attempts": [
+        {
+          "url": "https://gudiandian.github.io/attaches/asplos23/asplosb23main-p360.pdf",
+          "http_status": 200,
+          "final_url": "https://gudiandian.github.io/attaches/asplos23/asplosb23main-p360.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:50+08:00",
+      "title_in_pdf": "ElasticFlow: An Elastic Serverless Training Platform for Distributed Deep Learning",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Diandian Gu",
+        "Yihao Zhao",
+        "Yinmin Zhong",
+        "Yifan Xiong",
+        "Zhenhua Han",
+        "Peng Cheng",
+        "Fan Yang",
+        "Gang Huang",
+        "Xin Jin",
+        "Xuanzhe Liu"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "ElasticFlow: An Elastic Serverless Training Platform for Distributed Deep Learning",
+      "original_pdf_url": "https://gudiandian.github.io/attaches/asplos23/asplosb23main-p360.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "author_or_organizer_public_copy",
+      "version_note": "首页会议/期刊及版权/DOI 标记已核；未与出版社下载副本逐字比对。"
+    },
+    {
+      "source_id": "LN03",
+      "title": "Sailor: Automating Distributed Training over Dynamic, Heterogeneous, and Geo-distributed Clusters",
+      "local_pdf": "research/papers/strati_2025_sailor/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 17,
+      "title_verified": true,
+      "version": "SOSP 2025 作者或会议组织者公开排版稿",
+      "source_url": "https://anakli.inf.ethz.ch/papers/sailor_sosp25.pdf",
+      "final_url": "https://anakli.inf.ethz.ch/papers/sailor_sosp25.pdf",
+      "attempts": [
+        {
+          "url": "https://anakli.inf.ethz.ch/papers/sailor_sosp25.pdf",
+          "http_status": 200,
+          "final_url": "https://anakli.inf.ethz.ch/papers/sailor_sosp25.pdf",
+          "content_type": "application/pdf",
+          "result": "failed",
+          "error": "curl: (28) Operation timed out after 25002 milliseconds with 668738 out of 3626726 bytes received"
+        },
+        {
+          "action": "resume_partial_download",
+          "url": "https://anakli.inf.ethz.ch/papers/sailor_sosp25.pdf",
+          "http_status": 206,
+          "final_url": "https://anakli.inf.ethz.ch/papers/sailor_sosp25.pdf",
+          "result": "failed",
+          "error": "curl: (28) Operation timed out after 25001 milliseconds with 898536 out of 2957988 bytes received"
+        },
+        {
+          "action": "resume_partial_download",
+          "url": "https://anakli.inf.ethz.ch/papers/sailor_sosp25.pdf",
+          "http_status": 206,
+          "final_url": "https://anakli.inf.ethz.ch/papers/sailor_sosp25.pdf",
+          "result": "failed",
+          "error": "curl: (28) Operation timed out after 25002 milliseconds with 929520 out of 2059452 bytes received"
+        },
+        {
+          "action": "resume_partial_download",
+          "url": "https://anakli.inf.ethz.ch/papers/sailor_sosp25.pdf",
+          "http_status": 206,
+          "final_url": "https://anakli.inf.ethz.ch/papers/sailor_sosp25.pdf",
+          "result": "failed",
+          "error": "curl: (28) Operation timed out after 25001 milliseconds with 972123 out of 1129932 bytes received"
+        },
+        {
+          "action": "resume_partial_download",
+          "url": "https://anakli.inf.ethz.ch/papers/sailor_sosp25.pdf",
+          "http_status": 206,
+          "final_url": "https://anakli.inf.ethz.ch/papers/sailor_sosp25.pdf",
+          "result": "pdf_valid"
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:52+08:00",
+      "title_in_pdf": "Sailor: Automating Distributed Training over Dynamic, Heterogeneous, and Geo-distributed Clusters",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Foteini Strati",
+        "Zhendong Zhang",
+        "George Manos",
+        "Ixeia Sánchez Périz",
+        "Qinghao Hu",
+        "Tiancheng Chen",
+        "Berk Buzcu",
+        "Song Han",
+        "Pamela Delgado",
+        "Ana Klimovic"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "Sailor: Automating Distributed Training over Dynamic, Heterogeneous, and Geo-distributed Clusters",
+      "original_pdf_url": "https://anakli.inf.ethz.ch/papers/sailor_sosp25.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "author_or_organizer_public_copy",
+      "version_note": "首页会议/期刊及版权/DOI 标记已核；未与出版社下载副本逐字比对。"
+    },
+    {
+      "source_id": "LN04",
+      "title": "Optimus: An Efficient Dynamic Resource Scheduler for Deep Learning Clusters",
+      "local_pdf": "research/papers/peng_2018_optimus/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 14,
+      "title_verified": true,
+      "version": "EuroSys 2018 作者或会议组织者公开排版稿",
+      "source_url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+      "final_url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+      "attempts": [
+        {
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "http_status": 200,
+          "final_url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "content_type": "application/pdf",
+          "result": "failed",
+          "error": "curl: (28) Operation timed out after 25005 milliseconds with 639901 out of 12032518 bytes received"
+        },
+        {
+          "action": "resume_partial_download",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "http_status": 206,
+          "final_url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "result": "failed",
+          "error": "curl: (28) Operation timed out after 25003 milliseconds with 551841 out of 11392617 bytes received"
+        },
+        {
+          "action": "resume_partial_download",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "http_status": 206,
+          "final_url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "result": "failed",
+          "error": "curl: (28) Operation timed out after 25002 milliseconds with 575840 out of 10840776 bytes received"
+        },
+        {
+          "action": "resume_partial_download",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "http_status": 206,
+          "final_url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "result": "failed",
+          "error": "curl: (28) Operation timed out after 25001 milliseconds with 599840 out of 10264936 bytes received"
+        },
+        {
+          "action": "resume_partial_download",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "http_status": 206,
+          "final_url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "result": "failed",
+          "error": "curl: (28) Operation timed out after 25003 milliseconds with 527841 out of 9665096 bytes received"
+        },
+        {
+          "action": "resume_partial_download",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "http_status": 206,
+          "final_url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "result": "failed",
+          "error": "curl: (28) Operation timed out after 25005 milliseconds with 692833 out of 9137255 bytes received"
+        },
+        {
+          "action": "resume_partial_download",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "http_status": 206,
+          "final_url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "result": "failed",
+          "error": "curl: (28) Operation timed out after 25001 milliseconds with 351841 out of 8444422 bytes received"
+        },
+        {
+          "action": "parallel_range_resume",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "segment": 1,
+          "http_status": 206,
+          "result": "partial",
+          "error": "curl: (28) Operation timed out after 25000 milliseconds with 591842 out of 1348764 bytes received"
+        },
+        {
+          "action": "parallel_range_resume",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "segment": 1,
+          "http_status": 206,
+          "result": "partial",
+          "error": "curl: (28) Operation timed out after 25005 milliseconds with 631843 out of 756922 bytes received"
+        },
+        {
+          "action": "parallel_range_resume",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "segment": 1,
+          "http_status": 206,
+          "result": "downloaded"
+        },
+        {
+          "action": "parallel_range_resume",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "segment": 2,
+          "http_status": 206,
+          "result": "partial",
+          "error": "curl: (28) Operation timed out after 25005 milliseconds with 663842 out of 1348764 bytes received"
+        },
+        {
+          "action": "parallel_range_resume",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "segment": 2,
+          "http_status": 206,
+          "result": "partial",
+          "error": "curl: (28) Operation timed out after 25005 milliseconds with 495843 out of 684922 bytes received"
+        },
+        {
+          "action": "parallel_range_resume",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "segment": 2,
+          "http_status": 206,
+          "result": "downloaded"
+        },
+        {
+          "action": "parallel_range_resume",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "segment": 3,
+          "http_status": 206,
+          "result": "partial",
+          "error": "curl: (28) Operation timed out after 25001 milliseconds with 615842 out of 1348764 bytes received"
+        },
+        {
+          "action": "parallel_range_resume",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "segment": 3,
+          "http_status": 206,
+          "result": "downloaded"
+        },
+        {
+          "action": "parallel_range_resume",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "segment": 4,
+          "http_status": 206,
+          "result": "partial",
+          "error": "curl: (28) Operation timed out after 25001 milliseconds with 543842 out of 1348764 bytes received"
+        },
+        {
+          "action": "parallel_range_resume",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "segment": 4,
+          "http_status": 206,
+          "result": "partial",
+          "error": "curl: (28) Operation timed out after 25005 milliseconds with 487843 out of 804922 bytes received"
+        },
+        {
+          "action": "parallel_range_resume",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "segment": 4,
+          "http_status": 206,
+          "result": "downloaded"
+        },
+        {
+          "action": "parallel_range_resume",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "segment": 5,
+          "http_status": 206,
+          "result": "partial",
+          "error": "curl: (28) Operation timed out after 25005 milliseconds with 727841 out of 1348764 bytes received"
+        },
+        {
+          "action": "parallel_range_resume",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "segment": 5,
+          "http_status": 206,
+          "result": "downloaded"
+        },
+        {
+          "action": "parallel_range_resume",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "segment": 6,
+          "http_status": 206,
+          "result": "partial",
+          "error": "curl: (28) Operation timed out after 25001 milliseconds with 607840 out of 1348761 bytes received"
+        },
+        {
+          "action": "parallel_range_resume",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "segment": 6,
+          "http_status": 206,
+          "result": "partial",
+          "error": "curl: (28) Operation timed out after 25005 milliseconds with 655841 out of 740921 bytes received"
+        },
+        {
+          "action": "parallel_range_resume",
+          "url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "segment": 6,
+          "http_status": 206,
+          "result": "downloaded"
+        },
+        {
+          "action": "author_alternate_url",
+          "url": "https://i2.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+          "http_status": 403,
+          "result": "failed"
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:52+08:00",
+      "title_in_pdf": "Optimus: An Efficient Dynamic Resource Scheduler for Deep Learning Clusters",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Yanghua Peng",
+        "Yixin Bao",
+        "Yangrui Chen",
+        "Chuan Wu",
+        "Chuanxiong Guo"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "Optimus: An Efficient Dynamic Resource Scheduler for Deep Learning Clusters",
+      "original_pdf_url": "https://i.cs.hku.hk/~cwu/papers/yhpeng-eurosys18.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "author_or_organizer_public_copy",
+      "version_note": "首页会议/期刊及版权/DOI 标记已核；未与出版社下载副本逐字比对。"
+    },
+    {
+      "source_id": "LN05",
+      "title": "AntMan: Dynamic Scaling on GPU Clusters for Deep Learning",
+      "local_pdf": "research/papers/xiao_2020_antman/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 17,
+      "title_verified": true,
+      "version": "2020 正式出版社/会议 PDF",
+      "source_url": "https://www.usenix.org/system/files/osdi20-xiao.pdf",
+      "final_url": "https://www.usenix.org/system/files/osdi20-xiao.pdf",
+      "attempts": [
+        {
+          "url": "https://www.usenix.org/system/files/osdi20-xiao.pdf",
+          "http_status": 200,
+          "final_url": "https://www.usenix.org/system/files/osdi20-xiao.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:54+08:00",
+      "title_in_pdf": "AntMan: Dynamic Scaling on GPU Clusters for Deep Learning",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Wencong Xiao",
+        "Shiru Ren",
+        "Yong Li",
+        "Yang Zhang",
+        "Pengyang Hou",
+        "Zhi Li",
+        "Yihui Feng",
+        "Wei Lin",
+        "Yangqing Jia"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "",
+      "original_pdf_url": "https://www.usenix.org/system/files/osdi20-xiao.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "publisher_pdf",
+      "version_note": "出版社或会议公开文件；首页/封面题名、作者和会议版本已核。"
+    },
+    {
+      "source_id": "LN06",
+      "title": "Accelerating Model Training in Multi-cluster Environments with Consumer-grade GPUs",
+      "local_pdf": "research/papers/lim_2024_stellatrain/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 14,
+      "title_verified": true,
+      "version": "SIGCOMM 2024 作者或会议组织者公开排版稿",
+      "source_url": "https://cs.stanford.edu/~keithw/sigcomm2024/sigcomm24-final168-acmpaginated.pdf",
+      "final_url": "https://cs.stanford.edu/~keithw/sigcomm2024/sigcomm24-final168-acmpaginated.pdf",
+      "attempts": [
+        {
+          "url": "https://cs.stanford.edu/~keithw/sigcomm2024/sigcomm24-final168-acmpaginated.pdf",
+          "http_status": 200,
+          "final_url": "https://cs.stanford.edu/~keithw/sigcomm2024/sigcomm24-final168-acmpaginated.pdf",
+          "content_type": "application/pdf",
+          "result": "failed",
+          "error": "curl: (28) Operation timed out after 25000 milliseconds with 1179648 out of 2292714 bytes received"
+        },
+        {
+          "action": "resume_partial_download",
+          "url": "https://cs.stanford.edu/~keithw/sigcomm2024/sigcomm24-final168-acmpaginated.pdf",
+          "http_status": 206,
+          "final_url": "https://cs.stanford.edu/~keithw/sigcomm2024/sigcomm24-final168-acmpaginated.pdf",
+          "result": "pdf_valid"
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:54+08:00",
+      "title_in_pdf": "Accelerating Model Training in Multi-cluster Environments with Consumer-grade GPUs",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Hwijoon Lim",
+        "Juncheol Ye",
+        "Sangeetha Abdu Jyothi",
+        "Dongsu Han"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "Accelerating Model Training in Multi-cluster  Environments with Consumer-grade GPUs",
+      "original_pdf_url": "https://cs.stanford.edu/~keithw/sigcomm2024/sigcomm24-final168-acmpaginated.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "author_or_organizer_public_copy",
+      "version_note": "首页会议/期刊及版权/DOI 标记已核；未与出版社下载副本逐字比对。"
+    },
+    {
+      "source_id": "LN07",
+      "title": "Crux: GPU-Efficient Communication Scheduling for Deep Learning Training",
+      "local_pdf": "research/papers/cao_2024_crux/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 15,
+      "title_verified": true,
+      "version": "SIGCOMM 2024 作者或会议组织者公开排版稿",
+      "source_url": "https://www-cs.stanford.edu/~keithw/sigcomm2024/sigcomm24-final380-acmpaginated.pdf",
+      "final_url": "https://www-cs.stanford.edu/~keithw/sigcomm2024/sigcomm24-final380-acmpaginated.pdf",
+      "attempts": [
+        {
+          "url": "https://www-cs.stanford.edu/~keithw/sigcomm2024/sigcomm24-final380-acmpaginated.pdf",
+          "http_status": 200,
+          "final_url": "https://www-cs.stanford.edu/~keithw/sigcomm2024/sigcomm24-final380-acmpaginated.pdf",
+          "content_type": "application/pdf",
+          "result": "failed",
+          "error": "curl: (28) Operation timed out after 25005 milliseconds with 1048576 out of 2899007 bytes received"
+        },
+        {
+          "action": "resume_partial_download",
+          "url": "https://www-cs.stanford.edu/~keithw/sigcomm2024/sigcomm24-final380-acmpaginated.pdf",
+          "http_status": 206,
+          "final_url": "https://www-cs.stanford.edu/~keithw/sigcomm2024/sigcomm24-final380-acmpaginated.pdf",
+          "result": "failed",
+          "error": "curl: (28) Operation timed out after 25002 milliseconds with 1294336 out of 1850431 bytes received"
+        },
+        {
+          "action": "resume_partial_download",
+          "url": "https://www-cs.stanford.edu/~keithw/sigcomm2024/sigcomm24-final380-acmpaginated.pdf",
+          "http_status": 206,
+          "final_url": "https://www-cs.stanford.edu/~keithw/sigcomm2024/sigcomm24-final380-acmpaginated.pdf",
+          "result": "pdf_valid"
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:56+08:00",
+      "title_in_pdf": "Crux: GPU-Efficient Communication Scheduling for Deep Learning Training",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Jiamin Cao",
+        "Yu Guan",
+        "Kun Qian",
+        "Jiaqi Gao",
+        "Wencong Xiao",
+        "Jianbo Dong",
+        "Binzhang Fu",
+        "Dennis Cai",
+        "Ennan Zhai"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "Crux: GPU-Efficient Communication Scheduling for Deep Learning Training",
+      "original_pdf_url": "https://www-cs.stanford.edu/~keithw/sigcomm2024/sigcomm24-final380-acmpaginated.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "author_or_organizer_public_copy",
+      "version_note": "首页会议/期刊及版权/DOI 标记已核；未与出版社下载副本逐字比对。"
+    },
+    {
+      "source_id": "LN08",
+      "title": "Tessera: A Holistic Pipeline Parallelism Framework for Trillion-Parameter Heterogeneous MoE Training (Operational Systems)",
+      "local_pdf": "research/papers/hu_2026_tessera/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 19,
+      "title_verified": true,
+      "version": "2026 正式出版社/会议 PDF",
+      "source_url": "https://www.usenix.org/system/files/osdi26-hu-weifang.pdf",
+      "final_url": "https://www.usenix.org/system/files/osdi26-hu-weifang.pdf",
+      "attempts": [
+        {
+          "url": "https://www.usenix.org/system/files/osdi26-hu-weifang.pdf",
+          "http_status": 200,
+          "final_url": "https://www.usenix.org/system/files/osdi26-hu-weifang.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:57+08:00",
+      "title_in_pdf": "Tessera: A Holistic Pipeline Parallelism Framework for Trillion-Parameter Heterogeneous MoE Training",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Weifang Hu",
+        "Langshi Chen",
+        "Man Yuan",
+        "Youyang Yao",
+        "Xiulong Yuan",
+        "Li Tian",
+        "Yong Li",
+        "Wei Lin",
+        "Xuanhua Shi",
+        "Zhengping Qian",
+        "Jingren Zhou"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "Tessera: A Holistic Pipeline Parallelism Framework for Trillion-Parameter Heterogeneous MoE Training (Operational Systems)",
+      "original_pdf_url": "https://www.usenix.org/system/files/osdi26-hu-weifang.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "publisher_pdf",
+      "version_note": "出版社或会议公开文件；首页/封面题名、作者和会议版本已核。"
+    },
+    {
+      "source_id": "LC01",
+      "title": "AI data centres as grid-interactive assets",
+      "local_pdf": "research/papers/colangelo_2025_grid_interactive/paper_preprint.pdf",
+      "status": "downloaded_verified",
+      "pages": 10,
+      "title_verified": true,
+      "version": "arXiv 2507.00909v1，2025-07-01；题名与正式期刊版不同",
+      "source_url": "https://arxiv.org/pdf/2507.00909v1",
+      "final_url": "https://arxiv.org/pdf/2507.00909v1",
+      "attempts": [
+        {
+          "url": "https://www.nature.com/articles/s41560-025-01927-1.pdf",
+          "http_status": 200,
+          "final_url": "https://www.nature.com/articles/s41560-025-01927-1?error=cookies_not_supported&code=dece2458-39fa-47a7-81bb-595552c58f4c",
+          "content_type": "text/html; charset=utf-8",
+          "result": "failed",
+          "error": "Content is not a PDF"
+        },
+        {
+          "url": "https://arxiv.org/pdf/2507.00909v1",
+          "http_status": 200,
+          "final_url": "https://arxiv.org/pdf/2507.00909v1",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:36:57+08:00",
+      "title_in_pdf": "Turning AI Data Centers into Grid-Interactive Assets: Results from a Field Demonstration in Phoenix, Arizona",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Philip Colangelo",
+        "Ayse K. Coskun",
+        "Jack Megrue"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "Turning AI Data Centers into Grid-Interactive Assets: Results from a Field Demonstration in Phoenix, Arizona",
+      "original_pdf_url": "https://arxiv.org/pdf/2507.00909",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "arxiv_preprint",
+      "version_note": "首页标记 arXiv:2507.00909v1，1 Jul 2025；对应既有分析包，期刊正式题名为 AI data centres as grid-interactive assets。"
+    },
+    {
+      "source_id": "LC02",
+      "title": "GREEN: Carbon-efficient Resource Scheduling for Machine Learning Clusters",
+      "local_pdf": "research/papers/xu_2025_green/paper.pdf",
+      "status": "existing_verified",
+      "pages": 17,
+      "title_verified": true,
+      "version": "2025 正式出版社/会议 PDF",
+      "source_url": "https://www.usenix.org/system/files/nsdi25-xu-kaiqiang.pdf",
+      "final_url": null,
+      "attempts": [
+        {
+          "action": "validate_existing",
+          "path": "research/papers/xu_2025_green/paper.pdf",
+          "result": "passed"
+        }
+      ],
+      "checked_at": "2026-11-05T16:37:03+08:00",
+      "title_in_pdf": "GREEN: Carbon-efficient Resource Scheduling for Machine Learning Clusters",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Kaiqiang Xu",
+        "Decang Sun",
+        "Han Tian",
+        "Junxue Zhang",
+        "Kai Chen"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "",
+      "provenance_note": "已有本地文件，按阅读池所列 URL 记录来源线索；本轮未重新请求该 URL，未独立确认此前重定向终点。",
+      "original_pdf_url": "https://www.usenix.org/system/files/nsdi25-xu-kaiqiang.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "publisher_pdf",
+      "version_note": "出版社或会议公开文件；首页/封面题名、作者和会议版本已核。"
+    },
+    {
+      "source_id": "LC03",
+      "title": "SPADE: Signal-Aware DAG Scheduling and Dynamic Provisioning for Data Processing Clusters",
+      "local_pdf": "research/papers/lechowicz_2026_spade/paper.pdf",
+      "status": "existing_verified",
+      "pages": 19,
+      "title_verified": true,
+      "version": "2026 正式出版社/会议 PDF",
+      "source_url": "https://www.usenix.org/system/files/osdi26-lechowicz.pdf",
+      "final_url": null,
+      "attempts": [
+        {
+          "action": "validate_existing",
+          "path": "research/papers/lechowicz_2026_spade/paper.pdf",
+          "result": "passed"
+        }
+      ],
+      "checked_at": "2026-11-05T16:37:03+08:00",
+      "title_in_pdf": "SPADE: Signal-Aware DAG Scheduling and Dynamic Provisioning for Data Processing Clusters",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Adam Lechowicz",
+        "Rohan Shenoy",
+        "Noman Bashir",
+        "Mohammad Hajiesmaili",
+        "Adam Wierman",
+        "Christina Delimitrou"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "",
+      "provenance_note": "已有本地文件，按阅读池所列 URL 记录来源线索；本轮未重新请求该 URL，未独立确认此前重定向终点。",
+      "original_pdf_url": "https://www.usenix.org/system/files/osdi26-lechowicz.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "publisher_pdf",
+      "version_note": "出版社或会议公开文件；首页/封面题名、作者和会议版本已核。"
+    },
+    {
+      "source_id": "LC04",
+      "title": "CarbonScaler: Leveraging Cloud Workload Elasticity for Optimizing Carbon-Efficiency",
+      "local_pdf": "research/papers/hanafy_2023_carbonscaler/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 28,
+      "title_verified": true,
+      "version": "POMACS 2023 作者或会议组织者公开排版稿",
+      "source_url": "https://lass.cs.umass.edu/papers/pdf/sigmetrics2024-carbonscaler.pdf",
+      "final_url": "https://lass.cs.umass.edu/papers/pdf/sigmetrics2024-carbonscaler.pdf",
+      "attempts": [
+        {
+          "url": "https://lass.cs.umass.edu/papers/pdf/sigmetrics2024-carbonscaler.pdf",
+          "http_status": 200,
+          "final_url": "https://lass.cs.umass.edu/papers/pdf/sigmetrics2024-carbonscaler.pdf",
+          "content_type": "application/pdf",
+          "result": "failed",
+          "error": "curl: (28) Operation timed out after 25005 milliseconds with 5055933 out of 7265658 bytes received"
+        },
+        {
+          "action": "resume_partial_download",
+          "url": "https://lass.cs.umass.edu/papers/pdf/sigmetrics2024-carbonscaler.pdf",
+          "http_status": 206,
+          "final_url": "https://lass.cs.umass.edu/papers/pdf/sigmetrics2024-carbonscaler.pdf",
+          "result": "pdf_valid"
+        }
+      ],
+      "checked_at": "2026-11-05T16:37:03+08:00",
+      "title_in_pdf": "CarbonScaler: Leveraging Cloud Workload Elasticity for Optimizing Carbon-Efficiency",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Walid A. Hanafy",
+        "Qianlin Liang",
+        "Noman Bashir",
+        "David Irwin",
+        "Prashant Shenoy"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "CarbonScaler: Leveraging Cloud Workload Elasticity for Optimizing Carbon-Efficiency",
+      "original_pdf_url": "https://lass.cs.umass.edu/papers/pdf/sigmetrics2024-carbonscaler.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "author_or_organizer_public_copy",
+      "version_note": "首页会议/期刊及版权/DOI 标记已核；未与出版社下载副本逐字比对。"
+    },
+    {
+      "source_id": "LC05",
+      "title": "On the Limitations of Carbon-Aware Temporal and Spatial Workload Shifting in the Cloud",
+      "local_pdf": "research/papers/sukprasert_2024_carbon_limits/paper.pdf",
+      "status": "existing_verified",
+      "pages": 18,
+      "title_verified": true,
+      "version": "EuroSys 2024 作者或会议组织者公开排版稿",
+      "source_url": "https://lass.cs.umass.edu/papers/pdf/eurosys24-shiftinglimitations.pdf",
+      "final_url": null,
+      "attempts": [
+        {
+          "action": "validate_existing",
+          "path": "research/papers/sukprasert_2024_carbon_limits/paper.pdf",
+          "result": "passed"
+        }
+      ],
+      "checked_at": "2026-11-05T16:37:17+08:00",
+      "title_in_pdf": "On the Limitations of Carbon-Aware Temporal and Spatial Workload Shifting in the Cloud",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Thanathorn Sukprasert",
+        "Abel Souza",
+        "Noman Bashir",
+        "David Irwin",
+        "Prashant Shenoy"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "On the Limitations of Carbon-Aware Temporal and Spatial Workload Shifting in the Cloud",
+      "provenance_note": "已有本地文件，按阅读池所列 URL 记录来源线索；本轮未重新请求该 URL，未独立确认此前重定向终点。",
+      "original_pdf_url": "https://lass.cs.umass.edu/papers/pdf/eurosys24-shiftinglimitations.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "author_or_organizer_public_copy",
+      "version_note": "首页会议/期刊及版权/DOI 标记已核；未与出版社下载副本逐字比对。"
+    },
+    {
+      "source_id": "LC06",
+      "title": "Ecovisor: A Virtual Energy System for Carbon-Efficient Applications",
+      "local_pdf": "research/papers/souza_2023_ecovisor/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 14,
+      "title_verified": true,
+      "version": "ASPLOS 2023 作者或会议组织者公开排版稿",
+      "source_url": "https://noman-bashir.github.io/assets/pdf/ASPLOS-2023-Ecovisor.pdf",
+      "final_url": "https://noman-bashir.github.io/assets/pdf/ASPLOS-2023-Ecovisor.pdf",
+      "attempts": [
+        {
+          "url": "https://noman-bashir.github.io/assets/pdf/ASPLOS-2023-Ecovisor.pdf",
+          "http_status": 200,
+          "final_url": "https://noman-bashir.github.io/assets/pdf/ASPLOS-2023-Ecovisor.pdf",
+          "content_type": "application/pdf",
+          "result": "pdf_valid",
+          "title_verified": true,
+          "author_verified": true
+        }
+      ],
+      "checked_at": "2026-11-05T16:37:17+08:00",
+      "title_in_pdf": "Ecovisor: A Virtual Energy System for Carbon-Efficient Applications",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Abel Souza",
+        "Noman Bashir",
+        "Jorge Murillo",
+        "Walid Hanafy",
+        "Qianlin Liang",
+        "David Irwin",
+        "Prashant Shenoy"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "Ecovisor: A Virtual Energy System for Carbon-Efficient Applications",
+      "original_pdf_url": "https://noman-bashir.github.io/assets/pdf/ASPLOS-2023-Ecovisor.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "author_or_organizer_public_copy",
+      "version_note": "首页会议/期刊及版权/DOI 标记已核；未与出版社下载副本逐字比对。"
+    },
+    {
+      "source_id": "LC07",
+      "title": "The Online Pause and Resume Problem: Optimal Algorithms and An Application to Carbon-Aware Load Shifting",
+      "local_pdf": "research/papers/lechowicz_2023_pause_resume/paper.pdf",
+      "status": "existing_verified",
+      "pages": 32,
+      "title_verified": true,
+      "version": "POMACS 2023 作者或会议组织者公开排版稿",
+      "source_url": "https://noman-bashir.github.io/assets/pdf/SIGMETRICS-2024-DTPR.pdf",
+      "final_url": null,
+      "attempts": [
+        {
+          "action": "validate_existing",
+          "path": "research/papers/lechowicz_2023_pause_resume/paper.pdf",
+          "result": "passed"
+        }
+      ],
+      "checked_at": "2026-11-05T16:37:18+08:00",
+      "title_in_pdf": "The Online Pause and Resume Problem: Optimal Algorithms and An Application to Carbon-Aware Load Shifting",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Adam Lechowicz",
+        "Nicolas Christianson",
+        "Jinhang Zuo",
+        "Noman Bashir",
+        "Mohammad Hajiesmaili",
+        "Adam Wierman",
+        "Prashant Shenoy"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "The Online Pause and Resume Problem: Optimal Algorithms and An Application to Carbon-Aware Load Shifting",
+      "provenance_note": "已有本地文件，按阅读池所列 URL 记录来源线索；本轮未重新请求该 URL，未独立确认此前重定向终点。",
+      "original_pdf_url": "https://noman-bashir.github.io/assets/pdf/SIGMETRICS-2024-DTPR.pdf",
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "author_or_organizer_public_copy",
+      "version_note": "首页会议/期刊及版权/DOI 标记已核；未与出版社下载副本逐字比对。"
+    },
+    {
+      "source_id": "LC08",
+      "title": "GreenHadoop: Leveraging Green Energy in Data-Processing Frameworks",
+      "local_pdf": "research/papers/goiri_2012_greenhadoop/paper.pdf",
+      "status": "downloaded_verified",
+      "pages": 14,
+      "title_verified": true,
+      "version": "EuroSys 2012 作者或会议组织者公开排版稿",
+      "source_url": "https://personals.ac.upc.edu/jguitart/HomepageFiles/EuroSys12.pdf",
+      "final_url": "https://personals.ac.upc.edu/jguitart/HomepageFiles/EuroSys12.pdf",
+      "attempts": [
+        {
+          "url": "https://personals.ac.upc.edu/jguitart/HomepageFiles/EuroSys12.pdf",
+          "http_status": 200,
+          "final_url": "https://personals.ac.upc.edu/jguitart/HomepageFiles/EuroSys12.pdf",
+          "content_type": "application/pdf",
+          "result": "failed",
+          "error": "curl: (28) Operation timed out after 25006 milliseconds with 778240 out of 787316 bytes received"
+        },
+        {
+          "action": "resume_partial_download",
+          "url": "https://personals.ac.upc.edu/jguitart/HomepageFiles/EuroSys12.pdf",
+          "http_status": 206,
+          "final_url": "https://personals.ac.upc.edu/jguitart/HomepageFiles/EuroSys12.pdf",
+          "result": "pdf_valid"
+        }
+      ],
+      "checked_at": "2026-11-05T16:37:18+08:00",
+      "title_in_pdf": "GreenHadoop: Leveraging Green Energy in Data-Processing Frameworks",
+      "author_verified": true,
+      "authors_matched_on_first_page": [
+        "Íñigo Goiri",
+        "Kien Le",
+        "Thu D. Nguyen",
+        "Jordi Guitart",
+        "Jordi Torres",
+        "Ricardo Bianchini"
+      ],
+      "authors_not_matched_on_first_page": [],
+      "pdf_metadata_title": "GreenHadoop: leveraging green energy in data-processing frameworks",
+      "original_pdf_url": null,
+      "verified_at": "2026-11-05T16:44:41+08:00",
+      "pdf_can_open": true,
+      "all_pages_readable": true,
+      "listed_authors_verified": true,
+      "document_kind": "author_or_organizer_public_copy",
+      "version_note": "首页会议/期刊及版权/DOI 标记已核；未与出版社下载副本逐字比对。"
+    }
+  ],
+  "counts": {
+    "requested": 32,
+    "verified_local_pdfs": 31,
+    "new_downloads": 27,
+    "existing_files_reused": 4,
+    "publisher_or_author_final_layout": 30,
+    "explicit_arxiv_preprint": 1,
+    "unavailable": 1
+  },
+  "limitations": [
+    "LP08 PctoDL 的公开下载入口在本次环境访问受阻，仍缺 PDF。",
+    "LC01 为明确标注的 arXiv v1，正式期刊版 PDF 未取得。",
+    "已有四份 PDF 沿用阅读池的来源线索，未重新确认此前重定向终点。",
+    "下载和文件身份核验不增加论文的阅读深度或复现状态。"
+  ],
+  "completed_at": "2026-11-05T16:44:41+08:00"
+}

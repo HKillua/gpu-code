@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kareus 精读报告：降频之后，为什么"计算与通信怎么排"必须跟着改</title>
+<script>
+window.MathJax = {tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},
+  options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}, startup:{typeset:true}};
+</script>
+<script id="MathJax-script" async src="https://fastly.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+:root{
+  /* ===== 基础色 ===== */
+  --bg:#ffffff; --panel:#fafbfc; --card:#ffffff; --line:#e6e8eb; --line2:#eceff2;
+  --ink:#1f2328; --ink2:#57606a; --ink3:#666f7a; --ph:#8d959e; --heading:#24313f;
+  --accent:#2b6cb0; --onaccent:#ffffff;
+  --hover:#eef2f7; --active:#e6f0fb; --btnhover:#f1f5f9;
+  --headerbg:rgba(255,255,255,.94); --colheadbg:rgba(255,255,255,.96);
+  --headbg1:#fbfdff; --headbg2:#ffffff; --secline:#eef1f4;
+  /* ===== 表格 / 插图 ===== */
+  --thbg:#f5f7f9; --trhover:#fafcff; --best:#0f766e;
+  --figbg:#ffffff; --figfilter:none;
+  /* ===== 高亮与笔记 ===== */
+  --src:#fde68a; --srcb:#f59e0b; --tgt:#cfe8ff; --tgtb:#3b82f6;
+  --pin:#d1fae5; --pinb:#10b981; --note:#ffe0ee; --noteb:#ec4899;
+  --notebg:#fff6fa; --notering:#f9a8d4; --badgebg:#fce7f3; --badgeink:#9d174d;
+  --ring:#fbcfe8; --flash:#fff3bf; --linkhover:#eaf2fb;
+  /* ===== 其它 ===== */
+  --xdim:#c2c8cf; --danger:#b42318; --dangerbg:#fee2e2; --dangerink:#ffffff;
+  --toastbg:#1f2328; --toastink:#ffffff; --hintkey:#fbbf24;
+  --swborder:rgba(0,0,0,.15); --shadow:rgba(15,20,25,.05); --shadow2:rgba(15,20,25,.14);
+  --lbbg:rgba(15,20,25,.86);
+  --fs:16px; --lh:1.85; --navw:246px; --notew:0px;
+  --nfont:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+}
+/* ================= 主题：切换 body[data-theme] 即整套换色 ================= */
+/* VSCode Dark+ 风格深色 */
+body[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#1e1e1e; --panel:#252526; --card:#252526; --line:#3a3d41; --line2:#333639;
+  --ink:#e6e6e6; --ink2:#b0b8c1; --ink3:#8d949c; --ph:#6e767f; --heading:#d4dbe3;
+  --accent:#4ea1ff; --onaccent:#0a1220;
+  --hover:#2a2d2e; --active:#123a5c; --btnhover:#333639;
+  --headerbg:rgba(30,30,30,.94); --colheadbg:rgba(30,30,30,.96);
+  --headbg1:#232426; --headbg2:#1e1e1e; --secline:#343739;
+  --thbg:#2d2d30; --trhover:#2a2d2e; --best:#5ee08a;
+  --figbg:#eef1f4; --figfilter:brightness(.95) contrast(1.02);
+  --src:rgba(245,158,11,.34); --srcb:#f0a72c; --tgt:rgba(90,168,255,.32); --tgtb:#5aa8ff;
+  --pin:rgba(16,185,129,.30); --pinb:#34d399; --note:rgba(244,114,182,.32); --noteb:#f472b6;
+  --notebg:#2c2029; --notering:#b0507c; --badgebg:#4d2036; --badgeink:#ffc2dc;
+  --ring:#b0507c; --flash:rgba(250,204,21,.30); --linkhover:#22344a;
+  --xdim:#6e767f; --danger:#ff7b72; --dangerbg:#4a221f; --dangerink:#2b0c0a;
+  --toastbg:#eceff3; --toastink:#14181d; --hintkey:#b45309;
+  --swborder:rgba(255,255,255,.28); --shadow:rgba(0,0,0,.4); --shadow2:rgba(0,0,0,.55);
+  --lbbg:rgba(0,0,0,.9);
+}
+/* 靛青夜（比纯深色更柔，蓝调低刺激） */
+body[data-theme="indigo"]{
+  color-scheme:dark;
+  --bg:#11172b; --panel:#171f38; --card:#1a2340; --line:#2e3a5f; --line2:#28324f;
+  --ink:#dfe6f7; --ink2:#a9b6d8; --ink3:#8593b8; --ph:#6d7ba0; --heading:#cdd8f2;
+  --accent:#7aa2f7; --onaccent:#0a1020;
+  --hover:#1e2947; --active:#243b6b; --btnhover:#25314f;
+  --headerbg:rgba(17,23,43,.94); --colheadbg:rgba(17,23,43,.96);
+  --headbg1:#18203a; --headbg2:#11172b; --secline:#2a3454;
+  --thbg:#202b4a; --trhover:#1d2745; --best:#7ee787;
+  --figbg:#eaeef6; --figfilter:brightness(.95) contrast(1.02);
+  --src:rgba(250,204,21,.32); --srcb:#e0af68; --tgt:rgba(122,162,247,.32); --tgtb:#7aa2f7;
+  --pin:rgba(52,211,153,.28); --pinb:#41d19a; --note:rgba(244,114,182,.30); --noteb:#f0a0c8;
+  --notebg:#2a2140; --notering:#a2609a; --badgebg:#43244a; --badgeink:#ffc9e8;
+  --ring:#a2609a; --flash:rgba(224,175,104,.30); --linkhover:#233559;
+  --xdim:#6d7ba0; --danger:#ff8080; --dangerbg:#44202c; --dangerink:#2b0c0a;
+  --toastbg:#e8edf8; --toastink:#131a2c; --hintkey:#b45309;
+  --swborder:rgba(255,255,255,.28); --shadow:rgba(0,0,0,.4); --shadow2:rgba(0,0,0,.55);
+  --lbbg:rgba(4,8,18,.92);
+}
+/* 护眼绿（豆沙绿） */
+body[data-theme="green"]{
+  --bg:#c9e8cd; --panel:#d6efd9; --card:#e2f5e4; --line:#a5cfaa; --line2:#bbdcbf;
+  --ink:#122c18; --ink2:#37533d; --ph:#5d7d64; --ink3:#3d5f45; --heading:#173d24;
+  --accent:#0f5f33; --onaccent:#ffffff;
+  --hover:#bce2c1; --active:#a8dcb0; --btnhover:#cdead0;
+  --headerbg:rgba(201,232,205,.95); --colheadbg:rgba(201,232,205,.97);
+  --headbg1:#d9f1dc; --headbg2:#cfeed3; --secline:#b3d9b8;
+  --thbg:#bfe3c4; --trhover:#d9f2dc; --best:#0a6b39;
+  --figbg:#ffffff; --figfilter:none;
+  --src:#ffe08a; --srcb:#c98a00; --tgt:#b8d7f7; --tgtb:#1d5fc4;
+  --pin:#93dcae; --pinb:#0b7a45; --note:#ffcfe3; --noteb:#c02a63;
+  --notebg:#eaf7ec; --notering:#e39bbd; --badgebg:#ffe0ee; --badgeink:#8d1449;
+  --ring:#e39bbd; --flash:#fff0a8; --linkhover:#d3ecf6;
+  --xdim:#7a9c81; --danger:#a01b13; --dangerbg:#f7d7d4; --dangerink:#ffffff;
+  --toastbg:#122c18; --toastink:#e9f7ec; --hintkey:#ffd166;
+  --swborder:rgba(0,0,0,.2); --shadow:rgba(20,50,28,.10); --shadow2:rgba(20,50,28,.2);
+  --lbbg:rgba(10,30,16,.88);
+}
+/* 米黄纸（暖褐低蓝光，长时间阅读友好） */
+body[data-theme="sepia"]{
+  --bg:#f4ecd8; --panel:#faf4e4; --card:#fffaf0; --line:#dccfb2; --line2:#e6dcc4;
+  --ink:#372f22; --ink2:#5f5443; --ink3:#6a5f4c; --ph:#8b7f68; --heading:#463a28;
+  --accent:#8a5220; --onaccent:#fffaf0;
+  --hover:#ece2ca; --active:#e6d8b8; --btnhover:#f0e7d2;
+  --headerbg:rgba(244,236,216,.95); --colheadbg:rgba(244,236,216,.97);
+  --headbg1:#fbf5e6; --headbg2:#f4ecd8; --secline:#e3d8bd;
+  --thbg:#eee3c9; --trhover:#fbf6ea; --best:#0d6b47;
+  --figbg:#ffffff; --figfilter:none;
+  --src:#ffe08a; --srcb:#c07800; --tgt:#c3dcf5; --tgtb:#1f5fb8;
+  --pin:#b6e3c6; --pinb:#12784b; --note:#ffd4e4; --noteb:#c22a66;
+  --notebg:#fdf1e6; --notering:#e0a3ba; --badgebg:#fbe3ec; --badgeink:#8f1b4c;
+  --ring:#e6b6c6; --flash:#ffeea8; --linkhover:#e8dfc6;
+  --xdim:#a89a80; --danger:#a32017; --dangerbg:#f6dcd6; --dangerink:#fffaf0;
+  --toastbg:#372f22; --toastink:#fffaf0; --hintkey:#e9b949;
+  --swborder:rgba(0,0,0,.2); --shadow:rgba(70,58,40,.10); --shadow2:rgba(70,58,40,.2);
+  --lbbg:rgba(40,32,20,.88);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  font-size:var(--fs);line-height:var(--lh);-webkit-font-smoothing:antialiased}
+
+/* ---------- 顶部 ---------- */
+header{position:sticky;top:0;z-index:40;background:var(--headerbg);
+  backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--line)}
+.hwrap{max-width:1500px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:15px;letter-spacing:.2px;white-space:nowrap}
+.brand small{display:block;font-weight:400;color:var(--ink2);font-size:11.5px;letter-spacing:0}
+.tools{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--card);padding:6px 11px;font-size:12.5px;color:var(--ink2);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--accent);color:var(--onaccent)}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 11px;font-size:12.5px;
+  color:var(--ink2);cursor:pointer}
+.btn.on{background:var(--accent);color:var(--onaccent);border-color:var(--accent)}
+#theme{border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:8px;
+  padding:6px 8px;font:inherit;font-size:12.5px;cursor:pointer}
+#bar{height:2px;background:var(--accent);width:0;transition:width .1s linear}
+
+/* ---------- 布局 ---------- */
+.shell{max-width:1760px;margin:0 auto;padding:24px;display:grid;
+  grid-template-columns:var(--navw) minmax(0,1fr) var(--notew);gap:0}
+body.notes-on{--notew:392px}
+body.nav-off{--navw:0px}
+/* 显式列定位：目录隐藏（display:none）后正文不会滑到宽度 0 的第一列 */
+nav{grid-column:1}
+main{grid-column:2;min-width:0}
+aside.notes{grid-column:3}
+body.nav-off nav{display:none}
+nav{position:sticky;top:74px;align-self:start;max-height:calc(100vh - 100px);overflow:auto;
+  border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:12px;margin-right:26px}
+nav h4{margin:2px 0 8px;font-size:12px;color:var(--ink2);letter-spacing:.08em;text-transform:uppercase}
+nav a{display:block;text-decoration:none;color:var(--ink);padding:5px 8px;border-radius:7px;line-height:1.35}
+nav a:hover{background:var(--hover)}
+nav a.t2{font-size:13.5px;font-weight:600;margin-top:4px}
+nav a.t3{font-size:12.5px;padding-left:18px;color:var(--ink2)}
+nav a.active{background:var(--active);color:var(--accent)}
+nav .ten{display:block;font-size:10.5px;color:var(--ink3);font-weight:400}
+
+/* ---------- 论文头 ---------- */
+.paper{border:1px solid var(--line);border-radius:14px;padding:22px 26px;margin-bottom:20px;
+  background:linear-gradient(180deg,var(--headbg1),var(--headbg2))}
+.paper h1{margin:0 0 4px;font-size:25px;line-height:1.3}
+.paper .h1zh{margin:0 0 12px;font-size:17px;color:var(--accent);font-weight:600}
+.paper .m{font-size:13px;color:var(--ink2);margin:3px 0}
+.chips{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 11px;font-size:12px;color:var(--ink2)}
+.kpi{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kpi div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card)}
+.kpi b{display:block;font-size:19px;color:var(--accent)}
+.kpi span{font-size:11.5px;color:var(--ink2)}
+
+/* ---------- 双栏正文 ---------- */
+.colhead{position:sticky;top:57px;z-index:30;display:grid;grid-template-columns:1fr 1fr;gap:0 30px;
+  background:var(--colheadbg);border-bottom:1px solid var(--line);padding:8px 0;margin-bottom:6px}
+.colhead div{font-size:12px;color:var(--ink2);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.doc{display:grid;grid-template-columns:1fr 1fr;gap:0 30px;align-items:start}
+.cell{padding:2px 0}
+.cell.en{border-right:1px dashed var(--line2);padding-right:26px}
+.cell.zh{padding-left:2px}
+.doc p{margin:.35em 0 .9em}
+.cell.zh p{line-height:1.95}
+.full{grid-column:1/-1}
+h2{font-size:19px;margin:26px 0 6px;padding-top:8px}
+h3{font-size:15.5px;margin:18px 0 4px;color:var(--heading)}
+.cell.zh h2,.cell.zh h3{color:var(--accent)}
+.sec{border-top:2px solid var(--secline);margin-top:10px}
+.cap p{font-size:13px;color:var(--ink2);margin:.2em 0 1.1em}
+ul{margin:.3em 0 1em;padding-left:1.25em}
+li{margin:.25em 0}
+
+/* ---------- 句子高亮 ---------- */
+.s{border-radius:4px;padding:1px 1px;transition:background .12s,box-shadow .12s;cursor:pointer}
+.s.hl-src{background:var(--src);box-shadow:inset 0 -2px 0 var(--srcb)}
+.s.hl-tgt{background:var(--tgt);box-shadow:inset 0 -2px 0 var(--tgtb)}
+.s.pin:not(.noted){background:var(--pin)!important;box-shadow:inset 0 -2px 0 var(--pinb)!important}
+body.nohl .s{cursor:auto}
+body.nohl .s.hl-src,body.nohl .s.hl-tgt{background:transparent;box-shadow:none}
+
+/* ---------- 笔记标记（双击） ---------- */
+.s.noted{background:var(--note)!important;box-shadow:inset 0 -2px 0 var(--noteb)!important}
+.s.noted.pin{box-shadow:inset 0 -2px 0 var(--pinb),inset 0 -7px 0 -5px var(--noteb)!important}
+.s.noted::after{content:"笔记 " attr(data-nc);font-size:10px;color:var(--badgeink);background:var(--badgebg);
+  border:1px solid var(--notering);border-radius:4px;padding:0 4px;margin:0 2px 0 4px;
+  vertical-align:2px;white-space:nowrap;font-weight:600}
+.s.noted.hl-src{outline:2px solid var(--srcb);outline-offset:1px}
+.s.noted.hl-tgt{outline:2px solid var(--tgtb);outline-offset:1px}
+.annot{position:relative}
+.annot.noted{outline:2px solid var(--notering);outline-offset:2px;border-radius:12px;background:var(--notebg)}
+.annot.noted::after{content:"笔记 " attr(data-nc);position:absolute;top:4px;right:6px;font-size:10px;
+  color:var(--badgeink);background:var(--badgebg);border:1px solid var(--notering);border-radius:999px;padding:1px 7px;
+  font-weight:600;z-index:3}
+@keyframes flashbg{0%{background:var(--flash)}100%{background:transparent}}
+.flash{animation:flashbg 1.4s ease-out}
+
+/* ---------- 笔记栏：边注式，永远对齐所批注元素的那一行 ---------- */
+aside.notes{display:none}
+body.notes-on aside.notes{display:block;position:relative;margin-left:24px}
+.ncard{position:absolute;left:0;right:0;background:var(--card);border:1px solid var(--line);
+  border-left:3px solid var(--noteb);border-radius:10px;padding:8px 22px 8px 10px;
+  box-shadow:0 1px 3px var(--shadow);transition:top .18s ease,box-shadow .15s}
+.ncard.act{box-shadow:0 0 0 2px var(--ring)}
+/* 笔记正文与论文正文同字号，随 A−/A+ 一起缩放；--nfont 作为「默认字体」的可回归值 */
+.nbody{--nfont:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue','PingFang SC',
+  'Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  font-family:var(--nfont);
+  font-size:var(--fs);line-height:1.75;word-break:break-word;cursor:text;outline:0;min-height:22px}
+.nbody.ph::before{content:'点这里写笔记…';color:var(--ph);font-size:.85em}
+.nbody ol,.nbody ul{margin:.35em 0;padding-left:1.5em}
+.nbody li{margin:.15em 0}
+.nbody a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;word-break:break-all;
+  cursor:pointer}
+.nbody a:hover{background:var(--linkhover)}
+/* 图片与文字同行，光标 + 退格键即可删除 */
+.nbody img{display:inline-block;vertical-align:middle;max-width:100%;max-height:150px;
+  margin:2px 1px;border-radius:5px;border:1px solid var(--line)}
+.nbody img::selection{background:var(--ring)}
+.nx{position:absolute;top:2px;right:4px;width:18px;height:18px;line-height:17px;text-align:center;
+  border-radius:50%;color:var(--xdim);cursor:pointer;font-size:13px;user-select:none}
+.nx:hover{background:var(--dangerbg);color:var(--danger)}
+/* ---------- 笔记格式工具条（只在当前笔记上显示） ---------- */
+.ntb{display:none;gap:3px;align-items:center;flex-wrap:wrap;margin:0 0 6px;padding-bottom:5px;
+  border-bottom:1px dashed var(--line)}
+.ncard.act .ntb{display:flex}
+.ntb select{font:inherit;font-size:11px;padding:1px 2px;border:1px solid var(--line);border-radius:5px;
+  background:var(--card);color:var(--ink2);max-width:82px}
+.ntb button{width:23px;height:22px;padding:0;border:1px solid var(--line);border-radius:5px;background:var(--card);
+  color:var(--ink2);cursor:pointer;font-size:11.5px;line-height:1}
+.ntb button:hover{background:var(--btnhover);color:var(--ink)}
+.ntb button.on{background:var(--accent);color:var(--onaccent);border-color:var(--accent)}
+.ntb button.wide{width:auto;padding:0 6px;font-size:11px}
+.ntb .sep{width:1px;height:15px;background:var(--line);margin:0 2px}
+.ntb .sw{width:15px;height:15px;border-radius:3px;border:1px solid var(--swborder);cursor:pointer}
+.ntb .sw:hover{transform:scale(1.15)}
+.ntb .sw.on{outline:2px solid var(--ink);outline-offset:1px}
+.ntb input[type=color]{width:22px;height:22px;padding:0;border:1px solid var(--line);border-radius:5px;
+  background:var(--card);cursor:pointer}
+.ncard time{display:block;font-size:10px;color:var(--ph);margin-top:4px}
+#ntoast{position:fixed;right:18px;bottom:18px;z-index:70;background:var(--toastbg);color:var(--toastink);font-size:12px;
+  padding:7px 12px;border-radius:8px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:300px}
+#ntoast.on{opacity:.93}
+#ntoast.err{background:var(--danger);color:var(--dangerink)}
+
+/* ---------- 图 / 公式 / 表 ---------- */
+figure{margin:14px 0 6px;text-align:center;background:var(--figbg);border:1px solid var(--line);border-radius:12px;padding:12px}
+figure img{max-width:100%;height:auto;cursor:zoom-in;filter:var(--figfilter)}
+.eqbox{position:relative;margin:6px 0 14px;padding:8px 44px 8px 14px;background:var(--panel);
+  border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+.eqbody{font-size:15px}
+.eqno{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--ink2)}
+.tablebox{margin:2px 0 18px;overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:12.5px;background:var(--card)}
+th,td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:center;white-space:nowrap}
+th{background:var(--thbg);font-weight:600;color:var(--heading)}
+th small,td small{display:block;color:var(--ink2);font-size:10.5px;font-weight:400}
+td.l,th.l{text-align:left}
+tbody tr:hover{background:var(--trhover)}
+.best{color:var(--best);font-weight:700}
+.refs{grid-column:1/-1;margin:22px 0 40px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:10px 16px}
+.refs summary{cursor:pointer;font-size:13.5px;color:var(--ink2);font-weight:600}
+.refs ol{font-size:12px;color:var(--ink2);line-height:1.7}
+
+/* ---------- 单栏模式 ---------- */
+body.only-en .doc,body.only-zh .doc{grid-template-columns:1fr}
+body.only-en .colhead,body.only-zh .colhead{grid-template-columns:1fr}
+body.only-en .cell.zh,body.only-en .colhead div:nth-child(2){display:none}
+body.only-zh .cell.en,body.only-zh .colhead div:nth-child(1){display:none}
+body.only-en .cell.en{border-right:0;padding-right:0}
+
+/* ---------- 灯箱 ---------- */
+#lb{position:fixed;inset:0;background:var(--lbbg);display:none;z-index:99;
+  align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+#lb.on{display:flex}
+#lb img{max-width:96%;max-height:94%;background:var(--figbg);border-radius:8px}
+.hint{position:fixed;right:18px;bottom:18px;z-index:50;background:var(--toastbg);color:var(--toastink);font-size:12px;
+  padding:8px 12px;border-radius:8px;opacity:.9;max-width:290px;line-height:1.6}
+.hint b{color:var(--hintkey)}
+@media (max-width:1180px){
+  .shell{grid-template-columns:var(--navw) minmax(0,1fr);padding:16px}
+  nav{position:static;max-height:300px;margin-right:16px}
+  .cell.en{padding-right:18px}
+  .doc,.colhead{gap:0 20px}
+  body.notes-on{--notew:0px}
+  body.notes-on aside.notes{position:fixed;top:57px;right:0;bottom:0;width:min(360px,94vw);
+    margin:0;overflow:auto;padding:12px;background:var(--panel);border-left:1px solid var(--line);
+    z-index:60;box-shadow:-10px 0 28px var(--shadow2)}
+  body.notes-on .ncard{position:static;margin-bottom:10px}
+}
+@media (max-width:820px){
+  .doc,.colhead{grid-template-columns:1fr}
+  .cell.en{border-right:0;padding-right:0;border-bottom:1px dashed var(--line2)}
+}
+/* ===== academic-report 单栏报告适配层（叠在牛来核心视觉之上） ===== */
+
+/* 正文单栏容器：居中限宽，替代牛来的双栏 .doc */
+.content{max-width:980px;margin:0 auto;padding:0 6px 80px}
+.content h2{font-size:19px;margin:28px 0 10px;padding-top:10px;border-top:2px solid var(--secline);color:var(--heading)}
+.content h3{font-size:15.5px;margin:20px 0 8px;color:var(--accent)}
+.content p{margin:.6em 0 1em}
+.content a{color:var(--accent)}
+.content strong{font-weight:600}
+
+/* 行内代码与代码块 */
+.content code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.85em;
+  background:var(--codebg);padding:1px 5px;border-radius:4px;color:var(--ink)}
+.content pre{background:var(--codebg);border:1px solid var(--line);border-radius:10px;
+  padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.6}
+.content pre code{background:none;padding:0}
+
+/* Mermaid 图：白底居中卡片 */
+.content pre.mermaid{background:#fff;text-align:center;color:#333;padding:18px 8px;margin:16px 0}
+
+/* 引用块（关键原文引用：英文原句斜体 + 中文） */
+.content blockquote{
+  margin:14px 0;padding:10px 16px;background:var(--quotebg,#f7f8fa);
+  border-left:4px solid var(--quoteline,#c9ddf2);border-radius:0 10px 10px 0;color:var(--ink2)}
+.content blockquote p{margin:.4em 0}
+.content blockquote p:first-child{font-style:italic}
+.content blockquote p:nth-child(2){margin-top:10px;color:var(--ink)}
+
+/* 表格：圆角容器 + hover 行（牛来 .tablebox 已定义边框圆角，此处补行内细节） */
+.content .tablebox{margin:2px 0 18px;overflow-x:auto}
+.content table{font-size:13px;background:var(--card)}
+.content th,.content td{padding:7px 10px}
+.content td.l,.content th.l{text-align:left}
+.content .best{color:var(--best);font-weight:700}
+
+/* 列表 */
+.content ul,.content ol{margin:.5em 0 1em;padding-left:1.6em}
+.content li{margin:.3em 0}
+
+/* 深浅主题下的局部变量补充 */
+body[data-theme="dark"]{--codebg:#262b33;--quotebg:#23272f;--quoteline:#3d5a7a}
+body[data-theme="indigo"]{--codebg:#1c2542;--quotebg:#1a233d;--quoteline:#3d5288}
+body[data-theme="green"]{--codebg:#d8efdb;--quotebg:#ddefe0;--quoteline:#8fc298}
+body[data-theme="sepia"]{--codebg:#efe7d2;--quotebg:#f1ead8;--quoteline:#cbb48a}
+
+/* 打印 */
+@media print{
+  header,nav{display:none !important}
+  .shell{display:block;padding:0}
+  .content h2{page-break-before:always}
+  a{text-decoration:none;color:inherit}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <div class="brand">Kareus 精读报告：降频之后，为什么"计算与通信怎么排"必须跟着改
+      <small>AI 学术论文中文学习报告 · academic-report</small></div>
+    <div class="tools">
+      <button class="btn on" id="navbtn" title="展开 / 隐藏左侧目录">☰ 目录</button>
+      <div class="seg" id="fs">
+        <button data-f="-1">A−</button><button data-f="1">A+</button>
+      </div>
+      <select id="theme" title="配色主题（护眼）">
+        <option value="light">☀︎ 白底</option>
+        <option value="dark">◐ 深色 VSCode</option>
+        <option value="indigo">☾ 靛青夜</option>
+        <option value="green">◉ 护眼绿</option>
+        <option value="sepia">▤ 米黄纸</option>
+      </select>
+    </div>
+  </div>
+  <div id="bar"></div>
+</header>
+
+<div class="shell">
+  <nav id="toc"><h4>目录 Contents</h4><a class="t2" href="#报告元信息">报告元信息</a><a class="t2" href="#核心指标速览">核心指标速览</a><a class="t2" href="#1-先把两个-能量账本-分开">1 先把两个"能量账本"分开</a><a class="t3" href="#1-1-论文给出的账本定义">1.1 论文给出的账本定义</a><a class="t3" href="#1-2-用一张图记住这套账本">1.2 用一张图记住这套账本</a><a class="t3" href="#1-3-论文用-Qwen-3-1-7B-演示这套账本">1.3 论文用 Qwen 3 1.7B 演示这套账本</a><a class="t2" href="#2-两条既有路线-以及它们各自看不见的东西">2 两条既有路线，以及它们各自看不见的东西</a><a class="t3" href="#2-1-路线一-频率缩放-Perseus-一脉">2.1 路线一：频率缩放（Perseus 一脉）</a><a class="t3" href="#2-2-路线二-细粒度-kernel-调度-nanobatching-一脉">2.2 路线二：细粒度 kernel 调度（nanobatching 一脉）</a><a class="t3" href="#2-3-两条路线的关系图">2.3 两条路线的关系图</a><a class="t2" href="#3-三因素实验-把-最优-这件事拆成可测量的三根旋钮">3 三因素实验：把"最优"这件事拆成可测量的三根旋钮</a><a class="t3" href="#3-1-论文对-执行计划-的定义">3.1 论文对"执行计划"的定义</a><a class="t3" href="#3-2-六个执行计划-一张前沿图">3.2 六个执行计划，一张前沿图</a><a class="t3" href="#3-3-三因素互相咬合的形状">3.3 三因素互相咬合的形状</a><a class="t2" href="#4-机理-降频之后-最佳安排为什么会变-本报告要回答的核心问题">4 机理：降频之后，最佳安排为什么会变（本报告要回答的核心问题）</a><a class="t3" href="#4-1-因果链">4.1 因果链</a><a class="t3" href="#4-2-逐条对上论文证据">4.2 逐条对上论文证据</a><a class="t3" href="#4-3-为什么-暴露的通信-在低频下更致命">4.3 为什么"暴露的通信"在低频下更致命</a><a class="t3" href="#4-4-一个附带但很漂亮的反例-1-350-MHz-打败-1-410-MHz">4.4 一个附带但很漂亮的反例：1,350 MHz 打败 1,410 MHz</a><a class="t3" href="#4-5-把这个问题答完-三条可迁移的判断">4.5 把这个问题答完：三条可迁移的判断</a><a class="t2" href="#5-算法-把一个大不可解的问题切成-分区">5 算法：把一个大不可解的问题切成"分区"</a><a class="t3" href="#5-1-问题形式化与-为什么不能穷举">5.1 问题形式化与"为什么不能穷举"</a><a class="t3" href="#5-2-分区重叠执行模型">5.2 分区重叠执行模型</a><a class="t3" href="#5-3-三层结构">5.3 三层结构</a><a class="t3" href="#5-4-多目标贝叶斯优化-MBO">5.4 多目标贝叶斯优化（MBO）</a><a class="t3" href="#5-5-前沿的组合">5.5 前沿的组合</a><a class="t2" href="#6-实现-把计划落地需要的四件事">6 实现：把计划落地需要的四件事</a><a class="t3" href="#6-1-系统组成">6.1 系统组成</a><a class="t3" href="#6-2-画像为什么要-热稳定">6.2 画像为什么要"热稳定"</a><a class="t2" href="#7-实验证据-从单层到-70B-模拟">7 实验证据：从单层到 70B 模拟</a><a class="t3" href="#7-1-证据地图">7.1 证据地图</a><a class="t3" href="#7-2-最大吞吐-不如前沿那么亮眼-但方向正确">7.2 最大吞吐：不如前沿那么亮眼，但方向正确</a><a class="t3" href="#7-3-前沿改进-这才是它的主场">7.3 前沿改进：这才是它的主场</a><a class="t3" href="#7-4-消融-联合优化不是修辞">7.4 消融：联合优化不是修辞</a><a class="t3" href="#7-5-敏感性-µB-越大-收益越大-但能耗曲线不平滑">7.5 敏感性：µB 越大，收益越大（但能耗曲线不平滑）</a><a class="t3" href="#7-6-模拟-70B-上趋势一致">7.6 模拟：70B 上趋势一致</a><a class="t2" href="#8-把六篇放在同一张图上-Kareus-站在哪一层">8 把六篇放在同一张图上：Kareus 站在哪一层</a><a class="t3" href="#8-1-六篇的分层与优化对象">8.1 六篇的分层与优化对象</a><a class="t3" href="#8-2-一张定位图">8.2 一张定位图</a><a class="t3" href="#8-3-三条横向洞察">8.3 三条横向洞察</a><a class="t2" href="#9-放到-两机六卡-上-能做什么-不能做什么">9 放到"两机六卡"上：能做什么，不能做什么</a><a class="t3" href="#9-1-现实约束先摆清楚">9.1 现实约束先摆清楚</a><a class="t3" href="#9-2-三个可在六卡上做的最小实验">9.2 三个待核验的六卡实验线索</a><a class="t3" href="#9-3-决策树">9.3 决策树</a><a class="t2" href="#10-局限与可证伪点">10 局限与可证伪点</a><a class="t3" href="#10-1-论文自己承认的边界">10.1 论文自己承认的边界</a><a class="t3" href="#10-2-我会追问论文的四个点">10.2 我会追问论文的四个点</a><a class="t3" href="#10-3-可证伪的断言清单">10.3 可证伪的断言清单</a><a class="t2" href="#11-方法论上值得学的三件事">11 方法论上值得学的三件事</a><a class="t3" href="#11-1-先建-账本--再谈优化">11.1 先建"账本"，再谈优化</a><a class="t3" href="#11-2-用-同工作量-不同排法-制造可控对照">11.2 用"同工作量、不同排法"制造可控对照</a><a class="t3" href="#11-3-把-约束-写成显式的设计决策">11.3 把"约束"写成显式的设计决策</a><a class="t2" href="#12-术语-复现清单与-本报告没做的事">12 术语、复现清单与"本报告没做的事"</a><a class="t3" href="#12-1-术语表">12.1 术语表</a><a class="t3" href="#12-2-复现清单-若要动手">12.2 复现清单（若要动手）</a><a class="t3" href="#12-3-本报告没做的事">12.3 本报告没做的事</a><a class="t3" href="#12-4-一句话收尾">12.4 一句话收尾</a></nav>
+  <main>
+    <div class="paper">
+  <h1>Kareus 精读报告：降频之后，为什么"计算与通信怎么排"必须跟着改</h1>
+  <div class="h1zh">AI 学术论文中文学习报告 · academic-report</div>
+  <div class="m"><b>论文</b>：Kareus: Joint Reduction of Dynamic and Static Energy in Large Model Training</div><div class="m"><b>作者</b>：Ruofan Wu, Jae-Won Chung, Mosharaf Chowdhury（University of Michigan，SymbioticLab）</div><div class="m"><b>发表</b>：USENIX OSDI 2026，正文 pp.1185–1198（含封面共 21 页）</div><div class="m"><b>类型</b>：系统论文（measurement + 机理分析 + 算法设计 + 真实测试床评估 + 大规模模拟）</div><div class="m"><b>对象</b>：大模型训练（不是推理服务）的 GPU 能量：单迭代时间 × 功率的联合优化</div><div class="m"><b>关键机制</b>：分区重叠执行模型（partitioned overlap）+ 多目标贝叶斯优化（MBO）+ 热稳定画像器（thermally stable profiler）</div><div class="m"><b>集成对象</b>：Perseus（频率控制）+ Megatron-LM（训练框架）+ MSCCL++（通信 kernel）+ Zeus/NVML（测量）</div><div class="m"><b>开源</b>：https://github.com/ml-energy/kareus</div><div class="m"><b>主要数字</b>：同等时间能耗 −28.3%；同等能量时间 −27.5%；最大吞吐下时间 −14.9%、能耗 −22.1%；执行计划差距 3.29×</div><div class="m"><b>实验规模</b>：真实：16×A100 40GB（两台 AWS p4d.24xlarge）；模拟：Llama 3.3 70B 强扩展到 10,240 GPU</div><div class="m"><b>与本项目关系</b>：直接对应"发电/供电约束下 GPU 调度"里的训练侧功率-时间耦合一支；提供了"频率改变最优重叠安排"的机理证据链</div><div class="m"><b>读这篇要回答的问题</b>：降频后，计算与通信的最佳安排为什么会改变？</div>
+  <div class="kpi"><div><b>3.29×</b><span>不同执行计划的时间/能耗差距</span></div><div><b>能耗 −24.3%、时间 −12.3%</b><span>单 Attention 层能量最优计划 vs Megatron-LM</span></div><div><b>能耗 −7.1%、时间 −5.4%</b><span>同上 vs Nanobatching</span></div><div><b>14.9% / 22.1%</b><span>端到端最大吞吐：时间降幅 / 能耗降幅</span></div></div>
+</div>
+    <article class="content" id="content">
+<h1 id="Kareus-精读报告-降频之后-为什么-计算与通信怎么排-必须跟着改">Kareus 精读报告：降频之后，为什么"计算与通信怎么排"必须跟着改</h1>
+<blockquote>
+<p>一句话结论：<strong>Kareus 把"省电"从两个互不相干的动作——给非关键路径降频（Perseus 路线）与把通信塞进计算空隙（nanobatching 路线）——合并成一个联合搜索问题</strong>，并用"分区"把爆炸的搜索空间切成可以独立优化的小块。§3.2 的案例使用 Llama 3.2 3B、TP4 和<strong>四张全互联 A100</strong>，比较相同工作量下不同通信 SM 分配、启动时机和频率；§3.3 报告所观察配置的时间与能量差距最高可达 <strong>3.29×</strong>。在图 3 的案例中，<strong>改变频率后，优选的 SM 分配与启动时机也改变</strong>；这是指定设置内的证据。</p>
+</blockquote>
+<h2 id="报告元信息">报告元信息</h2>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>论文</td>
+<td>Kareus: Joint Reduction of Dynamic and Static Energy in Large Model Training</td>
+</tr>
+<tr>
+<td>作者</td>
+<td>Ruofan Wu, Jae-Won Chung, Mosharaf Chowdhury（University of Michigan，SymbioticLab）</td>
+</tr>
+<tr>
+<td>发表</td>
+<td>USENIX OSDI 2026，正文 pp.1185–1198（含封面共 21 页）</td>
+</tr>
+<tr>
+<td>类型</td>
+<td>系统论文（measurement + 机理分析 + 算法设计 + 真实测试床评估 + 大规模模拟）</td>
+</tr>
+<tr>
+<td>对象</td>
+<td>大模型<strong>训练</strong>（不是推理服务）的 GPU 能量：单迭代时间 × 功率的联合优化</td>
+</tr>
+<tr>
+<td>关键机制</td>
+<td>分区重叠执行模型（partitioned overlap）+ 多目标贝叶斯优化（MBO）+ 热稳定画像器（thermally stable profiler）</td>
+</tr>
+<tr>
+<td>集成对象</td>
+<td>Perseus（频率控制）+ Megatron-LM（训练框架）+ MSCCL++（通信 kernel）+ Zeus/NVML（测量）</td>
+</tr>
+<tr>
+<td>开源</td>
+<td>https://github.com/ml-energy/kareus</td>
+</tr>
+<tr>
+<td>主要数字</td>
+<td>同等时间能耗 −28.3%；同等能量时间 −27.5%；最大吞吐下时间 −14.9%、能耗 −22.1%；执行计划差距 3.29×</td>
+</tr>
+<tr>
+<td>实验规模</td>
+<td>真实：16×A100 40GB（两台 AWS p4d.24xlarge）；模拟：Llama 3.3 70B 强扩展到 10,240 GPU</td>
+</tr>
+<tr>
+<td>与本项目关系</td>
+<td>直接对应"发电/供电约束下 GPU 调度"里的<strong>训练侧功率-时间耦合</strong>一支；提供了"频率改变最优重叠安排"的机理证据链</td>
+</tr>
+<tr>
+<td>读这篇要回答的问题</td>
+<td><strong>降频后，计算与通信的最佳安排为什么会改变？</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p class="evidence-correction">2026-11-10 校正：按本地 PDF 第 4 页 §3.2 / Table 1 及第 19 页 Appendix A，核对四卡案例、nanobatching 的总能量与动态能量口径，并补齐恒频定理“相同平均频率对应相同完成时间”的第三前提。同步将未核验的拓扑、控制接口、计量刷新率和模型上限改为待测，并收紧“可发表”与“变化后必重跑 MBO”的判断。第 9 节属于待验证线索，尚无可执行 Idea/计划；本次未运行实验。</p>
+<h2 id="核心指标速览">核心指标速览</h2>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>数值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>不同执行计划的时间/能耗差距</td>
+<td>3.29×</td>
+</tr>
+<tr>
+<td>单 Attention 层能量最优计划 vs Megatron-LM</td>
+<td>能耗 −24.3%、时间 −12.3%</td>
+</tr>
+<tr>
+<td>同上 vs Nanobatching</td>
+<td>能耗 −7.1%、时间 −5.4%</td>
+</tr>
+<tr>
+<td>端到端最大吞吐：时间降幅 / 能耗降幅</td>
+<td>14.9% / 22.1%</td>
+</tr>
+<tr>
+<td>等时能耗降幅（前沿改进）</td>
+<td>28.3%</td>
+</tr>
+<tr>
+<td>等能量时间降幅（前沿改进）</td>
+<td>27.5%</td>
+</tr>
+<tr>
+<td>70B 模拟最大吞吐降幅</td>
+<td>时间 9.1–9.3%、能耗 19.7–20.2%</td>
+</tr>
+<tr>
+<td>消融：去掉频率缩放 / 去掉 kernel 调度</td>
+<td>能耗 +12.9% / +10.8%</td>
+</tr>
+<tr>
+<td>全局解空间规模</td>
+<td>85,050 个候选（A100，单迭代）</td>
+</tr>
+<tr>
+<td>穷举画像代价 vs MBO 代价</td>
+<td>4,912 GPU·h vs 2 h（32 GPU·h）</td>
+</tr>
+<tr>
+<td>画像单候选耗时构成</td>
+<td>5 s 测量 + 5 s 冷却 + 初始化/预热 ≈ 13 s</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="1-先把两个-能量账本-分开">1 先把两个"能量账本"分开</h2>
+<h3 id="1-1-论文给出的账本定义">1.1 论文给出的账本定义</h3>
+<p>论文把 GPU 功率拆成两项，这一步决定了后面所有推理成立与否：</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>定义</th>
+<th>由什么决定</th>
+<th>想降它要做什么</th>
+<th>代价</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>动态功耗/能量</strong></td>
+<td>芯片计算与内存活动所消耗的功率；与核心频率成正比、与电压平方成正比；能量是该功率对时间的积分</td>
+<td><strong>频率</strong>（近似三次方关系）、活动量（晶体管翻转次数）</td>
+<td>降低频率；减少无效活动</td>
+<td>降频直接拖慢计算，可能拉长迭代时间</td>
+</tr>
+<tr>
+<td><strong>静态功耗/能量</strong></td>
+<td>芯片所有部分在任何时刻都消耗的功率，与利用率无关；能量 = 静态功率 × 执行时间</td>
+<td><strong>只由执行时间决定</strong>（在给定芯片与温度下 P_static 近似常数）</td>
+<td>缩短执行时间；减少"有人在耗电但没干活"的空转时段</td>
+<td>缩短时间往往需要更多并行/更强重叠，可能抬高瞬时功率</td>
+</tr>
+<tr>
+<td>总能量</td>
+<td>静态能量 + 动态能量</td>
+<td>二者之和</td>
+<td>必须同时看两项</td>
+<td>两项的调节手段互相干扰</td>
+</tr>
+</tbody>
+</table></div>
+<p>论文对静态功耗取了一个非常具体的口径：<strong>GPU 处于就绪态（P0）、不跑显著计算时的功耗</strong>。这一点很关键，因为它把"空转浪费"这件事变成了可测量的量：一个 SM 闲着，它照样在分摊静态功耗，但它没有产出。</p>
+<p><strong>关键洞察</strong>：
+- 训练能耗不是一个数，而是<strong>两个乘法的和</strong>：<code>静态功率×时间 + 动态功率×时间</code>。Perseus 只动第二项里的频率，nanobatching 只动第一项里的时间，两边都没法单独把和压到最小。
+- 静态能量对时间是<strong>线性</strong>的，动态能量对频率近似<strong>三次方</strong>——这解释了一个反直觉现象：高频跑得更快，但功率涨得比时间降得更快，所以"跑满频率"通常不是能量最优。
+- 附录 A 给出一个<strong>有前提的定理</strong>：动态功率满足 $k f^3$、静态功率恒定，且<strong>相同平均频率对应相同完成时间</strong>时，Jensen 不等式推出恒定频率的总能量不高于波动频率；第三个前提不能省略。</p>
+<h3 id="1-2-用一张图记住这套账本">1.2 用一张图记住这套账本</h3>
+<p><pre class="mermaid">flowchart TD
+    subgraph POWER["GPU 功率"]
+        DY["动态功率<br/>计算 + 访存活动"]
+        ST["静态功率<br/>上电即消耗"]
+    end
+    subgraph TIME["执行时间"]
+        T["迭代时间 T"]
+    end
+    DY -->|"按频率三次方缩放"| ED["动态能量 = ∫P_dyn dt"]
+    ST -->|"与利用率无关"| ES["静态能量 = P_static × T"]
+    T -->|"直接乘进去"| ES
+    ED --> ET["总能量"]
+    ES --> ET
+    ET -->|"缩短时间"| LOOP1["走重叠/更快执行"]
+    ET -->|"降低频率"| LOOP2["走降频"]
+    LOOP1 -->|"可能抬高瞬时功率"| CONFLICT["两个目标互相拉扯"]
+    LOOP2 -->|"拖慢计算"| CONFLICT</pre></p>
+<h3 id="1-3-论文用-Qwen-3-1-7B-演示这套账本">1.3 论文用 Qwen 3 1.7B 演示这套账本</h3>
+<p>Table 1 是全文最关键的一张"体检表"：16 张 A100 上训练 Qwen 3 1.7B，Megatron-LM 达到 99.0 TFLOP/s/GPU。</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>配置</th>
+<th>迭代时间 (s)</th>
+<th>静态能量 (J)</th>
+<th>动态能量 (J)</th>
+<th>总能量 (J)</th>
+<th>读法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Megatron-LM</td>
+<td>5.60</td>
+<td>5,372</td>
+<td>21,374</td>
+<td>26,745</td>
+<td>基线：顺序执行 + 满频，动态能量占 80%</td>
+</tr>
+<tr>
+<td>Megatron-LM + Perseus</td>
+<td>5.60</td>
+<td>5,374</td>
+<td>19,531</td>
+<td>24,905</td>
+<td>时间不变 → 静态能量几乎不变；只削动态项，总能量 −6.9%</td>
+</tr>
+<tr>
+<td>Nanobatching</td>
+<td>5.31</td>
+<td>5,096</td>
+<td>21,445</td>
+<td>26,541</td>
+<td>时间 −5.2% → 静态能量随之下滑；但动态能量反而<strong>略升</strong>（更多访存 + 每个 nanobatch 额外梯度累加）</td>
+</tr>
+<tr>
+<td>Nanobatching + Perseus</td>
+<td>5.37</td>
+<td>5,160</td>
+<td>19,729</td>
+<td>24,889</td>
+<td>两条路线简单叠加，拿到 24,889 J，是"既有最优"</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>第三行的动态能量为 21,445 J，比基线增加 71 J；总能量则从 26,745 J 降至 26,541 J，减少 204 J（约 0.76%）。</strong> 原文把动态项增加归因于额外访存和梯度累加；缩短执行时间带来的静态项下降仍使这组配置的总能量略降。因此，该表支持“重叠的两类能量变化可能相反”，不能据此断言 nanobatching 不节能。第四行联合频率调整后，总能量进一步降至 24,889 J。</p>
+<p><strong>关键洞察</strong>：
+- 既有 SOTA（第四行）已经是"两条路线的最优拼装"，但它仍然是<strong>拼装</strong>：Perseus 用的 SM 分配与启动时机是 nanobatching 的默认配置，频率则是另一套逻辑单独算出来的。
+- 论文的核心质疑正是从这里开始：<strong>这两件事真的可以分开算吗？</strong> 第 3 节用一组 6 个执行计划的实验回答"不能"。</p>
+<hr />
+<h2 id="2-两条既有路线-以及它们各自看不见的东西">2 两条既有路线，以及它们各自看不见的东西</h2>
+<h3 id="2-1-路线一-频率缩放-Perseus-一脉">2.1 路线一：频率缩放（Perseus 一脉）</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>做法</td>
+<td>按 <strong>microbatch</strong> 粒度给"不在关键路径上"的前向/反向计算降频；流水线迭代时间不变（图 1b）</td>
+</tr>
+<tr>
+<td>为什么有效</td>
+<td>动态能量随频率下降（三次方），而迭代时间不变 → 静态能量不变，总能量下降</td>
+</tr>
+<tr>
+<td>它的盲区</td>
+<td>沿用<strong>顺序 kernel 执行模型</strong>（图 2a）：同一时刻只跑一个 kernel。它没有把通信塞进计算里，因此"暴露的通信时间"这段纯空转的静态浪费一直存在</td>
+</tr>
+<tr>
+<td>它的隐含假设</td>
+<td>"哪些 microbatch 是非关键的"由流水线调度决定，而流水线调度没被优化；SM 分配也没被优化</td>
+</tr>
+<tr>
+<td>论文对它的定位</td>
+<td>打开了"频率"这一维，但没打开"重叠"这一维</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2-2-路线二-细粒度-kernel-调度-nanobatching-一脉">2.2 路线二：细粒度 kernel 调度（nanobatching 一脉）</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>做法</td>
+<td>把一个 pipeline microbatch 切成两个<strong>等大、彼此无数据依赖</strong>的 nanobatch，让一个 nanobatch 的通信与另一个的计算错开跑（图 2b）</td>
+</tr>
+<tr>
+<td>代表工作</td>
+<td>NanoFlow、TokenWeave、vLLM Dual Batch Overlap（推理侧）；DeepSpeed Domino、DeepSeek DualPipe、Concerto（训练侧）</td>
+</tr>
+<tr>
+<td>为什么有效</td>
+<td>时间缩短 → 静态能量下降</td>
+</tr>
+<tr>
+<td>它的盲区</td>
+<td>(1) 不做频率缩放，动态能量不动；(2) 通信 kernel 用 NCCL 这类"为顺序执行优化"的默认实现，<strong>默认假设没有并发 kernel，因此可能占用过多 SM</strong>；(3) 启动时机基本是"尽早"，不与"和谁一起跑"的资源类型匹配</td>
+</tr>
+<tr>
+<td>它的隐含假设</td>
+<td>通信越快越好、重叠越早越好。第 3 节证明这两条都会翻车</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2-3-两条路线的关系图">2.3 两条路线的关系图</h3>
+<p><pre class="mermaid">flowchart LR
+    subgraph R1["路线一：降频"]
+        P["Perseus<br/>非关键 microbatch 降频"]
+    end
+    subgraph R2["路线二：重叠"]
+        N["Nanobatching<br/>切 microbatch 造重叠"]
+        D["Domino / DualPipe / Concerto"]
+    end
+    P -->|"只削动态能量"| E1["时间不变<br/>静态能量不变"]
+    N -->|"只削静态能量"| E2["时间下降<br/>动态能量略升"]
+    E1 --> C["简单叠加：Table 1 第四行<br/>24,889 J"]
+    E2 --> C
+    C -->|"但 SM 分配 / 时机 / 频率<br/>仍未联合求解"| GAP["剩余优化空间"]
+    GAP --> K["Kareus：联合搜索三因素"]</pre></p>
+<p><strong>关键洞察</strong>：
+- 这两条路线不是"竞争关系"，而是<strong>各管一个能量项</strong>。真正的问题不是选哪条，而是"两条一起上时，参数该怎么配"。
+- 论文抓的漏洞很精准：nanobatching 的默认通信 kernel 是<strong>为没有并发 kernel 的世界设计的</strong>；一旦你开始重叠，这个默认就变成错误的前提。这是"来自系统默认值的机会"——一个非常典型的系统论文选题切口。</p>
+<hr />
+<h2 id="3-三因素实验-把-最优-这件事拆成可测量的三根旋钮">3 三因素实验：把"最优"这件事拆成可测量的三根旋钮</h2>
+<h3 id="3-1-论文对-执行计划-的定义">3.1 论文对"执行计划"的定义</h3>
+<p>论文把执行计划（execution schedule）定义为三个因素的组合：</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>因素</th>
+<th>具体含义</th>
+<th>可调范围（论文实现）</th>
+<th>影响哪个账本</th>
+<th>单独看时的典型误判</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SM 分配</strong></td>
+<td>分配给通信 kernel 的 GPU 流多处理器数量</td>
+<td>A100 上有效范围约 1–30 个 SM（超过 30 经验上不再改善通信时延）</td>
+<td>主要影响时间（进而影响静态能量）；分太少会让通信暴露，分太多会抢计算</td>
+<td>"通信越快越好" → 给满 SM，结果拖慢计算</td>
+</tr>
+<tr>
+<td><strong>启动时机</strong></td>
+<td>通信 kernel 插在计算 kernel 序列的哪个位置</td>
+<td>枚举分区内所有计算算子位置</td>
+<td>影响时间与瞬时功率（争抢内存带宽/算力）</td>
+<td>"越早越好" → 与访存受限 kernel 撞车，双方都变慢</td>
+</tr>
+<tr>
+<td><strong>GPU 频率</strong></td>
+<td>计算与通信跑在什么频率</td>
+<td>A100 210–1,410 MHz（15 MHz 步长）；搜索限 900–1,410（35 档）</td>
+<td>主要影响动态能量；同时<strong>改变前两者的最优值</strong></td>
+<td>"降频只省能量、不改调度" → 沿用旧 SM 分配，反而更费</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="3-2-六个执行计划-一张前沿图">3.2 六个执行计划，一张前沿图</h3>
+<p>论文的案例设置：Llama 3.2 3B，单个 Transformer Attention 层，张量并行 4，四张全互联 A100。这一段只观察"一个 nanobatch 的计算 + 上一个 nanobatch 的通信"，二者无数据依赖，正是训练里的常见片段。</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>计划</th>
+<th>配置要点</th>
+<th>时间 (ms)</th>
+<th>能量 (J)</th>
+<th>落在前沿？</th>
+<th>失败原因（论文解释）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a)</td>
+<td>通信 2 SM，与 Linear 1 同启</td>
+<td>5.56</td>
+<td>7.69</td>
+<td>否</td>
+<td>通信在计算结束前跑不完 → <strong>暴露的通信时间</strong>，期间 106 个 SM 闲着，静态功耗白烧</td>
+</tr>
+<tr>
+<td>(b)</td>
+<td>通信 4 SM，与 Linear 1 同启</td>
+<td>4.33</td>
+<td><strong>6.88</strong></td>
+<td><strong>是</strong></td>
+<td>通信刚好在计算结束前完成，静态浪费最小 → 1,410 MHz 下的能量最优</td>
+</tr>
+<tr>
+<td>(c)</td>
+<td>通信 20 SM，与 Linear 1 同启</td>
+<td>4.62</td>
+<td>7.23</td>
+<td>否</td>
+<td>通信变快，但抢走 Linear 1 的 SM；多给的 SM 自己又几乎闲置，双重浪费</td>
+</tr>
+<tr>
+<td>(d)</td>
+<td>通信 4 SM，改与 <strong>Norm</strong> 同启</td>
+<td>4.62</td>
+<td>7.22</td>
+<td>否</td>
+<td>Norm/RoPE 是访存受限的，通信也要高内存带宽 → <strong>带宽争抢</strong>，双双被拖长</td>
+</tr>
+<tr>
+<td>(e)</td>
+<td>同 (d) 但频率降到 1,100 MHz</td>
+<td>5.51</td>
+<td>5.16</td>
+<td>否</td>
+<td>动态能量确实降了，但通信抢 Linear 1 的 SM，而 Linear 1 在低频下<strong>更</strong>计算受限 → 时间暴涨</td>
+</tr>
+<tr>
+<td>(f)</td>
+<td>1,100 MHz，通信 8 SM，与 <strong>RoPE</strong> 同启</td>
+<td>5.17</td>
+<td><strong>5.03</strong></td>
+<td><strong>是</strong></td>
+<td>让计算受限的 Linear 无干扰地跑；通信与访存邻接，干扰更小 → 低频下的能量最优</td>
+</tr>
+</tbody>
+</table></div>
+<p>请注意 (b) 与 (f)：<strong>同样是"能量最优"，两者的 SM 分配与启动时机完全不同</strong>。这就是全文的支点。</p>
+<h3 id="3-3-三因素互相咬合的形状">3.3 三因素互相咬合的形状</h3>
+<p><pre class="mermaid">flowchart TD
+    F["GPU 频率"] -->|"降频：计算吞吐下降<br/>内存/通信带宽不变"| REL["各 kernel 相对资源需求改变"]
+    REL -->|"原访存受限的 kernel<br/>变得更偏访存"| TIM["最优启动时机改变"]
+    REL -->|"原计算受限的 kernel<br/>变得更计算受限"| SM["最优 SM 分配改变"]
+    TIM -->|"与谁同跑决定干扰"| DYN["瞬时功率 / 动态能量"]
+    SM -->|"空闲 SM 是否浪费"| STA["暴露时间 / 静态能量"]
+    DYN --> TOT["时间–能量点"]
+    STA --> TOT
+    TOT -->|"反馈：改善前沿"| F</pre></p>
+<p><strong>关键洞察（表 2 的四条，按论文原意）</strong>：
+- <strong>SM 分配存在中间甜点</strong>：给少了，通信跑不完，出现"只有一个小 kernel 在跑"的空档；给多了，拖慢别的 kernel 而目标 kernel 并不显著变快。
+- <strong>"和谁一起跑"比"多早跑"更重要</strong>：通信 kernel 在 SM 充足时也是高带宽需求者，与 Norm/RoPE 同跑就是带宽内耗。
+- <strong>频率改变的是"相对"资源需求</strong>：低频让所有 kernel 都更偏计算受限，从而改变"哪些 kernel 值得重叠"，也放大了静态功耗的相对占比（暴露的通信更致命）。
+- <strong>三者不可解耦</strong>：改一个，另两个的能量最优配置就移位。</p>
+<hr />
+<h2 id="4-机理-降频之后-最佳安排为什么会变-本报告要回答的核心问题">4 机理：降频之后，最佳安排为什么会变（本报告要回答的核心问题）</h2>
+<p>这是清单里给这篇论文出的问题，也是它区别于"又一个调度器"的地方。论文的答案可以拆成<strong>四步因果链</strong>，每一步都有实验数字支撑。</p>
+<h3 id="4-1-因果链">4.1 因果链</h3>
+<p><pre class="mermaid">flowchart TD
+    S1["① 降频只压计算吞吐<br/>内存带宽与 NVLink/PCIe 带宽基本不变"] --> S2["② 所有 kernel 的<br/>算术强度相对上升"]
+    S2 --> S3["③ 原本访存受限的 kernel<br/>变成通信更好的搭档<br/>原本计算受限的 kernel 变得更怕被抢 SM"]
+    S3 --> S4["④ 于是最优 SM 分配下移<br/>最优启动时机改到访存邻接处"]
+    S4 --> S5["⑤ 若仍沿用高频时的排法<br/>暴露时间与争抢同时放大<br/>静态能量反而吃掉降频省下的动态能量"]</pre></p>
+<h3 id="4-2-逐条对上论文证据">4.2 逐条对上论文证据</h3>
+<p><strong>第一步：降频只影响计算吞吐。</strong> 论文明确写"reducing frequency only affects computation throughput and not memory throughput"。这是硬件事实层面的前提：HBM 带宽、NVLink/PCIe 带宽由存储与互连时钟决定，不随 SM 核心频率线性下降。因此降频后，同一个 kernel 的"计算/访存"比值下降——它变慢了，但它要的字节数没变。</p>
+<p><strong>第二步：相对资源需求整体偏移。</strong> 在 1,410 MHz 下，<code>Norm</code> 与 <code>RoPE</code> 是访存受限的、<code>Linear</code>/<code>FlashAttention</code> 是计算受限的。降到 1,100 MHz 后，所有 kernel 都往"计算受限"方向挪一格：原先"还挺访存"的 kernel 现在更访存占比高，原先计算受限的 kernel 更怕算力被切走。</p>
+<p><strong>第三步：于是"最佳搭档"换了人。</strong> 高频（1,410 MHz）下，论文的最优解是"通信与 <code>Linear 1</code> 同启、占 4 SM"（图 3b）：因为此时通信只要 4 个 SM 就能在 <code>Linear 1</code> 结束前跑完，而把通信丢给 <code>Norm</code> 会撞带宽（图 3d）。低频（1,100 MHz）下，最优解变成"通信与 <code>RoPE</code> 同启、占 8 SM"（图 3f）：因为 <code>Linear</code> 在低频下更计算受限，从它身上抢 SM 的代价更大；而 <code>RoPE</code> 本来就在等带宽，通信与它共享带宽的边际损失更小。<strong>这就是"降频后最佳安排改变"的直接机制。</strong></p>
+<p><strong>第四步：沿用旧安排会亏两次。</strong> 图 3e 就是"只降频、不改排法"的反例：能量从 7.22 J 降到 5.16 J（动态项省了），但时间从 4.62 ms 涨到 5.51 ms（+19%），静态能量随之上涨。而 3f 把排法改对之后，能量进一步降到 5.03 J，时间回到 5.17 ms。<strong>同样是 1,100 MHz，改不改排法差 2.3% 能量、6.4% 时间</strong>——数字不大，但它是"必须联合求解"的存在性证明。</p>
+<h3 id="4-3-为什么-暴露的通信-在低频下更致命">4.3 为什么"暴露的通信"在低频下更致命</h3>
+<p>论文给了一个比例论证：动态功率随频率显著下降，<strong>静态功率不降</strong>。于是降频后，静态功耗在总功耗中的占比上升；此时若有 1 毫秒的"只有通信在跑、计算 SM 全闲"，浪费的相对代价比高频时更高。这解释了为什么低频最优解更倾向于"把通信塞进访存邻接处，并且给足 SM 让它早点跑完"，而不是"给少点 SM、慢慢跑"。</p>
+<h3 id="4-4-一个附带但很漂亮的反例-1-350-MHz-打败-1-410-MHz">4.4 一个附带但很漂亮的反例：1,350 MHz 打败 1,410 MHz</h3>
+<p>论文在 Qwen 3 1.7B / TP8 / µB8 / 4K 上发现：两个基线都把关键路径跑在 <strong>1,410 MHz（最高频）</strong>，但 Kareus 找到一个 <strong>1,350 MHz</strong> 的重叠配置，<strong>时延反而最快</strong>，并且比 N+P 再省 10.7% 能量。原因是：1,410 MHz 下的 nanobatching 重叠把资源利用率拉高 → 瞬时功率顶到上限 → <strong>触发 GPU 频率节流</strong>。结果是：决定执行时间的"时间平均频率"接近 1,350 MHz，而决定动态能量的"时间平均动态功率"仍接近 1,410 MHz 的水平。</p>
+<p><strong>关键洞察</strong>：作者用这个 A100 案例说明硬件功率限制下的频率波动可能增加能量。附录 A 的解释仍依赖动态功率近似 $k f^3$、静态功率恒定，以及<strong>相同平均频率下完成时间相同</strong>。该案例不能直接证明所有 GPU、工作负载或机架级限额下恒频均更优；应先核对实际频率、执行时间和计量边界。</p>
+<h3 id="4-5-把这个问题答完-三条可迁移的判断">4.5 把这个问题答完：三条可迁移的判断</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>判断</th>
+<th>依据</th>
+<th>迁移到别的系统时的用法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>降频会<strong>重新排序</strong>"谁适合与通信重叠"</td>
+<td>图 3 的 (b) vs (f)；1,410 → 1,100 MHz 最优搭档从 Linear 换到 RoPE</td>
+<td>任何"带宽不随频率变"的平台（HBM、NVLink、PCIe）都成立；带宽随频率联动的平台要先重测</td>
+</tr>
+<tr>
+<td>降频会<strong>放大</strong>暴露时间的代价</td>
+<td>静态功耗占比随频率下降而上升</td>
+<td>低频运行的系统应更激进地消灭"单 kernel 空转"窗口</td>
+</tr>
+<tr>
+<td>在附录 A 三项前提下，频率波动增加动态能量</td>
+<td>附录 A 定理 + 1,350 MHz 案例</td>
+<td>有功率封顶/节流的机器上，"锁频"可能同时改善时间与能量</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="5-算法-把一个大不可解的问题切成-分区">5 算法：把一个大不可解的问题切成"分区"</h2>
+<h3 id="5-1-问题形式化与-为什么不能穷举">5.1 问题形式化与"为什么不能穷举"</h3>
+<p>论文的目标不是找单点最优，而是找<strong>整条时间–能量前沿</strong>，理由很实际：用户可能有时间截止（deadline、掉队节点）或能量预算，需要在前沿上挑点；这也是 Perseus/Zeus 一脉的共同立场。</p>
+<p>三个决策变量（SM 数、启动时机、频率）合起来的解空间，对一个典型 Transformer LLM + A100 是 <strong>85,050 个候选</strong>（附录 B 的算法：35 档频率 × 30 档 SM × 91 种重叠子问题 = 85,050）。每个候选要 <strong>约 13 秒</strong>画像（5 s 测量 + 5 s 冷却 + 初始化/预热），穷举要 <strong>4,912 GPU·小时</strong>——按分区并行算是 307 小时。这个量级直接宣告"暴力搜索"不可行。</p>
+<h3 id="5-2-分区重叠执行模型">5.2 分区重叠执行模型</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>设计要素</th>
+<th>论文做法</th>
+<th>为什么这么做</th>
+<th>代价/边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>分区定义</strong></td>
+<td>一个通信 kernel（来自 nanobatch A）+ 另一个 nanobatch 的最长连续计算 kernel 序列</td>
+<td>二者无数据依赖 → 通信可落在任意连续子序列上</td>
+<td>需要能识别"重复模式"，否则分区退化为整图</td>
+</tr>
+<tr>
+<td><strong>为什么能切</strong></td>
+<td>训练图是重复的：Attention–AllReduce 与 MLP–AllReduce 两类分区在每个 Transformer 块里重复出现</td>
+<td>局部最优可以复用，搜索空间按"分区类型"而非"分区实例"计</td>
+<td>依赖模型结构的规律性</td>
+</tr>
+<tr>
+<td><strong>泛化 nanobatching</strong></td>
+<td>nanobatching 是它的特例（通信尽早、用默认 NCCL、不调频）</td>
+<td>把"三因素"都变成分区级的自由变量</td>
+<td>需要支持可调 SM 的通信 kernel（MSCCL++）与可调频的运行时（Perseus）</td>
+</tr>
+<tr>
+<td><strong>前向/反向不对称</strong></td>
+<td>用自定义 <code>torch.autograd.Function</code> 包住整块，前向与反向可用不同分区与计划</td>
+<td>反向的 kernel 顺序与依赖不同，硬套前向计划会浪费机会</td>
+<td>实现复杂度上升</td>
+</tr>
+<tr>
+<td><strong>连续通信融合</strong></td>
+<td>多个连续通信（如上下文并行下多个 AllGather）融成一个、共享 SM 分配</td>
+<td>减少启动开销，避免"通信打通信"</td>
+<td>融合后细粒度控制变粗</td>
+</tr>
+<tr>
+<td><strong>短访存算子合并</strong></td>
+<td><code>BiasDropoutAdd</code> + <code>Norm</code> 这类合并为一个逻辑操作</td>
+<td>否则启动时机搜索空间膨胀而收益甚微</td>
+<td>需要算子级知识</td>
+</tr>
+<tr>
+<td><strong>执行模型可切换</strong></td>
+<td>工作量太小（小模型/小 microbatch）时，切分反而降低算术强度 → 允许回退<strong>顺序执行</strong></td>
+<td>避免"为了重叠而重叠"</td>
+<td>需要画像两种模型并比较</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="5-3-三层结构">5.3 三层结构</h3>
+<p><pre class="mermaid">flowchart TD
+    subgraph L1["迭代级"]
+        I["训练迭代<br/>1F1B 流水线"]
+    end
+    subgraph L2["microbatch 级"]
+        F["前向 microbatch"]
+        B["反向 microbatch"]
+    end
+    subgraph L3["分区级"]
+        PA["Attention–AllReduce"]
+        PM["MLP–AllReduce"]
+        PN["Norm / RoPE 等短算子"]
+    end
+    I --> F
+    I --> B
+    F --> PA
+    F --> PM
+    PM --> PN
+    PA -->|"分区内：SM 数 + 启动时机 + 频率"| SCH["执行计划"]
+    PM --> SCH</pre></p>
+<h3 id="5-4-多目标贝叶斯优化-MBO">5.4 多目标贝叶斯优化（MBO）</h3>
+<p>标准 BO 只对单目标，而这里要帕累托前沿。论文做了两处定制：</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>论文设计</th>
+<th>为什么这样设计</th>
+<th>具体超参</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>代理模型</strong></td>
+<td>两个：$\\hat T(x)$ 预测时间、$\\hat E(x)$ 预测动态能量；总能量 = $\\hat T(x)\\cdot P_{static} + \\hat E(x)$</td>
+<td>时间主要由 SM 分配与启动时机决定，动态能量主要由频率决定，两者<strong>大致正交</strong></td>
+<td>XGBoost；训练线性于样本数（高斯过程是立方），树结构天然吃离散/类别变量</td>
+</tr>
+<tr>
+<td><strong>采集函数（利用）</strong></td>
+<td>三个超体积改进 HVI：分别用<strong>总能量 / 动态能量 / 静态能量</strong>代入</td>
+<td>三个方向互补：动态能量向下推、静态能量向左推、总能量朝原点推</td>
+<td>配额 0.4 / 0.2 / 0.2</td>
+</tr>
+<tr>
+<td><strong>采集函数（探索）</strong></td>
+<td>bootstrap 集成（5 个模型、0.8 采样），用<strong>各目标标准差之和</strong>打分</td>
+<td>单一采集函数只瞄一个方向，会漏掉前沿的其他段</td>
+<td>配额 0.2</td>
+</tr>
+<tr>
+<td><strong>停止条件</strong></td>
+<td>样本数足够 or 连续若干批前沿无改进</td>
+<td>画像是最贵的环节（占 97%），必须设上限</td>
+<td>$N_{init}$ 36/48/96；$B_{max}$ 3/4/4；$k$ 16/16/32（小/中/大分区）</td>
+</tr>
+</tbody>
+</table></div>
+<p>HVI 的定义（论文式）是：</p>
+<p>$$
+\\mathrm{HVI}(x) = \\mathrm{HV}(P \\cup \\{(\\hat T(x), \\mathrm{Energy}(x))\\}; r) - \\mathrm{HV}(P; r)
+$$</p>
+<p>其中 $P$ 是当前前沿点集，$r$ 是略差于已观测最差点的参考点（论文取 $r=(1.1\\max T(x), 1.1\\max E(x))$），保证超体积有界。</p>
+<p><strong>MBO 的执行循环</strong>：</p>
+<p><pre class="mermaid">flowchart LR
+    A["随机初始化<br/>N_init 个候选"] --> B["热稳定画像<br/>时间 + 能量 + 温度"]
+    B --> C["训练两个 XGBoost<br/>T 模型 / E 模型"]
+    C --> D["四遍选择"]
+    D -->|"总能量 HVI 0.4"| E["候选批 k 个"]
+    D -->|"动态能量 HVI 0.2"| E
+    D -->|"静态能量 HVI 0.2"| E
+    D -->|"不确定性 0.2"| E
+    E --> F["继续画像"]
+    F -->|"未收敛"| C
+    F -->|"收敛 / 预算用尽"| G["分区前沿<br/>若干 (T, E) 点"]</pre></p>
+<h3 id="5-5-前沿的组合">5.5 前沿的组合</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>层次</th>
+<th>组合方式</th>
+<th>关键约束</th>
+<th>为什么必须约束</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>分区 → microbatch</td>
+<td>枚举各分区计划的组合，累加时间与能量，剪掉被支配的组合</td>
+<td>(1) <strong>一个 microbatch 内频率统一</strong>；(2) <strong>同类型分区共用一套 SM/时机</strong></td>
+<td>频率切换要数毫秒，相对单分区时延不可忽略；若允许每分区自由配置，搜索空间随分区数指数爆炸而收益甚微</td>
+</tr>
+<tr>
+<td>microbatch → 迭代</td>
+<td>采用 Perseus 的迭代算法：迭代时间是关键路径上 microbatch 时延之和，能量是所有 microbatch 能量 + 空闲期静态能量</td>
+<td>需要流水线各阶段的 microbatch 排布</td>
+<td>关键路径与"非关键 microbatch"的降频机会都由排布决定</td>
+</tr>
+</tbody>
+</table></div>
+<p><pre class="mermaid">flowchart TD
+    subgraph P["分区级前沿"]
+        P1["Attention–AllReduce"]
+        P2["MLP–AllReduce"]
+    end
+    subgraph M["microbatch 级前沿"]
+        M1["前向：分区组合 + 统一频率"]
+        M2["反向：分区组合 + 统一频率"]
+    end
+    subgraph I["迭代级前沿"]
+        I1["关键路径时延 + 空闲静态能量"]
+    end
+    P1 --> M1
+    P2 --> M1
+    P1 --> M2
+    M2 --> I1
+    M1 -->|"Perseus 组合算法"| I1
+    I1 -->|"按目标时延挑点"| SEL["运行时执行计划"]</pre></p>
+<p><strong>关键洞察</strong>：
+- "统一频率"这条约束是<strong>工程现实压过理论优雅</strong>的典型：它可以被证明会损失一点前沿质量，但它换来"频率切换开销不进入模型"。任何"细粒度调频"的论文都必须回答这个数毫秒的切换代价。
+- "同类型分区共用配置"是<strong>用结构规律性换搜索可行性</strong>。这也是这类系统论文常见的取舍：先承认"逐实例最优"不可解，再用"同类同配"的假设把问题压到可搜索。</p>
+<hr />
+<h2 id="6-实现-把计划落地需要的四件事">6 实现：把计划落地需要的四件事</h2>
+<h3 id="6-1-系统组成">6.1 系统组成</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>实现</th>
+<th>职责</th>
+<th>依赖</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>优化器</td>
+<td>MBO + 分区识别 + 前沿组合</td>
+<td>离线产出"迭代前沿表"（T₁…Tₙ 各对应一套 SM/时机/频率）</td>
+<td>—</td>
+</tr>
+<tr>
+<td>热稳定画像器</td>
+<td>Zeus + NVML</td>
+<td>给每个候选测时间与能量，控制温度干扰</td>
+<td>NVML 约 100 ms 采样间隔</td>
+</tr>
+<tr>
+<td>分区重叠执行引擎</td>
+<td>Megatron-LM + MSCCL++ + 独立 CUDA 流 + CUDA event</td>
+<td>按计划执行分区，控制 SM 数与启动时机</td>
+<td>通信 kernel 必须支持 grid size 控制</td>
+</tr>
+<tr>
+<td>频率控制器</td>
+<td>改自 Perseus 开源实现</td>
+<td>异步切换每张卡频率</td>
+<td>需 GPU 允许锁频</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="6-2-画像为什么要-热稳定">6.2 画像为什么要"热稳定"</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>现象（论文实测）</th>
+<th>论文对策</th>
+<th>数字</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NVML 采样太粗</td>
+<td>采样间隔约 100 ms，毫秒级测量误差大</td>
+<td>每个分区在 <strong>5 秒窗口</strong>内反复执行</td>
+<td>从 5 s 起能量读数稳定；&lt;2 s 波动大且均值偏低（GPU 未热起来）</td>
+</tr>
+<tr>
+<td>温度污染</td>
+<td>前一个候选把 GPU 烤热，后一个候选测出来偏高</td>
+<td>候选之间<strong>冷却 5 秒</strong>（本环境可降到 &lt;32°C）</td>
+<td>能耗均值与"测量开始时温度"强相关；5 s 起稳定</td>
+</tr>
+<tr>
+<td>总耗时</td>
+<td>初始化 + 预热 + 5 s 测量 + 5 s 冷却</td>
+<td>接受 ≈13 s/候选</td>
+<td>单分区典型：32 候选/轮 → 画像 6.9 min，代理训练 + 采集 11 s</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>关键洞察</strong>：
+- 这是全文最"脏活"也最容易被忽略的一段。<strong>任何以能量为目标的系统，如果测量不稳，优化器就会去优化噪声。</strong> 论文把 97% 的优化开销花在画像上，说明它把"测量可信"当成了第一性约束。
+- "5 秒冷却"不是一个可随便套用的常数：论文自己写明所需时长取决于服务器散热能力。搬到风冷/液冷不同的机器上必须重标定。</p>
+<hr />
+<h2 id="7-实验证据-从单层到-70B-模拟">7 实验证据：从单层到 70B 模拟</h2>
+<h3 id="7-1-证据地图">7.1 证据地图</h3>
+<p><pre class="mermaid">flowchart LR
+    subgraph REAL["真实测试床（16×A100）"]
+        R1["Table 1：能耗拆解<br/>Qwen 3 1.7B"]
+        R2["Table 3：最大吞吐<br/>11 个配置"]
+        R3["Table 4：前沿改进<br/>11 个配置"]
+        R4["Table 8：消融"]
+        R5["Table 9-10：µB 敏感性"]
+    end
+    subgraph EMU["模拟（Llama 3.3 70B）"]
+        E1["Table 5：强扩展配置<br/>1,280–10,240 GPU"]
+        E2["Table 6-7：吞吐与前沿"]
+    end
+    subgraph MECH["机理与组件"]
+        M1["Fig 3-4：三因素案例<br/>6 个执行计划"]
+        M2["Fig 7：四遍 MBO 归因"]
+        M3["Fig 12：画像稳定性"]
+    end
+    R1 --> R2
+    R2 --> R3
+    M1 --> R2
+    E2 --> R3</pre></p>
+<h3 id="7-2-最大吞吐-不如前沿那么亮眼-但方向正确">7.2 最大吞吐：不如前沿那么亮眼，但方向正确</h3>
+<p>论文的"最大吞吐"比较是取每条前沿的<strong>最左点</strong>（时间最小），与 Megatron-LM 比：</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>时间降幅</th>
+<th>能耗降幅</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>全部 11 个配置的峰值</td>
+<td><strong>14.9%</strong></td>
+<td><strong>22.1%</strong></td>
+<td>14.9% 出现在 Qwen 1.7B / TP8 / µB8 / 8K；22.1% 出现在 Qwen 1.7B / TP8 / µB8 / 4K</td>
+</tr>
+<tr>
+<td>典型 Llama 3.2 3B / TP8 / µB8 / 4K</td>
+<td>12.3%</td>
+<td>19.6%</td>
+<td>已是"纯 TP"里通信开销较高的一档</td>
+</tr>
+<tr>
+<td>Llama 3.2 3B / CP2TP4 / µB8 / 4K</td>
+<td>5.2%</td>
+<td>14.4%</td>
+<td>加上下文并行后，时间收益变小、能量收益仍可观</td>
+</tr>
+<tr>
+<td>Qwen 1.7B / CP2TP4 / µB8 / 4K</td>
+<td>−0.5%</td>
+<td>7.1%</td>
+<td>特例：Nanobatching 在该配置下时间 <strong>−20.4%</strong>（显著拖慢），Kareus 靠"回退顺序执行"避开</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>关键洞察</strong>：
+- 时间降幅的规律很清楚：<strong>通信开销越大的配置，时间收益越大</strong>（TP &gt; CP+TP；µB 大 &gt; 序列长）。这符合"重叠省的是暴露时间"这一机理。
+- 能量降幅<strong>不总跟随时间降幅</strong>。论文解释得干脆：重叠提高利用率 → 抬高功率 → 抵消时间收益。所以"更快"不等于"更省"；要省，必须同时把频率也调对。
+- 那一行 −20.4% 特别值得记住：<strong>nanobatching 不是万灵药</strong>。负载小到算术强度撑不住切分时，它会显著拖慢。Kareus 的"执行模型可切换"就是为这种情况准备的，这也是它比"纯 nanobatching"更稳的原因。</p>
+<h3 id="7-3-前沿改进-这才是它的主场">7.3 前沿改进：这才是它的主场</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>定义</th>
+<th>最好值</th>
+<th>出处</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>等时能耗降幅</td>
+<td>以 M+P 的最小时延为截止，看能耗能降多少</td>
+<td><strong>28.3%</strong>（Qwen 1.7B / TP8 / µB16 / 4K）</td>
+<td>Table 4</td>
+</tr>
+<tr>
+<td>等能量时间降幅</td>
+<td>以 M+P 的最小能量为预算，看时间能省多少</td>
+<td><strong>27.5%</strong>（Qwen 1.7B / TP8 / µB8 / 4K）</td>
+<td>Table 4</td>
+</tr>
+<tr>
+<td>有代表性的中间值</td>
+<td>Qwen 1.7B / CP2TP4 / µB16 / 4K</td>
+<td>等时 8.9%→20.1%、等能量 8.4%→19.7%</td>
+<td>Table 4 + Fig 11</td>
+</tr>
+</tbody>
+</table></div>
+<p>论文对这两个方向的解释很物理：<strong>同时间预算下静态能量被钉住</strong>，Kareus 利用率更高 → 可以用更低频率跑完 → 动态能量降；<strong>同能量预算下</strong>，Kareus 把静态浪费压到最小 → 有更多能量额度可以"花在频率上"换速度。这是一个把两个账本"互相腾挪"的解释，比单纯说"我的调度更好"更有说服力。</p>
+<h3 id="7-4-消融-联合优化不是修辞">7.4 消融：联合优化不是修辞</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>变体</th>
+<th>相对 Kareus 的时间增幅</th>
+<th>相对 Kareus 的能耗增幅</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kareus 去掉频率缩放</td>
+<td>+1.0%</td>
+<td><strong>+12.9%</strong></td>
+<td>只留调度：时间几乎不变（说明调度本身没让事情变慢），但动态能量还回去了</td>
+</tr>
+<tr>
+<td>Kareus 去掉 kernel 调度</td>
+<td>+8.2%</td>
+<td><strong>+10.8%</strong></td>
+<td>只留调频：时间明显变长（暴露的通信回来了），静态能量上升</td>
+</tr>
+<tr>
+<td>Nanobatching（两者都去掉）</td>
+<td>+7.8%</td>
+<td><strong>+20.6%</strong></td>
+<td>与第一行/第二行对照可见：两项收益不是简单相加，联合起来才有 20.6%</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>关键洞察</strong>：这是一个"1 + 1 &gt; 2"的实证。<strong>去掉任意一维都只损失一部分，但两维都去掉损失更大</strong>——这恰好对应"两个能量项通过同一个调度决策耦合"的论点。</p>
+<h3 id="7-5-敏感性-µB-越大-收益越大-但能耗曲线不平滑">7.5 敏感性：µB 越大，收益越大（但能耗曲线不平滑）</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>µB</th>
+<th>时间降幅</th>
+<th>能耗降幅</th>
+<th>等时能耗降幅</th>
+<th>等能量时间降幅</th>
+<th>读法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8</td>
+<td>12.2%</td>
+<td><strong>22.1%</strong></td>
+<td>26.8%</td>
+<td>27.5%</td>
+<td>能耗峰值来自"低频关键路径"这个发现（1,350 MHz 案例）</td>
+</tr>
+<tr>
+<td>12</td>
+<td>14.7%</td>
+<td>17.6%</td>
+<td>28.6%</td>
+<td>27.3%</td>
+<td>流水线失衡变大 → 非关键 microbatch 有更多降频空间</td>
+</tr>
+<tr>
+<td>16</td>
+<td>14.8%</td>
+<td>17.3%</td>
+<td>28.3%</td>
+<td>26.7%</td>
+<td>与端到端主配置一致</td>
+</tr>
+<tr>
+<td>20</td>
+<td><strong>18.1%</strong></td>
+<td>18.8%</td>
+<td><strong>29.8%</strong></td>
+<td><strong>28.8%</strong></td>
+<td>通信占比最高 → 重叠收益最大</td>
+</tr>
+</tbody>
+</table></div>
+<p>论文对"能耗曲线不平滑"给了两个解释：一是 µB8 有那个 1,350 MHz 的额外发现；二是 µB 改变流水线<strong>阶段失衡</strong>，而"给非关键 microbatch 降频"的省电潜力正比于失衡程度。这是一个挺微妙的点：<strong>失衡在纯时间视角下是坏东西，在能量视角下反而是资源</strong>。</p>
+<h3 id="7-6-模拟-70B-上趋势一致">7.6 模拟：70B 上趋势一致</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>时间降幅</th>
+<th>能耗降幅</th>
+<th>等时能耗降幅</th>
+<th>等能量时间降幅</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>16 µB / 10,240 GPU</td>
+<td>9.3%</td>
+<td>20.2%</td>
+<td>11.6%</td>
+<td>19.1%</td>
+</tr>
+<tr>
+<td>32 µB / 5,120 GPU</td>
+<td>9.2%</td>
+<td>20.0%</td>
+<td>14.1%</td>
+<td>16.8%</td>
+</tr>
+<tr>
+<td>64 µB / 2,560 GPU</td>
+<td>9.1%</td>
+<td>19.8%</td>
+<td>15.3%</td>
+<td>16.4%</td>
+</tr>
+<tr>
+<td>128 µB / 1,280 GPU</td>
+<td>9.1%</td>
+<td>19.7%</td>
+<td>15.1%</td>
+<td>16.0%</td>
+</tr>
+</tbody>
+</table></div>
+<p>论文的解释：流水线阶段与 microbatch 更多 → 非关键路径上可降频的东西更多 → 能耗降幅普遍高于测试床；µB 越多，预热/收尾的流水线气泡占比越小（而这些气泡本来会被降到最低频），所以能耗降幅略降；等时能耗降幅反而随 µB 上升，因为绝对迭代时间变长、可省额度变大。</p>
+<p><strong>关键洞察</strong>：模拟的价值不在"数字更大"，而在<strong>趋势可复现</strong>。但必须标明：这是模拟器结果，不是 10,240 张卡的真实测量。论文自己也用了 Perseus 的模拟器，并只声称"趋势一致"。</p>
+<h2 id="8-把六篇放在同一张图上-Kareus-站在哪一层">8 把六篇放在同一张图上：Kareus 站在哪一层</h2>
+<h3 id="8-1-六篇的分层与优化对象">8.1 六篇的分层与优化对象</h3>
+<p>这六篇论文表面上都在谈"能耗/供电"，实际作用在完全不同的层，优化对象、时间尺度、代价函数都不一样。把它们并排看，能看出这个方向的"层间分工"。</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>论文</th>
+<th>作用层</th>
+<th>优化对象</th>
+<th>时间尺度</th>
+<th>代价/约束</th>
+<th>核心手段</th>
+<th>与 Kareus 的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SpotGPU / ASI</strong>（OSDI'26）</td>
+<td>集群</td>
+<td>6 个月、155,410 张 GPU、37,707 节点、1,400 万作业的<strong>放置与迁移</strong></td>
+<td>分钟级决策（&lt;2 分钟），抢占代价以 GPU·小时计</td>
+<td>分配率 68%→93%；抢占代价 $C_t = G_t(\\tau_{now}-\\tau_{ck})$</td>
+<td>特征刻画 + 增量放置 + "先建后拆" + 弹射链</td>
+<td>提供了"上层负载长什么样"的事实底座；Kareus 优化的是单作业内部的 kernel 排布</td>
+</tr>
+<tr>
+<td><strong>GREEN</strong>（NSDI'25）</td>
+<td>集群/作业</td>
+<td>碳感知的<strong>批作业调度与扩缩容</strong></td>
+<td>作业级（JCT 以小时计）</td>
+<td>碳足迹 −41.2%（四地区均值 32.2%），JCT 代价 3.6–5.9%</td>
+<td>碳因子驱动的时移 + GPU 数量扩展 + 峰值功耗约束</td>
+<td>同一"用电侧灵活性"母题，但它在<strong>作业之间</strong>腾挪，Kareus 在<strong>作业内部</strong>腾挪</td>
+</tr>
+<tr>
+<td><strong>TAPAS</strong>（ASPLOS'25）</td>
+<td>服务集群</td>
+<td>供电上限如何传导到<strong>放置、路由、实例配置</strong></td>
+<td>秒–分钟</td>
+<td>供电预算 + SLO</td>
+<td>功率感知的放置/路由/配置联动</td>
+<td>推理侧对应物；与 Kareus 共享"功率上限重塑最优配置"这一逻辑</td>
+</tr>
+<tr>
+<td><strong>DynamoLLM</strong>（HPCA'25）</td>
+<td>推理服务</td>
+<td><strong>实例数 / 并行度 / GPU 频率</strong>三层控制</td>
+<td>30 min / 5 min / 5 s 三级节律</td>
+<td>P99 TTFT/TBT、SLO；重配置 6–8 分钟</td>
+<td>画像 + 预测 + 重配置 + emergency 四步</td>
+<td>与 Kareus 最像：都做"并行/频率的联合控制"，但一个在服务、一个在训练；DynamoLLM 的分层节律正好解释 Kareus 为何要"一个 microbatch 内统一频率"</td>
+</tr>
+<tr>
+<td><strong>Kareus</strong>（OSDI'26）</td>
+<td>单作业 / kernel</td>
+<td>同一迭代内<strong>通信启动时机 + SM 分配 + GPU 频率</strong></td>
+<td>毫秒（kernel）–秒（迭代）</td>
+<td>训练时间预算或能量预算</td>
+<td>分区重叠 + MBO + 前沿组合</td>
+<td>本报告主角；把"频率"与"重叠"从两个独立旋钮变成一个联合问题</td>
+</tr>
+<tr>
+<td><strong>Nixie</strong>（OSDI'26）</td>
+<td>单机 / 消费级 GPU</td>
+<td>多应用<strong>时间复用</strong>与显存状态迁移</td>
+<td>100 ms 空闲检测；秒级窗口</td>
+<td>交互延迟 vs 后台吞吐（−23.5%/+90.6%/+39.5%）</td>
+<td>VMM 保留虚拟地址 + chunk 级迁移 + MLFQ</td>
+<td>把"GPU 被谁占用"这一层打开了；对 Kareus 的意义是：多租户下的"频率/占用"竞争会更复杂</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="8-2-一张定位图">8.2 一张定位图</h3>
+<p><pre class="mermaid">flowchart TD
+    subgraph CLUSTER["集群层（分钟级）"]
+        S["SpotGPU：放置与迁移<br/>分配率 68%→93%"]
+        G["GREEN：碳感知调度<br/>碳 −41.2%，JCT +3.6–5.9%"]
+    end
+    subgraph SERVICE["服务层（秒–分钟级）"]
+        T["TAPAS：供电限制 → 放置/路由/配置"]
+        D["DynamoLLM：实例数/并行度/频率<br/>30min / 5min / 5s"]
+    end
+    subgraph KERNEL["作业内层（毫秒–秒级）"]
+        K["Kareus：时机 + SM + 频率<br/>联合求前沿"]
+    end
+    subgraph DEVICE["单机设备层（100ms–秒级）"]
+        N["Nixie：多应用时间复用<br/>显存状态迁移"]
+    end
+    S -->|"决定作业落在哪张卡上"| K
+    G -->|"决定作业何时跑、跑几张卡"| K
+    T -->|"决定实例配置的上限"| D
+    D -->|"决定频率/并行的可用区间"| K
+    N -->|"决定同一张卡被谁占有"| K
+    K -->|"单作业能效上限"| S</pre></p>
+<h3 id="8-3-三条横向洞察">8.3 三条横向洞察</h3>
+<p><strong>洞察一：这六篇其实在回答同一个问题的五个不同粒度——"给定一个功率/时间预算，怎样重排工作"。</strong> SpotGPU 重排作业、GREEN 重排时间窗与卡数、TAPAS 重排实例与路由、DynamoLLM 重排并行度与频率、Kareus 重排 kernel 与频率、Nixie 重排"哪个应用此刻拥有 GPU"。区别不在"要不要重排"，而在<strong>重排一次要付多少代价</strong>：SpotGPU 的代价是抢占的 GPU·小时，DynamoLLM 的代价是 6–8 分钟建实例，Kareus 的代价是毫秒级频率切换与离线画像，Nixie 的代价是显存迁移。</p>
+<p><strong>洞察二："降频"这件事在不同层有不同含义，且都不能孤立做。</strong> DynamoLLM 把频率当作第三层（5 秒节律）来调，因为它比"重切分"便宜得多（50–80 ms vs 1–2 分钟）；Kareus 把频率当作与 SM/时机同级的决策变量，因为一次选错就会把静态浪费放大。两者共同指向一个结论：<strong>频率不是一个可以叠加在调度之上的补丁，它会改变调度的最优解</strong>。</p>
+<p><strong>洞察三：只有 Kareus 把"能量"当第一目标而不是"时间的副产品"。</strong> 其他五篇的主指标基本是"利用率/时延/碳排/成本"，能量要么是约束、要么是副产品；Kareus 直接把 $T$–$E$ 平面画出来，并且明确区分静态项与动态项。这也是它能发现"nanobatching 省时间但赔能量"这种反例的原因——<strong>如果你只看时间，你永远看不到这笔账</strong>。</p>
+<hr />
+<h2 id="9-放到-两机六卡-上-能做什么-不能做什么">9 放到"两机六卡"上：能做什么，不能做什么</h2>
+<h3 id="9-1-现实约束先摆清楚">9.1 现实约束先摆清楚</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>约束</th>
+<th>具体情况</th>
+<th>对复现/借鉴的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>硬件</td>
+<td>2 台服务器 × 3 张 RTX 3090（共 6 张，24GB）</td>
+<td>原 16×A100 的规模结果不能作为本机预期；需先核验六卡是否保留目标机制</td>
+</tr>
+<tr>
+<td>互连</td>
+<td>机内拓扑、GPU 间链路、机间网卡和实际带宽均待核验</td>
+<td>通信占比、争用及重叠余量均须测量，不能从卡型直接推定收益方向</td>
+</tr>
+<tr>
+<td>频率控制</td>
+<td>目标 3090 的驱动、可用频率/功率控制接口、允许范围与权限待核验</td>
+<td>权限和实际行为核验后可对照锁频与功率限制，检查附录 A 三项前提的适用性</td>
+</tr>
+<tr>
+<td>通信 kernel 可调 SM</td>
+<td>所选 NCCL/MSCCL++ 版本及通信 kernel 的资源控制能力、3090 兼容性待核验</td>
+<td>先检查已有工件和接口是否能控制目标变量；若只能调整时机与频率，须重新限定问题与证据范围</td>
+</tr>
+<tr>
+<td>能量测量</td>
+<td>本机 NVML 字段、传感器有效刷新率与计量误差待核验；板卡功率与整机功率分开</td>
+<td>依据本机传感器与稳定性选择积分窗口和冷却时间；论文的 5 s 设置仅作待测参考，明确板卡边界</td>
+</tr>
+<tr>
+<td>规模</td>
+<td>可运行的模型规模、精度、batch 和并行策略待实测，不预设六卡只能运行约 1B 模型</td>
+<td>结论必须标注"缩小规模验证"，不能宣称集群级收益</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="9-2-三个可在六卡上做的最小实验">9.2 三个待核验的六卡实验线索</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>实验</th>
+<th>变量</th>
+<th>主要指标</th>
+<th>计量边界</th>
+<th>停止/继续条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>E1：三因素微基准</strong>（单层 Attention，TP 度数待模型与拓扑核验）</td>
+<td>本机可用频率档 × 可控通信资源配置 × 启动时机；具体候选经接口核验后写入独立计划</td>
+<td>单层时间（ms）与板卡能量（J，长窗口积分）</td>
+<td>只测 GPU 板卡能量，排除整机与网络</td>
+<td>若配置排序稳定改变，先区分资源竞争、实际频率与测量误差；若不变，只能记为该设置未观察到，不能直接归因于 PCIe 拓扑</td>
+</tr>
+<tr>
+<td><strong>E2：功率封顶 vs 锁频</strong></td>
+<td>功率限制与锁频两种运行设置；具体档位待实测校准，不能预设 250 W 与 1,100 MHz 的平均频率相同</td>
+<td>时间、能量与实际频率采样序列；先核对传感器刷新和可观察的时间尺度</td>
+<td>平均频率匹配和同等完成时间须分别核对；同时检查功率模型与静态项假设</td>
+<td>同等工作、匹配平均频率和完成时间下的能量差，可支持或削弱模型在该设置的适用性；若时间不同，先记录第三前提未满足，不能仅归因于 GPU 代际，也不能称定理被证伪</td>
+</tr>
+<tr>
+<td><strong>E3：端到端小步训练</strong></td>
+<td>有无重叠 + 两档频率，固定步数、固定数据</td>
+<td>每步时间、每步能量、loss 一致性</td>
+<td>积分窗口按本机刷新与稳定性核验后确定；同种子同数据</td>
+<td>若重叠在小 batch 下更慢，记录条件与不确定性；Kareus 已有顺序执行回退，研究差异和价值须经最近邻及独立验证判断</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="9-3-决策树">9.3 决策树</h3>
+<p><pre class="mermaid">flowchart TD
+    A["想复现 Kareus 的哪个结论"] --> B{"能控制通信 kernel 的 SM 数吗"}
+    B -->|"否"| C["退化为：时机 + 频率 二维<br/>仍可验证『降频改变最优搭档』"]
+    B -->|"是（自写 kernel / MSCCL++）"| D["三因素全开<br/>按 E1 扫网格"]
+    C --> E["E2：锁频 vs 功率封顶<br/>核验定理前提与适用边界"]
+    D --> E
+    E --> F{"结论与论文同向吗"}
+    F -->|"同向"| G["写『小规模机理复现』<br/>明确不宣称集群收益"]
+    F -->|"不同向"| H["记录 PCIe / DVFS / 3090 差异<br/>作为边界条件写进结论"]</pre></p>
+<p><strong>关键洞察</strong>：
+- <strong>E2 只是待评估的诊断建议</strong>：在确认锁频、功率控制和计量能力后，可以检查附录 A 的假设是否适用于本机；它不等于验证一个对所有工作负载成立的恒频优势。实际运行仍需单独的 Idea 与计划。
+- 真正卡住复现的是<strong>通信 kernel 的 SM 可调性</strong>。这不是算力问题，是工具链问题；如果这一条过不去，任何"SM 分配"的结论都只能引用不能自证。选题时必须先把这条打通或明确放弃。</p>
+<hr />
+<h2 id="10-局限与可证伪点">10 局限与可证伪点</h2>
+<h3 id="10-1-论文自己承认的边界">10.1 论文自己承认的边界</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>局限</th>
+<th>论文表述/位置</th>
+<th>影响</th>
+<th>怎样检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>两分量功耗模型</td>
+<td>把 GPU 功耗拆为"动态 + 恒定静态"，更细的漏电模型（对电压敏感）留作未来工作</td>
+<td>若漏电占比高（高温、低电压），静态项不再是常数，前沿会偏</td>
+<td>在高温/低压场景重测静态功耗随温度的漂移</td>
+</tr>
+<tr>
+<td>仅 A100</td>
+<td>所有真实实验在 A100 40GB</td>
+<td>频率档位、SM 数、DVFS 行为都是 A100 特有</td>
+<td>换 H100/3090 复测"最优搭档是否随频率移动"</td>
+</tr>
+<tr>
+<td>只覆盖 Transformer + 1F1B</td>
+<td>分区识别依赖重复结构</td>
+<td>MoE、长上下文异构结构、非 1F1B 流水线可能需要重新定义分区</td>
+<td>在 MoE 模型上试分区识别；看分区类型是否仍重复</td>
+</tr>
+<tr>
+<td>一个 microbatch 内统一频率</td>
+<td>频率切换需数毫秒</td>
+<td>牺牲了一部分前沿质量</td>
+<td>若切换能压到微秒级，统一频率的约束可以放开</td>
+</tr>
+<tr>
+<td>同类型分区共用配置</td>
+<td>否则搜索空间指数爆炸</td>
+<td>牺牲逐实例最优</td>
+<td>对比"逐分区自由"在小模型上的收益上限</td>
+</tr>
+<tr>
+<td>离线画像</td>
+<td>画像与负载/硬件条件相关；变化后可否复用或需要重跑 MBO，待工件实现与测量核验</td>
+<td>原实验画像平均为 2 h / 32 GPU·h；本机成本及缓存复用范围未知</td>
+<td>测"换模型/换卡后前沿漂移多少"</td>
+</tr>
+<tr>
+<td>大规模结果是模拟</td>
+<td>70B 用 Perseus 模拟器</td>
+<td>绝对数字不可当实测</td>
+<td>需要真实千卡验证（本篇没有）</td>
+</tr>
+<tr>
+<td>未计入网络与存储能耗</td>
+<td>只算 GPU 板卡</td>
+<td>GPU 板卡证据不能直接支持端到端机房收益；增减幅度需额外计量</td>
+<td>加整机/交换机功率计</td>
+</tr>
+<tr>
+<td>温度只用于画像冷却</td>
+<td>未把温度作为调度变量</td>
+<td>高温降频会打乱计划</td>
+<td>高温环境跑同一计划看偏差</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="10-2-我会追问论文的四个点">10.2 我会追问论文的四个点</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>追问</th>
+<th>为什么值得问</th>
+<th>论文的现有回答</th>
+<th>缺口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"静态功耗取 P0 空闲值"是否过于乐观？</td>
+<td>真实空转时芯片未必在 P0；温度升高会抬高漏电</td>
+<td>用两分量模型简化，并引 [29,45] 的更细模型</td>
+<td>没有给出"静态功耗随温度/利用率变化"的敏感性</td>
+</tr>
+<tr>
+<td>13 秒/候选的画像，在小模型上是否"画像比训练还贵"？</td>
+<td>若单次训练只有几分钟，2 小时离线优化就不划算</td>
+<td>用 Llama 3 训练 54 天作对比</td>
+<td>没有给出"训练时长多短时不值得用 Kareus"的阈值</td>
+</tr>
+<tr>
+<td>1,350 MHz 的发现是普遍现象还是个例？</td>
+<td>它依赖"功率封顶 + 重叠抬高瞬时功率"</td>
+<td>作为 case study 呈现</td>
+<td>没有系统统计"多少配置会触发节流"</td>
+</tr>
+<tr>
+<td>统一频率的损失有多大？</td>
+<td>这是全文最明显的近似</td>
+<td>§4.4 还给出同类型分区采用相同配置的复杂度理由；逐分区自由与多次切频的独立代价需进一步核验</td>
+<td>没有量化"若允许逐分区频率，前沿能再降多少"</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="10-3-可证伪的断言清单">10.3 可证伪的断言清单</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>断言</th>
+<th>可证伪方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>频率改变会移动最优 SM 分配与启动时机</td>
+<td>固定频率、扫 SM 与时机，若最优点不随频率移动 → 断言失败</td>
+</tr>
+<tr>
+<td>简单叠加 Perseus + nanobatching 是次优的</td>
+<td>若"叠加配置"恰好落在联合搜索的前沿上 → 断言失败</td>
+</tr>
+<tr>
+<td>附录 A 三项前提成立时，恒频总能量不高于波动频率</td>
+<td>先核对动态功率模型、静态项、相同平均频率与同等完成时间；若观察与预测不同，检查测量误差和各项前提，不能仅凭能量相同或更差认定三次方功耗假设错误</td>
+</tr>
+<tr>
+<td>重叠省时间但可能赔能量</td>
+<td>若所有重叠配置的能耗都低于无重叠 → 反例消失</td>
+</tr>
+<tr>
+<td>分区化不会显著损失前沿质量</td>
+<td>若"逐分区自由"比"同类型同配"好很多 → 近似过强</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="11-方法论上值得学的三件事">11 方法论上值得学的三件事</h2>
+<h3 id="11-1-先建-账本--再谈优化">11.1 先建"账本"，再谈优化</h3>
+<p>论文没有一上来就提算法，而是先用 Table 1 把"时间/静态/动态/总能量"四列摆出来。这一步的作用是<strong>把争论变成算术</strong>：谁说 nanobatching 省电，就看它那一行的动态能量是不是涨了。<strong>任何"能效"主张，如果没有分项账本，都容易被平均数字掩盖。</strong></p>
+<h3 id="11-2-用-同工作量-不同排法-制造可控对照">11.2 用"同工作量、不同排法"制造可控对照</h3>
+<p>3.29× 这个数字的说服力来自实验设计：<strong>工作量完全相同</strong>，只有排法不同。这是系统论文里最干净的对照方式——它排除了"你跑得更快是因为你少算了活"这类质疑。做自己的实验时，这也应该是默认设计。</p>
+<h3 id="11-3-把-约束-写成显式的设计决策">11.3 把"约束"写成显式的设计决策</h3>
+<p>"一个 microbatch 内统一频率""同类型分区同配"这两条，论文没有藏起来，而是明确写出理由（切换毫秒级、搜索空间爆炸）。<strong>把近似写在明面上，比让它藏在实现里更可信</strong>，也给了后续工作明确的改进入口。</p>
+<p><pre class="mermaid">flowchart LR
+    A["观察：两个能量项<br/>被两条路线分别优化"] --> B["拆账本<br/>Table 1 四列"]
+    B --> C["制造可控对照<br/>同工作量、只改排法"]
+    C --> D["找到反例<br/>3.29× 与 1,350 MHz"]
+    D --> E["把反例变成机制<br/>四步因果链 + 定理"]
+    E --> F["再把机制变成算法<br/>分区 + MBO"]
+    F --> G["最后把近似写在明面上<br/>统一频率 / 同类同配"]</pre></p>
+<hr />
+<h2 id="12-术语-复现清单与-本报告没做的事">12 术语、复现清单与"本报告没做的事"</h2>
+<h3 id="12-1-术语表">12.1 术语表</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>术语</th>
+<th>英文</th>
+<th>在本篇里的确切含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>动态能量</td>
+<td>dynamic energy</td>
+<td>计算与访存活动消耗的能量，随频率近似三次方变化</td>
+</tr>
+<tr>
+<td>静态能量</td>
+<td>static energy</td>
+<td>静态功率 × 执行时间；静态功率取 P0 空闲值</td>
+</tr>
+<tr>
+<td>执行计划</td>
+<td>execution schedule</td>
+<td>通信启动时机 + 通信 SM 数 + GPU 频率 的三元组</td>
+</tr>
+<tr>
+<td>分区</td>
+<td>partition</td>
+<td>一个通信 kernel + 另一 nanobatch 的最长连续计算序列（无数据依赖）</td>
+</tr>
+<tr>
+<td>分区重叠</td>
+<td>partitioned overlap</td>
+<td>泛化 nanobatching、并对三因素做细粒度控制的执行模型</td>
+</tr>
+<tr>
+<td>前沿</td>
+<td>frontier</td>
+<td>时间–能量平面上不被支配的点集</td>
+</tr>
+<tr>
+<td>等时能耗降幅</td>
+<td>iso-time energy reduction</td>
+<td>时间预算固定为基线最小时延时，能耗能降多少</td>
+</tr>
+<tr>
+<td>等能量时间降幅</td>
+<td>iso-energy time reduction</td>
+<td>能量预算固定为基线最小能量时，时间能降多少</td>
+</tr>
+<tr>
+<td>超体积改进</td>
+<td>HVI</td>
+<td>新候选把前沿相对参考点扩展的面积</td>
+</tr>
+<tr>
+<td>热稳定画像</td>
+<td>thermally stable profiling</td>
+<td>5 s 测量 + 5 s 冷却，避免温度污染测量</td>
+</tr>
+<tr>
+<td>1F1B</td>
+<td>one-forward-one-backward</td>
+<td>Megatron-LM 的流水线调度：一次前向一次反向交替</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="12-2-复现清单-若要动手">12.2 复现清单（若要动手）</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>需要什么</th>
+<th>论文给的线索</th>
+<th>我方的现实差距</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>频率控制</td>
+<td>可锁频的驱动与权限</td>
+<td>Perseus 开源实现</td>
+<td>3090 可锁频，但需验证权限与档位</td>
+</tr>
+<tr>
+<td>通信 kernel</td>
+<td>可设 SM 数（grid size）的 AllReduce</td>
+<td>MSCCL++（A100 生态）</td>
+<td>3090 + 自建环境需自写或找替代</td>
+</tr>
+<tr>
+<td>训练框架</td>
+<td>Megatron-LM + 自定义 autograd Function</td>
+<td>论文 §5.2</td>
+<td>需先跑通小模型 TP</td>
+</tr>
+<tr>
+<td>能量测量</td>
+<td>NVML + 长窗口积分 + 冷却</td>
+<td>Zeus；5 s/5 s</td>
+<td>NVML 采样 100 ms，必须长窗口</td>
+</tr>
+<tr>
+<td>优化器</td>
+<td>双 XGBoost + 四遍 HVI + bootstrap</td>
+<td>论文附录 C 给了全部超参</td>
+<td>可直接照抄，成本低</td>
+</tr>
+<tr>
+<td>分区识别</td>
+<td>从执行图识别重复模式</td>
+<td>论文 §4.2</td>
+<td>需按自己的模型结构重写</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="12-3-本报告没做的事">12.3 本报告没做的事</h3>
+<ul>
+<li><strong>没有做浏览器交互验收</strong>：本报告与配套中英对照页均为静态构建 + 静态核验（句对数、图数、表数、MathJax、placeholder），未在浏览器里逐项点验悬停联动、批注、主题切换。</li>
+<li><strong>没有独立复核论文数字</strong>：所有数字来自原文（Table 1/3/4/5/6/7/8/9/10、Fig 3 的时间与能量标注、§6.6 的归因比例），未重跑实验、未重算模拟。</li>
+<li><strong>没有验证开源代码</strong>：仓库地址取自论文，未克隆、未审计其实现是否与描述一致。</li>
+<li><strong>没有做跨论文的定量合并</strong>：第 8 章只做层级与代价的对照，没有把六篇的收益折算成同一口径（它们的基线、硬件、负载都不同，强行合并会失真）。</li>
+</ul>
+<h3 id="12-4-一句话收尾">12.4 一句话收尾</h3>
+<p>这篇论文最值钱的地方不是 28.3%，而是它把一句很容易说空的话——"频率和调度要一起优化"——落成了<strong>可测量的三因素、可复算的前沿、可反驳的定理</strong>。对做供电约束下 GPU 调度的人来说，它提供了一个可以直接搬走的分析框架：<strong>先问"这项工作的时间与能量分别被谁决定"，再问"改变其中一个，另一个的最优解会不会移动"。</strong></p>
+    </article>
+  </main>
+</div>
+
+<script src="https://fastly.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+(function(){
+  var body=document.body, doc=document;
+
+  /* ---- 主题（5 套护眼） ---- */
+  var themeSel=doc.getElementById('theme');
+  function applyTheme(t){
+    body.setAttribute('data-theme',t);
+    if(themeSel) themeSel.value=t;
+  }
+  try{ applyTheme(localStorage.getItem('arTheme')||'light'); }catch(e){ applyTheme('light'); }
+  if(themeSel) themeSel.addEventListener('change',function(){
+    applyTheme(this.value);
+    try{ localStorage.setItem('arTheme',this.value); }catch(e){}
+  });
+
+  /* ---- 字号 A− / A+ ---- */
+  var fsBtn=doc.getElementById('fs');
+  var rootStyle=doc.documentElement.style;
+  function setFs(v){
+    var cl=parseFloat(getComputedStyle(doc.documentElement).getPropertyValue('--fs'))||16;
+    cl=Math.max(13,Math.min(22,cl+v));
+    rootStyle.setProperty('--fs',cl+'px');
+    try{ localStorage.setItem('arFs',cl); }catch(e){}
+  }
+  try{
+    var savedFs=parseFloat(localStorage.getItem('arFs'));
+    if(savedFs) rootStyle.setProperty('--fs',savedFs+'px');
+  }catch(e){}
+  if(fsBtn){
+    fsBtn.addEventListener('click',function(ev){
+      var b=ev.target.closest('button'); if(!b) return;
+      setFs(parseInt(b.dataset.f,10)||0);
+    });
+  }
+
+  /* ---- 目录显示/隐藏 ---- */
+  var navBtn=doc.getElementById('navbtn');
+  if(navBtn) navBtn.addEventListener('click',function(){
+    body.classList.toggle('nav-off');
+    this.classList.toggle('on',!body.classList.contains('nav-off'));
+  });
+
+  /* ---- 目录：当前章节高亮 ---- */
+  var links=Array.prototype.slice.call(doc.querySelectorAll('nav a'));
+  var secs=Array.prototype.slice.call(doc.querySelectorAll('.content h2[id],.content h3[id]'));
+  var spy=function(){
+    var pos=window.scrollY+140, cur=null;
+    secs.forEach(function(s){ if(s.offsetTop<=pos) cur=s.id; });
+    links.forEach(function(a){
+      a.classList.toggle('active', a.getAttribute('href')==='#'+cur);
+    });
+  };
+  window.addEventListener('scroll',spy,{passive:true});
+  setTimeout(spy,200);
+
+  /* ---- 阅读进度条 ---- */
+  var bar=doc.getElementById('bar');
+  function prog(){
+    var h=doc.documentElement, max=h.scrollHeight-h.clientHeight;
+    bar.style.width=(max>0?(window.scrollY/max*100):0)+'%';
+  }
+  window.addEventListener('scroll',prog,{passive:true});
+  prog();
+
+  /* ---- Mermaid ---- */
+  if(window.mermaid){
+    try{
+      mermaid.initialize({startOnLoad:true,theme:'neutral',securityLevel:'loose',
+        flowchart:{htmlLabels:true,curve:'basis'}});
+      mermaid.run();
+    }catch(e){ console.warn('mermaid render failed:',e); }
+  } else {
+    console.warn('mermaid CDN 未加载，图表以代码形式显示');
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,589 @@
+{
+  "created_at": "2026-11-05",
+  "stage": "analyze-paper",
+  "status": "partial",
+  "scope": "5篇正文广读；4个新partial包，1个既有partial包复用；不含GFS",
+  "next_skill": "deep-read Mode C",
+  "evidence_legend": {
+    "SC": "来源的陈述/机制",
+    "DE": "本地原文可定位的直接证据；作者实验/仿真按正文注明，不是本项目实测",
+    "AI": "分析者推断",
+    "UN": "未核验或证据不足"
+  },
+  "papers": [
+    {
+      "source_id": "LN03",
+      "analysis_id": "AN-20261105-019-v01",
+      "analysis_path": "research/papers/strati_2025_sailor/analysis_v01.md",
+      "title": "Sailor: Automating Distributed Training over Dynamic, Heterogeneous, and Geo-distributed Clusters",
+      "short_name": "Sailor",
+      "year": 2025,
+      "venue": "SOSP",
+      "official_url": "https://doi.org/10.1145/3731569.3764839",
+      "pdf_url": "https://anakli.inf.ethz.ch/papers/sailor_sosp25.pdf",
+      "local_pdf": "research/papers/strati_2025_sailor/paper.pdf",
+      "version": "SOSP2025正式会议版作者公开PDF",
+      "evidence_status": "partial",
+      "package_action": "reuse_existing_valid_package",
+      "problem": "GPU 类型、链路与可用机器变化后，训练作业如何选出可放入显存、且吞吐/费用合适的并行方案？",
+      "method": "计算/通信/内存profile与模拟器支撑资源选择和DP/TP/PP计划搜索；资源变化触发重新规划。保持worker进程但销毁通信组、清理并重建模型和组，随后从最近可用checkpoint恢复；异步checkpoint降低回退但不是零丢失保证。",
+      "evidence": [
+        {
+          "id": "LN03-E04-BR",
+          "location": "§4.4–5.1，PDF p9（印刷p212）",
+          "text": "明确kill-free重配置仍需重建通信与模型，training restarts from latest available checkpoint；不是任意中断无损。",
+          "provenance": "2026-11-06正文增量复核；独立于原AN019的LN03-E1，不覆盖旧定位。"
+        },
+        {
+          "id": "LN03-E05-BR",
+          "location": "§5.2.4，PDF p13（印刷p216）；原AN019 LN03-E2另保留§5.2图10/12的实测/仿真定位",
+          "text": "硬件测量与较大规模仿真分开；约束示例为0.2 iterations/s或1.2 USD/iteration，预算单位是货币而不是W。",
+          "provenance": "2026-11-06正文增量复核；货币预算信息新增编号，不改变原LN03-E2范围。"
+        },
+        {
+          "id": "LN03-E3",
+          "location": "§5.5，PDF p13（印刷p216）；§6，PDF p14",
+          "text": "16→20V100、OPT-350M：规划0.1s、清理3s、广播1.25s、NCCL组重建4.5s、模型/优化器重建2s、dataloader0.5s；此指定事件未报告重复区间。"
+        },
+        {
+          "id": "LN03-E06-BR",
+          "location": "§5 Evaluation—System configurations、§5.1，PDF p9（印刷p212）",
+          "text": "真实评估包括GCP A100/V100、最多32台每台4张Grace-Hopper的同构集群，以及2×8 Titan-RTX、3×8 RTX-2080、2×8 RTX-3090的异构主机；Fig6为异构迭代时间预测。不能将真实设备范围概括为只有A100/V100，也不能据此认定两机六卡可复现。",
+          "provenance": "2026-11-06补读本地会议PDF9；新增事实定位，旧AN019保持原样。"
+        }
+      ],
+      "limits": [
+        "作者§6：当前规划/模拟限1F1B，不含activation offloading/rematerialization；跨供应商/异构网络协议、抖动/丢包另有问题。",
+        "AI：单事件重配数据不能成为任意模型/设备固定开销；部分基线的资源拓扑固定，比较也包含动作空间差异。",
+        "UN：检查点恢复数据量、checkpoint年龄与端到端有效进度损失需进一步原始日志；本轮未审计工件代码。"
+      ],
+      "reading_coverage": "复用AN019有效partial包；本轮实际复核本地PDF pp9、13–14（§4.4、§5设置/5.1、§5.2.4/5.3–5.5、§6）。没有覆盖所有正文页；不标全文精读，不重新声称代码审核或复现。",
+      "reading_depth": "正文定点复核并复用既有partial包",
+      "directness": "邻接：资源动态可用性、并行重配与checkpoint恢复；目标含货币预算，不是电力预算。",
+      "idea_leads": [
+        "已有系统会重新规划并恢复checkpoint；后续理解应分开计划可得、通信重建结束和第一步有效进度三个时点。",
+        "资源变更是否值得实施，需知道状态重建代价与可用窗口，不能只读求解器耗时。"
+      ],
+      "priority_reason": "高：首先读§4.4、§5.5，建立资源变化→状态转换→有效训练恢复的直观链条。",
+      "six_gpu_takeaway": "概念学习不受硬件规模限制；若未来落地，只能在已核验的模型/网络/显存环境中确定阶段成本，不能将V100用时代入3090。",
+      "unresolved_questions": [
+        "异步checkpoint回退量与重配阶段总时间如何共同影响有效进度？",
+        "较大模型/不同拓扑下的状态搬运与通信组初始化时间分布尚未核验。"
+      ],
+      "incremental_evidence_note": "本轮新增LN03-E04-BR/E05-BR/E06-BR；LN03-E3复用旧包。原AN019 LN03-E1/E2保持规划profile与实测/仿真原义。"
+    },
+    {
+      "source_id": "LN08",
+      "analysis_id": "AN-20261105-043-v01",
+      "analysis_path": "research/papers/hu_2026_tessera/analysis_broad_v01.md",
+      "title": "Tessera: A Holistic Pipeline Parallelism Framework for Trillion-Parameter Heterogeneous MoE Training (Operational Systems)",
+      "short_name": "Tessera",
+      "year": 2026,
+      "venue": "OSDI",
+      "official_url": "https://www.usenix.org/conference/osdi26/presentation/hu-weifang",
+      "pdf_url": "https://www.usenix.org/system/files/osdi26-hu-weifang.pdf",
+      "local_pdf": "research/papers/hu_2026_tessera/paper.pdf",
+      "version": "USENIX OSDI 2026 正式会议 PDF，Operational Systems Paper；PDF 含封面，正文印刷页287–304。",
+      "evidence_status": "partial",
+      "package_action": "new_partial_package",
+      "problem": "异构 MoE 层的计算与通信可重叠程度不同；按层数或串行 FLOPs 平衡流水线，仍可能留下不同的实际关键路径。怎样联合划分流水线与安排可移动任务？",
+      "method": "静态部分把候选相邻 chunk 的方向性重叠构成图，细化计算/通信 DAG，用事件启发式生成执行顺序并在匹配 TP/EP 拓扑的参考 GPU 组上 profile；MILP 最小化最慢的重叠后成本。运行期 DBO 从路由 token 数和离线画像预测局部 EP 空隙，把满足依赖、截止位置和内存约束的 Wgrad/梯度归约放入空隙；有界任务池限制延长存活期的状态。",
+      "evidence": [
+        {
+          "id": "LN08-E1",
+          "evidence_type": "SC",
+          "location": "§2–3，PDF pp4–8（印刷pp289–293）",
+          "observation": "串行平衡不足；静态候选划分、重叠成本画像和MILP；DBO使用局部路由信号和受依赖/截止位置/内存约束的可移动任务池。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "LN08-E2",
+          "evidence_type": "DE",
+          "location": "§5，PDF p10（印刷p295）",
+          "observation": "作者报告纯理论成本平均低估约5%，EP通信会占用SM并拖慢重叠计算；过度延后任务曾导致OOM。移动平均预测抖动属于未来系统验证。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "LN08-E3",
+          "evidence_type": "DE",
+          "location": "§6.1–6.2，表2，PDF pp11–12（印刷pp296–297）",
+          "observation": "五组生产工作负载相对内部优化基线的MFU增益为20%–32.8%。Qwen3-Next-XL的12,288GPU结果为15.9%→21.1% MFU；绝对提升5.2个百分点。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "LN08-E4",
+          "evidence_type": "DE",
+          "location": "§6.3–6.5，PDF pp12–14（印刷pp297–299）",
+          "observation": "公开模型比较与mock-router静态消融另行报告；ILP每实例300秒上限，多例未证明最优，约1%的差距是相对于该ILP参考结果。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "LN08-E5",
+          "evidence_type": "DE",
+          "location": "§6.6，表3，PDF p14（印刷p299）",
+          "observation": "256GPU、Qwen3-Next-M、4K序列，overlap-aware静态分区上启用DBO：迭代6.98→6.67秒（作者报告4.4%下降），峰值内存67.4%→70.0%（+2.6个百分点）；always-keep为7.06秒。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "LN08-E6",
+          "evidence_type": "DE",
+          "location": "§6.7，PDF pp14–15（印刷pp299–300）",
+          "observation": "8,192GPU目标配置的离线profile在64GPU参考组上执行；最长3,050秒，MILP耗时0.34–4.22秒，不能只以求解时间代表整个规划成本。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        }
+      ],
+      "results_with_uncertainty": [
+        {
+          "evidence_type": "DE",
+          "claim": "生产表2报告MFU相对增益20%–32.8%；15.9%→21.1%是+5.2个百分点。",
+          "evidence_ids": [
+            "LN08-E3"
+          ],
+          "uncertainty_and_boundary": "不同模型与规模；对照为内部优化Megatron。未核验原始日志、重复运行置信区间或第三方复现，MFU不是板卡/整机能效。"
+        },
+        {
+          "evidence_type": "DE",
+          "claim": "指定DBO消融中迭代时间6.98→6.67秒，峰值分配内存67.4%→70.0%。",
+          "evidence_ids": [
+            "LN08-E5"
+          ],
+          "uncertainty_and_boundary": "同一静态分区的组件对照，内存代价明确；不是所有MoE模型的固定收益。"
+        },
+        {
+          "evidence_type": "DE",
+          "claim": "启发式的profile后成本距ILP参考结果约1%。",
+          "evidence_ids": [
+            "LN08-E4"
+          ],
+          "uncertainty_and_boundary": "部分ILP未证明最优，因此不能说距全局最优1%。"
+        }
+      ],
+      "limits": [
+        "§5：理论成本与硬件重叠存在SM争用导致的偏差；任务延后增加激活/梯度存活期，需有界池防止OOM。",
+        "§6.2：模型计算/通信比决定可隐藏通信；Next-M与Next-L的暴露通信不同，分区平衡仍保留warmup/cooldown与结构性等待。",
+        "§6.5–6.7：候选空间与ILP时间限制；profile是重要离线成本，求解快不表示无画像成本。",
+        "AI：原文处理层/算子异构和路由变化，没有以GPU功率上限变化为输入；功率变化后画像、可重叠窗口与内存余量是否仍有效未知。",
+        "AI：生产收益受内部框架、模型和特定拓扑条件影响；mock-router消融帮助归因，却不能替代真实路由尾部行为。",
+        "UN：代码、原始trace、逐次运行及不确定区间未审计；生产比特一致性是作者对指定确定性运行的报告，不是本项目验证。"
+      ],
+      "reading_coverage": "实际阅读本地PDF第4–15页：§2问题与重叠现象，§3–4方法和执行机制，§5模型—实机差距，§6评估/消融/开销。未逐条审阅相关工作与参考文献，未读代码或原始训练日志；属于正文定点广读，不是全文精读或复现。",
+      "reading_depth": "正文定点广读：方法、关键评估与局限；未复现",
+      "directness": "间接：提供实际重叠成本、关键路径与内存副作用的系统证据；没有直接处理外部供电上限或能量优化。",
+      "idea_leads": [
+        "已有机制已覆盖重叠后画像与局部bubble填充；待理解的是画像与执行条件变化时，哪些成本仍稳定，哪些会改变关键路径。",
+        "调度改善速度同时延长状态存活期；需要把内存代价视为原文明确的条件，而不是默认免费重叠。"
+      ],
+      "priority_reason": "中高：适合在理解Sailor的状态和通信成本后读，用于学习算子级时序与阶段级资源管理的区别。",
+      "six_gpu_takeaway": "可学习“串行成本和实际暴露通信不同”及组件消融的组织方式；概念学习不受六卡限制。原生产规模、路由特征和多级并行收益不可由六卡结果外推。",
+      "unresolved_questions": [
+        "功率或频率改变后参考组profile是否仍能预测重叠成本？原文未测试。",
+        "不同延后策略的尾部内存和截止位置违约是否有逐次记录？未读取原始数据。"
+      ]
+    },
+    {
+      "source_id": "LS08",
+      "analysis_id": "AN-20261105-044-v01",
+      "analysis_path": "research/papers/li_2026_spotgpu/analysis_broad_v01.md",
+      "title": "Heterogeneity at Hyperscale: Characterization and Scheduling of Large Production AI Clusters at Alibaba (Operational Systems)",
+      "short_name": "Alibaba ASI / SpotGPU",
+      "year": 2026,
+      "venue": "OSDI",
+      "official_url": "https://www.usenix.org/conference/osdi26/presentation/li-suyi",
+      "pdf_url": "https://www.usenix.org/system/files/osdi26-li-suyi.pdf",
+      "local_pdf": "research/papers/li_2026_spotgpu/paper.pdf",
+      "version": "USENIX OSDI 2026 正式会议 PDF，Operational Systems Paper；PDF含封面，正文印刷页2187–2203。",
+      "evidence_status": "partial",
+      "package_action": "new_partial_package",
+      "problem": "大型生产AI集群里，预留容量、GPU类型偏好、CPU/GPU配比与网络局部性使“有空卡”和“任务能启动”并不等价。怎样使用低优先级任务消化可暂借容量，同时控制抢占损失和高优先级服务影响？",
+      "method": "ASI结合真实任务/设备画像、In-place Consolidation与SpotGPU。IPC用局部分组和递归迁移减少碎片，但任务可锁定、并非全部可迁。SpotGPU由用户把HP任务标为有期限Standby，保留容器、停止主要服务进程并让出资源；回收时先驱逐LP，再恢复HP命令。调度首先尝试不抢占，按紧凑放置、同优先级共置、历史驱逐次数排序；必须抢占时最小化GPU数量×距最近成功checkpoint的时间。",
+      "evidence": [
+        {
+          "id": "LS08-E1",
+          "evidence_type": "DE",
+          "location": "§2、§3.1，表1，PDF pp4–5（印刷pp2189–2190）；§6，PDF pp13–14",
+          "observation": "六个月生产trace覆盖155,410GPU；训练94.1%为HP、离线推理98.6%为LP。高/低优先级由用户与服务保证定义，不能按“训练=可随意暂停”分类。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "LS08-E2",
+          "evidence_type": "DE",
+          "location": "§4.1，PDF pp8–10（印刷pp2193–2195）",
+          "observation": "GPU、CPU和网络局部性共同约束放置；约40%任务锁定不可迁移。IPC报告部署经验，并用两个月trace replay报告部分占用节点减少20.2%。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "LS08-E3",
+          "evidence_type": "SC",
+          "location": "§4.2，PDF pp10–11（印刷pp2195–2196）",
+          "observation": "Standby由用户通过API选择时间窗并获得费用激励；容器保温，主进程替换sleep且切断请求流量。恢复跳过重新调度/拉镜像，但仍须驱逐LP并恢复HP服务命令。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "LS08-E4",
+          "evidence_type": "DE",
+          "location": "§4.2 Standby HP tasks，PDF p11（印刷p2196）",
+          "observation": "LP优雅退出上限60秒；部署平均退出13秒，P95为48秒；超时SIGKILL少于5%。这是资源驱逐阶段的时延，不是HP恢复到首个有效请求的端到端时延。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "LS08-E5",
+          "evidence_type": "SC",
+          "location": "§4.2 Preemptive task scheduling，PDF p11（印刷p2196）",
+          "observation": "已有抢占机制定义Ct=Gt×(τnow−τck)，最小化距最近成功checkpoint后丢弃的GPU-time；优先不抢占，LP新任务只能不抢占放置。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "LS08-E6",
+          "evidence_type": "DE",
+          "location": "§4.2 Benefits of SpotGPU，PDF p12（印刷p2197）",
+          "observation": "GPU平均分配率68%→93%；关闭共置/驱逐历史并使用随机victim的对照下，LP完成时间减少24%，作者称HP性能未受影响。测量窗口和逐次统计在该段未展开。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "LS08-E7",
+          "evidence_type": "DE",
+          "location": "§5.2、§6，PDF pp13–14（印刷pp2198–2199）",
+          "observation": "作者尚未解决的条件包括资源耦合、跨ASW拓扑与异构性能、prefill/decode的KV相关约束；trace不含专用foundation预训练集群，训练子类标签也未充分细分。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        }
+      ],
+      "results_with_uncertainty": [
+        {
+          "evidence_type": "DE",
+          "claim": "部署中的LP退出均值13秒、P95为48秒，清理窗口60秒。",
+          "evidence_ids": [
+            "LS08-E4"
+          ],
+          "uncertainty_and_boundary": "用户自定义清理逻辑是主要耗时；未给出本段样本量/置信区间；不能当作HP服务完整恢复或电力响应时延。"
+        },
+        {
+          "evidence_type": "DE",
+          "claim": "分配率68%→93%，LP完成时间比上述复合消融对照减少24%。",
+          "evidence_ids": [
+            "LS08-E6"
+          ],
+          "uncertainty_and_boundary": "前者不是SM利用率，也不是有效进度或节能比例；后者对照同时改变多个策略，不能全归因于一个cost公式。"
+        },
+        {
+          "evidence_type": "DE",
+          "claim": "IPC两个月trace replay中部分占用节点减少20.2%。",
+          "evidence_ids": [
+            "LS08-E2"
+          ],
+          "uncertainty_and_boundary": "回放结果不能冒充该幅度的现场生产因果测量。"
+        }
+      ],
+      "limits": [
+        "§6：专门的大规模foundation预训练集群不在观察范围；未细分SFT/LoRA等训练子类；关注GPU工作负载。",
+        "§4.1：任务锁定与拓扑约束限制整理能力；§5.2明确仍有资源耦合和prefill/decode放置问题。",
+        "AI：checkpoint之后的GPU-time只估计丢弃工作，不能自动表示清理、状态写出、通信初始化及首个有效结果的总时间。",
+        "AI：用户自愿Standby与LP价格/SLO合约支撑可让出容量；不能推断所有训练任务可抢占，也不能将内部容量变化解释为外部电网限额。",
+        "UN：HP“未受影响”的完整尾延迟曲线、负载匹配和SLO统计未独立审计；生产trace有单平台代表性限制。",
+        "伦理/数据：正文使用聚合生产数据；本轮未访问个人或租户原始记录，未审核更细的匿名化/发布程序。"
+      ],
+      "reading_coverage": "实际阅读本地PDF第4–5、8–14页：§2数据来源、§3任务/优先级特征、§4碎片与SpotGPU完整机制、§5开放挑战、§6边界。未逐页精读全部表征图、附录MILP或实现代码；正文定点广读。",
+      "reading_depth": "正文定点广读：方法、关键评估与局限；未复现",
+      "directness": "间接但需求依据强：真实存在混合紧急度、可暂借预留容量和有代价的抢占。原文处理集群容量和业务承诺，不处理物理供电功率上限。",
+      "idea_leads": [
+        "已有方法已用checkpoint年龄估计抢占损失；后续阅读应继续区分工作丢弃量、资源释放延迟与服务恢复时间，不把三者合并。",
+        "可让出资源依赖用户选定窗口、任务类型和服务保证；混合紧急度研究需先解释任务为何允许等待或退出。"
+      ],
+      "priority_reason": "高：先读§3.1和§4.2，能把“紧急/不紧急”的口头假设变成清楚的生产服务语义。",
+      "six_gpu_takeaway": "学习状态定义与指标分母：已分配、忙碌、有用进度、可回收是四种不同量。六卡能帮助理解这些概念，但不限制阅读155,410GPU生产经验，也不能验证其规模收益。",
+      "unresolved_questions": [
+        "HP恢复到第一个有效请求/稳定SLO的完整时间分布是什么？",
+        "不同LP任务的checkpoint损失和退出清理耗时是否相关？原文现有汇总不足以判断。"
+      ]
+    },
+    {
+      "source_id": "RP03",
+      "analysis_id": "AN-20261105-045-v01",
+      "analysis_path": "research/papers/yoshida_2025_vahrm/analysis_broad_v01.md",
+      "title": "VAHRM: Variation-Aware Resource Management in Heterogeneous Supercomputing Systems",
+      "short_name": "VAHRM",
+      "year": 2025,
+      "venue": "IEEE Transactions on Parallel and Distributed Systems, 36(8), 1713–1727",
+      "official_url": "https://ieeexplore.ieee.org/document/11031465",
+      "pdf_url": "https://www.cs.umd.edu/~bhatele/pubs/pdf/2025/tpds2025.pdf",
+      "local_pdf": "research/papers/yoshida_2025_vahrm/paper_tpds2025.pdf",
+      "version": "作者大学网站保存的IEEE TPDS正式排版版；36(8)，1713–1727，2025年8月；DOI 10.1109/TPDS.2025.3577252。",
+      "evidence_status": "partial",
+      "package_action": "new_partial_package",
+      "problem": "同型号CPU/GPU的制造差异会造成任务相关的功耗差异；如何在总功率预算下选择节点和作业顺序，使能量与等待/周转时间取得可调整的折中？",
+      "method": "两阶段TSMVA功率模型先预测同类设备基线，再学习单设备偏差；输入为PMC特征，CPU/GPU分别建模。VAHRM按预估能量与等待时间的加权优先级选作业，把低预测功耗的空闲节点优先分配给它，再核查系统功率预算；首跑缺PMC的作业按TDP估计并随机选节点、收集画像。等待上限用于防止大作业长期饥饿。",
+      "evidence": [
+        {
+          "id": "RP03-E1",
+          "evidence_type": "SC",
+          "location": "§III-A–C，PDF pp3–4（印刷pp1715–1716）",
+          "observation": "节点独占、CPU/accelerator二类任务；加速器任务CPU按idle计；仅系统预算、无节点power cap，允许瞬时超过预算。预计执行时间事先可知，权重β需运行测试确定。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "RP03-E2",
+          "evidence_type": "SC",
+          "location": "§IV，PDF pp5–6（印刷pp1717–1718）",
+          "observation": "TSMVA用同类基线模型加资源特定残差模型，六类PMC特征，RF+RF为主要实例；首跑缺画像按TDP保守入场。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "RP03-E3",
+          "evidence_type": "DE",
+          "location": "§V-A–E，PDF pp6–8（印刷pp1718–1720）",
+          "observation": "主要评估为1秒步长调度模拟；九组合负载和10,000条日志；2,160GPU中256GPU实测，其余1,904GPU用正态随机数补齐，CPU分布从另一系统外推。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "RP03-E4",
+          "evidence_type": "DE",
+          "location": "§VI-A–B，图5–6，PDF pp8–9（印刷pp1720–1721）",
+          "observation": "P100的RF+RF两阶段功率模型平均MAPE1.54%、最大7.64%；64节点真实执行预定调度的能量校验平均误差0.94%、最大1.76%。后者不是生产在线调度部署。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "RP03-E5",
+          "evidence_type": "DE",
+          "location": "§VI-C1，图7–9，PDF p9（印刷p1721）",
+          "observation": "主调度仿真：β=(1/4)^6、SR=1、PCR=1；九负载相对VU-FCFS平均能量减少4.5%、最大5.8%。相对CVA-FCFS-B平均节能4.2%；吞吐相对VU-FCFS提升7.1%。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "RP03-E6",
+          "evidence_type": "DE",
+          "location": "§III-C，图3，PDF p5；§VI-C2–6，PDF pp10–12（印刷pp1722–1724）",
+          "observation": "排序会产生个体等待代价；部分大作业等待可达backfill对照18倍。首跑作业收集PMC的附加执行时间在敏感性实验中假设为5%，首跑比例>40%时节能约1%；原日志不标注重跑，约9%首跑来自启发式同作业判定。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        }
+      ],
+      "results_with_uncertainty": [
+        {
+          "evidence_type": "DE",
+          "claim": "P100功率预测RF+RF平均MAPE1.54%、最大7.64%；真实节点执行预定调度的能量校验平均误差0.94%。",
+          "evidence_ids": [
+            "RP03-E4"
+          ],
+          "uncertainty_and_boundary": "真实设备证据与模拟器能量验证；没有因此验证任意GPU/LLM、时变功率上限、尾部超限概率。训练/测试划分细节及在线附录本轮未完整审计。"
+        },
+        {
+          "evidence_type": "DE",
+          "claim": "主仿真九负载相对VU-FCFS平均节能4.5%，最大5.8%；相对CVA-FCFS-B平均4.2%。",
+          "evidence_ids": [
+            "RP03-E5"
+          ],
+          "uncertainty_and_boundary": "这里是模拟系统能量，输入含合成功率分布及重复作业假设；不能写成生产实测节电。"
+        },
+        {
+          "evidence_type": "DE",
+          "claim": "首跑比例超过40%时该敏感性分析的节能约1%。",
+          "evidence_ids": [
+            "RP03-E6"
+          ],
+          "uncertainty_and_boundary": "5%画像附加执行时间是作者设定，不是对所有首次作业的实测；9%首跑估计用用户/队列/核数/运行时间±10%启发式。"
+        }
+      ],
+      "limits": [
+        "§III：已知运行时、独占节点和加速器作业CPU近似idle等前提；没有严格瞬时功率约束。",
+        "§III/§VI：节能优先可恶化部分作业等待，β需要结合运行目标选择；平均改善不保证逐作业改善。",
+        "§V：目标系统CPU功率无法由用户级RAPL获得，改用另一系统分布；大量GPU功率是统计扩展。",
+        "§VI-C6：初次作业比例影响画像收益，真实日志不直接标注是否首次运行，使用启发式估计。",
+        "AI：制造差异是同型号设备的静态/任务相关差异；没有证据表明作者把电网波峰波谷或动态预算作为控制输入。",
+        "AI：缺CPU忙时和通信/重配成本会影响向分布式AI的迁移，不能直接把HPC节点模型视作多卡训练完整功耗。",
+        "UN：PMC模型代码、完整附录、训练划分、原始时序功率和超限持续时间未核验；本轮未实施画像。",
+        "伦理/数据：使用既有调度日志的匿名用户ID作重复任务估计；本轮未访问原始用户数据。"
+      ],
+      "reading_coverage": "实际阅读本地PDF第3–12页：§III前提/排序/分配，§IV两阶段画像，§V真实测量与仿真构造，§VI全部主要评估和敏感性。未读取在线附录PMC完整定义，未审核实现/原始数据；不是全面复现。",
+      "reading_depth": "正文定点广读：方法、关键评估与局限；未复现",
+      "directness": "较直接但边界明确：系统总功率预算进入入场检查，目标含能量和作业周转；预算并非本文的时变输入，且允许瞬时超限，没有严格响应保证。",
+      "idea_leads": [
+        "已有方法已处理同型号功耗差异、等待老化和首跑保守画像；需理解什么时候设备排名重要、什么时候预算误差重要。",
+        "“功率模型准确”与“调度更好”是两项证据；首跑比例和节点独占假设可能改变能效收益。"
+      ],
+      "priority_reason": "中高：供电相关性较强，先读§III-A厘清预算语义，再读§V/VI识别实测、合成扩展与仿真。",
+      "six_gpu_takeaway": "学习同型号硬件也可能有任务相关功耗差异、画像成本与排序公平性；六张3090有无足够差异目前未知，不能从P100/V100结果推定。",
+      "unresolved_questions": [
+        "静态制造差异是否在实际AI计算、通信和低功率运行状态下保持相同排序？",
+        "瞬时超限允许多大、多长，缺失尾部功率证据时如何理解预算可行性？原文没有给出硬响应保证。"
+      ]
+    },
+    {
+      "source_id": "RNS06",
+      "analysis_id": "AN-20261105-046-v01",
+      "analysis_path": "research/papers/du_2026_ecoserve/analysis_broad_v01.md",
+      "title": "Efficient LLM Serving on Commodity GPU Clusters with Data-Reduced Cross-Instance Orchestration",
+      "short_name": "EcoServe",
+      "year": 2026,
+      "venue": "OSDI 2026",
+      "official_url": "https://www.usenix.org/conference/osdi26/presentation/du",
+      "pdf_url": "https://www.usenix.org/system/files/osdi26-du.pdf",
+      "local_pdf": "research/papers/du_2026_ecoserve/paper.pdf",
+      "version": "USENIX OSDI 2026 正式会议 PDF；含封面，正文印刷页1787–1802，非2025年较早arXiv稿。",
+      "evidence_status": "partial",
+      "package_action": "new_partial_package",
+      "problem": "普通PCIe/Ethernet集群中，prefill/decode互相干扰，但完全分离两阶段又需要传KV状态。怎样在较弱互联上维持SLO并让服务容量随负载改变？",
+      "method": "PaDG在每个实例内按时间分离prefill/decode，在macro instance内部循环激活prefill，KV留在原实例。路由综合预估prefill时间、decode累积的saved TPOT和内存；容量按平均TTFT和slack调整，并等待已有请求排空后缩容。通过序列化InstanceHandler改变实例所属macro scheduler，实现逻辑分组迁移，不复制正在执行的模型/KV状态。",
+      "evidence": [
+        {
+          "id": "RNS06-E1",
+          "evidence_type": "SC",
+          "location": "§3.1–3.3，图6、算法1，PDF pp5–8（印刷pp1790–1793）",
+          "observation": "PaDG把prefill与decode在实例内按时间分开并循环激活；算法检查预计prefill时间、当前decode请求的平均saved TPOT和显存；本文TTFT显式包含阶段切换等待。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "RNS06-E2",
+          "evidence_type": "SC",
+          "location": "§3.4，PDF pp8–9（印刷pp1793–1794）",
+          "observation": "扩缩以运行时平均TTFT/slack触发；缩容先drain；Flexible Instance Migration转移InstanceHandler/消息队列入口等元数据，改变macro scheduler的控制权，不物理迁移模型或KV。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "RNS06-E3",
+          "evidence_type": "DE",
+          "location": "§4.1，表4，PDF p9（印刷p1794）",
+          "observation": "主测试床64L20，另16A800和16H100；模型、三数据集、不同SLO与Poisson/Gamma到达。各基线的运行版本和配置条件有明确范围。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "RNS06-E4",
+          "evidence_type": "DE",
+          "location": "§4.3，PDF p11（印刷p1796）",
+          "observation": "CodeLlama-34B/A800/ShareGPT案例中TTFT/TPOT从5秒/100毫秒收紧至1秒/50毫秒时，99%达标比例下吞吐42→18请求/秒（下降57.1%）。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "RNS06-E5",
+          "evidence_type": "DE",
+          "location": "§4.5，PDF p12（印刷p1797）",
+          "observation": "CodeLlama-34B、TP4、ShareGPT、L20动态负载从20增加至50RPS，32→64GPU并重新分macro groups；本地存储重新初始化一个实例约3分钟。逻辑迁移避免已有实例重新初始化。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        },
+        {
+          "id": "RNS06-E6",
+          "evidence_type": "DE",
+          "location": "§4.2、§5，PDF pp10、14（印刷pp1795、1799）",
+          "observation": "作者说明高带宽H100条件下收益缩小，特定CodeLlama案例Mooncake更好；小模型可适合不分离，极严格SLO/大模型可能需要完整分离及高速网络；部分基线达不到SLO的组合不展示。",
+          "provenance": "本地正式 PDF；原文证据，未独立复现"
+        }
+      ],
+      "results_with_uncertainty": [
+        {
+          "evidence_type": "DE",
+          "claim": "指定严格SLO对照中99%请求达标下吞吐42→18请求/秒。",
+          "evidence_ids": [
+            "RNS06-E4"
+          ],
+          "uncertainty_and_boundary": "这是CodeLlama/A800/ShareGPT的一组条件；99%是请求达标比例，不是吞吐的99分位数；无从推广为所有模型固定变化。"
+        },
+        {
+          "evidence_type": "DE",
+          "claim": "作者展示32→64L20的动态请求率实验；本地存储重启一个CodeLlama实例约3分钟。",
+          "evidence_ids": [
+            "RNS06-E5"
+          ],
+          "uncertainty_and_boundary": "此计时说明重新初始化的代价；逻辑分组操作避免它，不代表可在任意物理GPU迁移或瞬时增加冷实例。未看到完整冷启动/缩容尾延迟分解。"
+        },
+        {
+          "evidence_type": "DE",
+          "claim": "高速互联上部分比较优势缩小且有baseline更好。",
+          "evidence_ids": [
+            "RNS06-E6"
+          ],
+          "uncertainty_and_boundary": "效果取决于网络、模型KV形态和SLO；被省略的不可达SLO组合需保留为比较范围，不能只汇总最大倍数。"
+        }
+      ],
+      "limits": [
+        "§5：PaDG适合受限网络/有可借时间余量；小模型的prefill干扰可很小，强互联、巨大模型或严格SLO可能更适合其他部署方式。",
+        "§4.2：部分baseline无法满足SLO或模型条件而省略；DistServe实现为未持续维护的原型，版本背景影响解释。",
+        "§4.2：Llama-30B在LongBench中的序列截断至2048，不能把所有长输入结论都理解为原完整数据。",
+        "AI：算法1使用平均saved TPOT和profile估计，不能只凭这条检查宣布每个请求有硬deadline保证；评估是经验SLO达标比例。",
+        "AI：logical migration保留物理运行实例，不能代表GPU退出、断电或跨机状态搬运的可用动作。",
+        "UN：动态实验的请求级尾部、真实冷启动与物理迁移分解未核查；代码、环境和原始日志未审计。",
+        "AI：实例数增加时更多算力被占用；论文没有测量该动作是否符合时变电力上限，也没有证明节能。"
+      ],
+      "reading_coverage": "实际阅读本地PDF第5–14页：§3方法/算法/SLO定义/迁移，§4设置、主评估、严格SLO、动态伸缩与消融，§5条件讨论。未阅读完整实现或请求级原始日志；正文定点广读。",
+      "reading_depth": "正文定点广读：方法、关键评估与局限；未复现",
+      "directness": "间接：涉及推理阶段时序、通信和动态实例管理；没有外部功率预算输入，不能称为供电约束调度。",
+      "idea_leads": [
+        "已有方法明确避免KV跨实例搬运并借decode时间余量；值得继续理解的是SLO定义如何决定可借时间，而非把slack视为无代价资源。",
+        "低开销逻辑重组和真正物理缩容/冷启动是不同动作；供电变化语境下必须先确认哪种动作实际释放资源。"
+      ],
+      "priority_reason": "高：可与Sailor/SpotGPU并读，理解推理弹性、资源回收和状态移动为什么不是同一件事。",
+      "six_gpu_takeaway": "学习区分“重分组控制关系”和“迁移模型/KV”，以及请求达标率与吞吐之间的条件关系。六卡并不限制阅读此机制，但是否可部署取决于模型、显存和链路实况。",
+      "unresolved_questions": [
+        "请求级saved slack的分布与均值判断如何对应尾部SLO失败？",
+        "若物理GPU必须释放，drain、冷启动和状态处置各需多少时间？论文逻辑分组实验不足以给出。"
+      ]
+    }
+  ],
+  "candidate_relations": [
+    {
+      "id": "DIST-C01",
+      "status": "候选关系，待deep-read Mode C核验；不是新算法/已选题",
+      "P": "资源可用性改变时，“减少被丢弃的计算”和“尽快释放并恢复有效服务”可能是不同目标。",
+      "F": "SpotGPU用checkpoint年龄×GPU数计丢弃工作，但另有13s均值/48s P95退出；Sailor的指定恢复事件里NCCL重建4.5s大于规划0.1s；EcoServe逻辑换控制权避免已有实例初始化，但不物理迁移状态。",
+      "M": "已有机制分别为checkpoint-aware victim选择、kill-free通信/模型重建、InstanceHandler逻辑重组。该集合只用于区分已有动作及代价，不提出组合算法。",
+      "E": [
+        {
+          "source_id": "LS08",
+          "evidence_ids": [
+            "LS08-E4",
+            "LS08-E5"
+          ],
+          "location": "§4.2，PDF p11"
+        },
+        {
+          "source_id": "LN03",
+          "evidence_ids": [
+            "LN03-E04-BR",
+            "LN03-E3"
+          ],
+          "location": "§4.4，PDF p9；§5.5，PDF p13"
+        },
+        {
+          "source_id": "RNS06",
+          "evidence_ids": [
+            "RNS06-E2",
+            "RNS06-E5"
+          ],
+          "location": "§3.4.3，PDF p9；§4.5，PDF p12"
+        }
+      ],
+      "unknown": "三类动作的硬件、任务和触发不同，不能把时延相加作为统一模型；尚无共同动态供电事件上的端到端证据。"
+    },
+    {
+      "id": "DIST-C02",
+      "status": "候选关系，待deep-read Mode C核验；不是创新性结论",
+      "P": "能暂时插入或挪动的计算时间由依赖、内存和SLO共同决定；设备闲或算子慢不直接等于可借用时间。",
+      "F": "Tessera的DBO在指定配置降低迭代时间4.4%并增加峰值内存2.6个百分点；EcoServe利用decode积累的时间余量，但指定严格SLO下达标吞吐42→18请求/秒。",
+      "M": "已有机制包括post-overlap profile、有界可移动任务池、平均saved TPOT与显存约束检查；两者控制粒度/目标不同。",
+      "E": [
+        {
+          "source_id": "LN08",
+          "evidence_ids": [
+            "LN08-E1",
+            "LN08-E5"
+          ],
+          "location": "§3，PDF pp5–8；§6.6表3，PDF p14"
+        },
+        {
+          "source_id": "RNS06",
+          "evidence_ids": [
+            "RNS06-E1",
+            "RNS06-E4"
+          ],
+          "location": "§3.3算法1，PDF p7；§4.3，PDF p11"
+        }
+      ],
+      "unknown": "是否能在功率变化下保持画像、依赖和请求级SLO有效，原文均未建立；不声称跨领域迁移或功率控制方案。"
+    }
+  ],
+  "not_performed": [
+    "未提出新算法",
+    "未选择baseline或题目",
+    "未执行实验",
+    "未计算哈希",
+    "未更新台账/根索引/总矩阵"
+  ],
+  "batch_date": "2026-11-05",
+  "completed_on": "2026-11-06"
+}

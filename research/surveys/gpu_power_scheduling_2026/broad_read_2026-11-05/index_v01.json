@@ -1,0 +1,144 @@
+{
+  "round_id": "BR-20261105-v01",
+  "started_on": "2026-11-05",
+  "completed_on": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "stage": "analyze-paper → deep-read Mode C",
+  "formal_sources": 20,
+  "watchlist_sources": 1,
+  "new_main_packages": 15,
+  "reused_main_packages": 5,
+  "new_watchlist_packages": 1,
+  "evidence_status": "partial",
+  "source_index": [
+    {
+      "source_id": "LP05",
+      "analysis_id": "AN-20261105-031-v01",
+      "analysis_path": "research/papers/stojkovic_2025_tapas/analysis_broad_v01.md",
+      "card_file": "power_serving.json"
+    },
+    {
+      "source_id": "LP03",
+      "analysis_id": "AN-20261105-007-v01",
+      "analysis_path": "research/papers/stojkovic_2025_dynamollm/analysis_v01.md",
+      "card_file": "power_serving.json"
+    },
+    {
+      "source_id": "LP06",
+      "analysis_id": "AN-20261105-032-v01",
+      "analysis_path": "research/papers/wu_2026_kareus/analysis_broad_v01.md",
+      "card_file": "power_serving.json"
+    },
+    {
+      "source_id": "RP01",
+      "analysis_id": "AN-20261105-033-v01",
+      "analysis_path": "research/papers/kakolyris_2025_throttllem/analysis_broad_v01.md",
+      "card_file": "power_serving.json"
+    },
+    {
+      "source_id": "RP04",
+      "analysis_id": "AN-20261105-034-v01",
+      "analysis_path": "research/papers/rajput_2026_flipflop/analysis_broad_v01.md",
+      "card_file": "power_serving.json"
+    },
+    {
+      "source_id": "RNS01",
+      "analysis_id": "AN-20261105-035-v01",
+      "analysis_path": "research/papers/xu_2026_nixie/analysis_broad_v01.md",
+      "card_file": "sharing_preemption.json"
+    },
+    {
+      "source_id": "RNS02",
+      "analysis_id": "AN-20261105-036-v01",
+      "analysis_path": "research/papers/coppock_2025_lithos/analysis_broad_v01.md",
+      "card_file": "sharing_preemption.json"
+    },
+    {
+      "source_id": "RNS03",
+      "analysis_id": "AN-20261105-037-v01",
+      "analysis_path": "research/papers/zhang_2025_bless/analysis_broad_v01.md",
+      "card_file": "sharing_preemption.json"
+    },
+    {
+      "source_id": "RNS04",
+      "analysis_id": "AN-20261105-038-v01",
+      "analysis_path": "research/papers/wu_2026_fastserve/analysis_broad_v01.md",
+      "card_file": "sharing_preemption.json"
+    },
+    {
+      "source_id": "RNS05",
+      "analysis_id": "AN-20261105-039-v01",
+      "analysis_path": "research/papers/duan_2026_gfs/analysis_broad_v01.md",
+      "card_file": "sharing_preemption.json"
+    },
+    {
+      "source_id": "LN03",
+      "analysis_id": "AN-20261105-019-v01",
+      "analysis_path": "research/papers/strati_2025_sailor/analysis_v01.md",
+      "card_file": "distributed_resources.json"
+    },
+    {
+      "source_id": "LN08",
+      "analysis_id": "AN-20261105-043-v01",
+      "analysis_path": "research/papers/hu_2026_tessera/analysis_broad_v01.md",
+      "card_file": "distributed_resources.json"
+    },
+    {
+      "source_id": "LS08",
+      "analysis_id": "AN-20261105-044-v01",
+      "analysis_path": "research/papers/li_2026_spotgpu/analysis_broad_v01.md",
+      "card_file": "distributed_resources.json"
+    },
+    {
+      "source_id": "RP03",
+      "analysis_id": "AN-20261105-045-v01",
+      "analysis_path": "research/papers/yoshida_2025_vahrm/analysis_broad_v01.md",
+      "card_file": "distributed_resources.json"
+    },
+    {
+      "source_id": "RNS06",
+      "analysis_id": "AN-20261105-046-v01",
+      "analysis_path": "research/papers/du_2026_ecoserve/analysis_broad_v01.md",
+      "card_file": "distributed_resources.json"
+    },
+    {
+      "source_id": "LC02",
+      "analysis_id": "AN-20261105-023-v01",
+      "analysis_path": "research/papers/xu_2025_green/analysis_breadth_v01.md",
+      "card_file": "measurement_signals.json"
+    },
+    {
+      "source_id": "LC03",
+      "analysis_id": "AN-20261105-024-v01",
+      "analysis_path": "research/papers/lechowicz_2026_spade/analysis_breadth_v01.md",
+      "card_file": "measurement_signals.json"
+    },
+    {
+      "source_id": "S02",
+      "analysis_id": "AN-20261105-002-v01",
+      "analysis_path": "research/papers/colangelo_2025_grid_interactive/analysis_v01.md",
+      "card_file": "measurement_signals.json"
+    },
+    {
+      "source_id": "LP07",
+      "analysis_id": "AN-20261105-041-v01",
+      "analysis_path": "research/papers/chung_2025_ml_energy_benchmark/analysis_broad_v01.md",
+      "card_file": "measurement_signals.json"
+    },
+    {
+      "source_id": "RP02",
+      "analysis_id": "AN-20261105-042-v01",
+      "analysis_path": "research/papers/tschand_2025_mlperf_power/analysis_broad_v01.md",
+      "card_file": "measurement_signals.json"
+    }
+  ],
+  "matrices": [
+    "MC-20261105-002-v01",
+    "MC-20261105-003-v01",
+    "MC-20261105-004-v01"
+  ],
+  "baseline_selected": false,
+  "topic_selected": false,
+  "experiments_run": false,
+  "next_stage": "逐篇导读、最近邻与Mode C增量；尚不进入执行"
+}

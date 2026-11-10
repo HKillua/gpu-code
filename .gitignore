@@ -1,0 +1,35 @@
+# macOS / editors
+.DS_Store
+._*
+.idea/
+*.swp
+*.swo
+*~
+
+# Local environments, secrets and caches
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+node_modules/
+
+# Generated experiment runs and downloaded model artifacts
+# Keep README, configs, analysis scripts and small result summaries outside runs/.
+experiments/**/runs/
+experiments/**/checkpoints/
+experiments/**/models/
+
+# Reference documents, figures and small data files remain eligible for version control.
+
+# Local paper copies and generated paper-reading attachments
+research/papers/**/*.pdf
+research/papers/**/bilingual/
+research/papers/**/text*.txt
+research/papers/**/study/raw*.txt

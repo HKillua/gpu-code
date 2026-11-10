@@ -1,0 +1,55 @@
+{
+  "captured_at": "2026-11-05",
+  "timezone": "Asia/Shanghai",
+  "reason": "User explicitly requested cross-domain transfer as part of mandatory research process.",
+  "workflow_contract_version": "research-pipeline-contract v2.0",
+  "origin": "Local available skills; supplement to, not part of, original Feishu ZIP.",
+  "global_skills_modified": false,
+  "files": [
+    {
+      "source_path": "/Users/a1/.agents/skills/transfer-ml-methods/SKILL.md",
+      "snapshot_path": "transfer-ml-methods/SKILL.md",
+      "sha256": "4e955671662eb007071c03944f285a50dfe3765ab531eb71103a6f9f87a4531b"
+    },
+    {
+      "source_path": "/Users/a1/.agents/skills/transfer-ml-methods/agents/openai.yaml",
+      "snapshot_path": "transfer-ml-methods/agents/openai.yaml",
+      "sha256": "fc44ae08d38a028dfcdb4db8cb888aec9a5c3886938998f940fe582681719a7d"
+    },
+    {
+      "source_path": "/Users/a1/.agents/skills/transfer-ml-methods/references/transfer-design.md",
+      "snapshot_path": "transfer-ml-methods/references/transfer-design.md",
+      "sha256": "1f6846f7510f8a20d4dfc2da5c78582303695770eb431ea80d725428996eb622"
+    },
+    {
+      "source_path": "/Users/a1/.codex/skills/research-workflow/SKILL.md",
+      "snapshot_path": "research-workflow/SKILL.md",
+      "sha256": "711efa201101bdaff2d75d42c4c22cd5591dc2b0c06ac6c40ccc702c7dee62c9"
+    },
+    {
+      "source_path": "/Users/a1/.codex/skills/research-workflow/agents/openai.yaml",
+      "snapshot_path": "research-workflow/agents/openai.yaml",
+      "sha256": "0e3c34e2f01bbaa687cb569ebb6348a8676988e2305371d0ae86cad8e53b618a"
+    },
+    {
+      "source_path": "/Users/a1/.codex/skills/research-workflow/references/literature-knowledge-base.md",
+      "snapshot_path": "research-workflow/references/literature-knowledge-base.md",
+      "sha256": "dcc6842b4f3d02492ca8ce90ddad02493cf1d1588d4b691e21dbd6e6a47742d9"
+    },
+    {
+      "source_path": "/Users/a1/.codex/skills/research-workflow/references/original-five-skill-workflow.md",
+      "snapshot_path": "research-workflow/references/original-five-skill-workflow.md",
+      "sha256": "cb1539793189b5eb67306e79a65be0b2d8963cf31370850bbcb82db457a2a894"
+    },
+    {
+      "source_path": "/Users/a1/.codex/skills/research-workflow/references/routing-examples.md",
+      "snapshot_path": "research-workflow/references/routing-examples.md",
+      "sha256": "5fed50c53e776c6c60f52744944132ecaa6b232cd06077da412a890270071d42"
+    },
+    {
+      "source_path": "/Users/a1/.codex/skills/research-workflow/references/six-skill-contract.md",
+      "snapshot_path": "research-workflow/references/six-skill-contract.md",
+      "sha256": "c535d4f59fcd4b09166651b1356908cd606809a126ee447b725c56a690d1a00d"
+    }
+  ]
+}

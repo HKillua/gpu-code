@@ -1,0 +1,190 @@
+{
+  "captured_at": "2026-11-05",
+  "timezone": "Asia/Shanghai",
+  "source_records": [
+    {
+      "source_id": "WF03",
+      "url": "https://my.feishu.cn/wiki/OHs3w9meHiQ3OXk4XC7ctFPXnxd",
+      "title": "视频文案",
+      "path": "video_script.md",
+      "capture": "Feishu UI export: Markdown, text only; file retained byte-for-byte",
+      "captured_at": "2026-11-05",
+      "timezone": "Asia/Shanghai",
+      "displayed_modified_at": "10月13日 22:27",
+      "displayed_year": null,
+      "sha256": "19e6fb70b4462b9db8fbd0d6606c794a191a9d55c0a0f3b41fc0f9d6f4712dee",
+      "bytes": 33827,
+      "reading_coverage": "All exported text read; images/attachments not included in selected export mode.",
+      "sections": [
+        {
+          "heading": "视频文案",
+          "line": 1
+        },
+        {
+          "heading": "ClaudeCode做科研焚决第1章",
+          "line": 3
+        },
+        {
+          "heading": "ClaudeCode做科研焚决第2章",
+          "line": 198
+        },
+        {
+          "heading": "ClaudeCode做科研焚决第3章",
+          "line": 226
+        },
+        {
+          "heading": "论文读完不会用？5个Skill 打通科研全流程",
+          "line": 252
+        },
+        {
+          "heading": "科研遇到问题后，怎样做实验才能少走弯路？",
+          "line": 320
+        },
+        {
+          "heading": "一、能解决问题，不代表能提升模型性能",
+          "line": 326
+        },
+        {
+          "heading": "二、为什么知道根因，还是避免不了？",
+          "line": 334
+        },
+        {
+          "heading": "三、局部问题解决了，整体性能就会提升吗？",
+          "line": 342
+        },
+        {
+          "heading": "四、设计方案还得算代价",
+          "line": 350
+        },
+        {
+          "heading": "科研死循环的根本原因",
+          "line": 360
+        },
+        {
+          "heading": "一、遇到问题，先别急着自己设计方案",
+          "line": 366
+        },
+        {
+          "heading": "二、一次尽量只改变一个变量",
+          "line": 372
+        },
+        {
+          "heading": "三、不要只关注想提升的那个指标",
+          "line": 380
+        },
+        {
+          "heading": "四、学会及时回退，而不是不断打补丁",
+          "line": 386
+        },
+        {
+          "heading": "五、让每一次实验都有明确的结论",
+          "line": 394
+        },
+        {
+          "heading": "六、回头看",
+          "line": 402
+        },
+        {
+          "heading": "跨领域论文方法迁移",
+          "line": 420
+        },
+        {
+          "heading": "一、先把自己的问题挖到足够深",
+          "line": 434
+        },
+        {
+          "heading": "二、让 AI 批量寻找领域 B 的解决方案",
+          "line": 457
+        },
+        {
+          "heading": "三、深入分析领域 B 的方法为什么有效",
+          "line": 473
+        },
+        {
+          "heading": "四、寻找领域 C，研究别人是怎么迁移的",
+          "line": 493
+        },
+        {
+          "heading": "五、不是把方法塞进 Baseline，而是改造 Baseline 来适配方法",
+          "line": 519
+        },
+        {
+          "heading": "六、最后还需要验证，到底是谁带来了收益",
+          "line": 550
+        },
+        {
+          "heading": "七、最后",
+          "line": 562
+        }
+      ]
+    },
+    {
+      "source_id": "WF02",
+      "url": "https://my.feishu.cn/wiki/TWXBw9US4iloe8kN2IpcAFiBnyc",
+      "title": "问题清单",
+      "path": "questions_export.md",
+      "capture": "Feishu UI export: Markdown, text only; file retained byte-for-byte",
+      "captured_at": "2026-11-05",
+      "timezone": "Asia/Shanghai",
+      "displayed_modified_at": "10月13日 01:22",
+      "displayed_year": null,
+      "sha256": "05d69cc228d722be77859eaa007c746792698981598738f31cbf72d8f1615b8d",
+      "bytes": 2092,
+      "reading_coverage": "All exported text read; images/attachments not included in selected export mode.",
+      "sections": [
+        {
+          "heading": "问题清单",
+          "line": 1
+        },
+        {
+          "heading": "1、最终实验数据比不过sota怎么办",
+          "line": 3
+        },
+        {
+          "heading": "2、怎么让cc生成的代码不堆叠屎山，如何确定哪个模块再起作用",
+          "line": 7
+        },
+        {
+          "heading": "3、什么是失败的实验现象，再做实验前的想idea阶段可以通过看别的研究找到吗",
+          "line": 15
+        },
+        {
+          "heading": "4、怎么判断这个问题是否有价值",
+          "line": 21
+        },
+        {
+          "heading": "5、有了 idea 是如何快速验证以及快速工程实现的",
+          "line": 25
+        },
+        {
+          "heading": "6、组合实验可以写到论文里吗",
+          "line": 31
+        },
+        {
+          "heading": "7、",
+          "line": 35
+        }
+      ]
+    }
+  ],
+  "questions_comparison": {
+    "prior_transcription": "../2026-11-05/questions.md",
+    "all_items_equal_after_markdown_escaping_and_whitespace_normalization": true,
+    "item_7": "empty, unchanged"
+  },
+  "new_evidence": [
+    "WF03 chapter 1 appendix defines full 1a-4b loop.",
+    "WF03 cross-domain section explicitly defines 1a-2b; former definition gap resolved.",
+    "WF03 anti-loop sections require whole-system outcome/cost, rollback criteria and information gained."
+  ],
+  "files": [
+    {
+      "path": "video_script.md",
+      "sha256": "19e6fb70b4462b9db8fbd0d6606c794a191a9d55c0a0f3b41fc0f9d6f4712dee"
+    },
+    {
+      "path": "questions_export.md",
+      "sha256": "05d69cc228d722be77859eaa007c746792698981598738f31cbf72d8f1615b8d"
+    }
+  ]
+}

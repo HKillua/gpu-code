@@ -1,0 +1,153 @@
+{
+  "date": "2026-11-05",
+  "operation": "reorganize",
+  "files": [
+    {
+      "old": "Investigating Power Consumption Flexibility of AI Data Centers for Demand Response Participation.pdf",
+      "new": "research/papers/acun_2026_dr/paper.pdf",
+      "sha256_before": "c7ea44cc17c6e90c5b704bbf968d1a9b5fbf41fa978e0fb3b49bbd07f9b8576a",
+      "sha256_after": "c7ea44cc17c6e90c5b704bbf968d1a9b5fbf41fa978e0fb3b49bbd07f9b8576a",
+      "changed": false
+    },
+    {
+      "old": "paper/dr_report/AI数据中心DR灵活性_学习报告.html",
+      "new": "research/papers/acun_2026_dr/study/AI数据中心DR灵活性_学习报告.html",
+      "sha256_before": "6a159f96b81761fc8173c6579c8e2ac5ac098bddd1921492d7d08f4bf511ec9c",
+      "sha256_after": "6a159f96b81761fc8173c6579c8e2ac5ac098bddd1921492d7d08f4bf511ec9c",
+      "changed": false
+    },
+    {
+      "old": "paper/dr_report/AI数据中心DR灵活性_学习报告.md",
+      "new": "research/papers/acun_2026_dr/study/AI数据中心DR灵活性_学习报告.md",
+      "sha256_before": "958686dd4aa3bb55b64bed29e0bb14bef82f3ff28487a70e8f6c47fe8b2c58d0",
+      "sha256_after": "958686dd4aa3bb55b64bed29e0bb14bef82f3ff28487a70e8f6c47fe8b2c58d0",
+      "changed": false
+    },
+    {
+      "old": "paper/dr_report/raw.txt",
+      "new": "research/papers/acun_2026_dr/study/raw.txt",
+      "sha256_before": "f1f827cbb4b4007dd0f4132f5be6ec32e9a96f0da8e3a8a6b0c80072aa27cd00",
+      "sha256_after": "f1f827cbb4b4007dd0f4132f5be6ec32e9a96f0da8e3a8a6b0c80072aa27cd00",
+      "changed": false
+    },
+    {
+      "old": "data_analysis/dr_bilingual/AI数据中心DR灵活性_中英对照.html",
+      "new": "research/papers/acun_2026_dr/bilingual/AI数据中心DR灵活性_中英对照.html",
+      "sha256_before": "54696474ecf184f044182d0170935181441bd9278e61d14188a45aaca95df23a",
+      "sha256_after": "54696474ecf184f044182d0170935181441bd9278e61d14188a45aaca95df23a",
+      "changed": false
+    },
+    {
+      "old": "data_analysis/dr_bilingual/content.json",
+      "new": "research/papers/acun_2026_dr/bilingual/content.json",
+      "sha256_before": "8c4b210cf8815083b062acc8d5ca8e95759b62faf161c8d74d810c467d761a4b",
+      "sha256_after": "8c4b210cf8815083b062acc8d5ca8e95759b62faf161c8d74d810c467d761a4b",
+      "changed": false
+    },
+    {
+      "old": "data_analysis/dr_bilingual/figures.json",
+      "new": "research/papers/acun_2026_dr/bilingual/figures.json",
+      "sha256_before": "979239657e2cd1e6aaa1e8186b2f6845a387e7ee8595f56893ee81137a8c2760",
+      "sha256_after": "979239657e2cd1e6aaa1e8186b2f6845a387e7ee8595f56893ee81137a8c2760",
+      "changed": false
+    },
+    {
+      "old": "data_analysis/dr_bilingual/img/fig1.png",
+      "new": "research/papers/acun_2026_dr/bilingual/img/fig1.png",
+      "sha256_before": "d154d574163847c2eb4802e420851c95892d7d3df2a3dfc7900ccc00bc102fed",
+      "sha256_after": "d154d574163847c2eb4802e420851c95892d7d3df2a3dfc7900ccc00bc102fed",
+      "changed": false
+    },
+    {
+      "old": "data_analysis/dr_bilingual/img/fig2.png",
+      "new": "research/papers/acun_2026_dr/bilingual/img/fig2.png",
+      "sha256_before": "689974518263da9fe4afcce59b71adfefac6c9f749f6bf3b816c8e17ae4644e3",
+      "sha256_after": "689974518263da9fe4afcce59b71adfefac6c9f749f6bf3b816c8e17ae4644e3",
+      "changed": false
+    },
+    {
+      "old": "data_analysis/dr_bilingual/img/fig5.png",
+      "new": "research/papers/acun_2026_dr/bilingual/img/fig5.png",
+      "sha256_before": "db11166fb801794623a8db28966317a833c6e44f9a5c4d43f539ee1bec606a4e",
+      "sha256_after": "db11166fb801794623a8db28966317a833c6e44f9a5c4d43f539ee1bec606a4e",
+      "changed": false
+    },
+    {
+      "old": "data_analysis/dr_bilingual/img/fig6.png",
+      "new": "research/papers/acun_2026_dr/bilingual/img/fig6.png",
+      "sha256_before": "cb6f5a1e6f2b9381de0a1f8ff79b2b8f403900b8bd9ba4d1c3f2df3022039599",
+      "sha256_after": "cb6f5a1e6f2b9381de0a1f8ff79b2b8f403900b8bd9ba4d1c3f2df3022039599",
+      "changed": false
+    },
+    {
+      "old": "data_analysis/dr_bilingual/img/tab2.png",
+      "new": "research/papers/acun_2026_dr/bilingual/img/tab2.png",
+      "sha256_before": "0c03fbf6ad6e2977897ee48a444c30d67661d3af29cd5bf0a9128a4f6acc0a75",
+      "sha256_after": "0c03fbf6ad6e2977897ee48a444c30d67661d3af29cd5bf0a9128a4f6acc0a75",
+      "changed": false
+    },
+    {
+      "old": "data_analysis/dr_bilingual/page4_full.png",
+      "new": "research/papers/acun_2026_dr/bilingual/page4_full.png",
+      "sha256_before": "6394848860064cad30aa9c748055bda853987e8e779f9ddc2f7de9acd6b39a67",
+      "sha256_after": "6394848860064cad30aa9c748055bda853987e8e779f9ddc2f7de9acd6b39a67",
+      "changed": false
+    },
+    {
+      "old": "data_analysis/dr_bilingual/raw.txt",
+      "new": "research/papers/acun_2026_dr/bilingual/raw.txt",
+      "sha256_before": "9a882ff85388cb72e04afdbeab0576aaf2102ca036df333d088b5ee71b26251f",
+      "sha256_after": "9a882ff85388cb72e04afdbeab0576aaf2102ca036df333d088b5ee71b26251f",
+      "changed": false
+    },
+    {
+      "old": "research/gpu_power_scheduling_2026/导师讨论_一页选题建议.md",
+      "new": "topics/导师讨论_一页选题建议.md",
+      "sha256_before": "6dfaec0cc45fdf51b449e9987c4c3240c957fb5424586c17f34b98f2a754f8ed",
+      "sha256_after": "c0744e629ba99926dac77d9c4ca66f2728e72cf2a6b0a757428e373bc1c3db4f",
+      "changed": true
+    },
+    {
+      "old": "research/gpu_power_scheduling_2026/gpu_systems_notes.md",
+      "new": "research/surveys/gpu_power_scheduling_2026/gpu_systems_notes.md",
+      "sha256_before": "112baa86148082dcad999f616ca1802b27fb754a8c964cf302c021e57d6124a2",
+      "sha256_after": "112baa86148082dcad999f616ca1802b27fb754a8c964cf302c021e57d6124a2",
+      "changed": false
+    },
+    {
+      "old": "research/gpu_power_scheduling_2026/industry_notes.md",
+      "new": "research/surveys/gpu_power_scheduling_2026/industry_notes.md",
+      "sha256_before": "3ee79245274d31cb1968435741a08e5c8084a774ba542a4b71c5c48d08dc0210",
+      "sha256_after": "3ee79245274d31cb1968435741a08e5c8084a774ba542a4b71c5c48d08dc0210",
+      "changed": false
+    },
+    {
+      "old": "research/gpu_power_scheduling_2026/network_methods_notes.md",
+      "new": "research/surveys/gpu_power_scheduling_2026/network_methods_notes.md",
+      "sha256_before": "c5ee35416bfbef077949c6ef889a5a876c28fc5e3935deff4e7577dce58901fd",
+      "sha256_after": "c5ee35416bfbef077949c6ef889a5a876c28fc5e3935deff4e7577dce58901fd",
+      "changed": false
+    },
+    {
+      "old": "research/gpu_power_scheduling_2026/research_brief.md",
+      "new": "research/surveys/gpu_power_scheduling_2026/research_brief.md",
+      "sha256_before": "7955202c46343e3965acf3fe99a12000cf5f53c5c6b95c047a915d7a2e5534c2",
+      "sha256_after": "7955202c46343e3965acf3fe99a12000cf5f53c5c6b95c047a915d7a2e5534c2",
+      "changed": false
+    },
+    {
+      "old": "research/gpu_power_scheduling_2026/供电约束下的GPU调度_产业与研究调研.md",
+      "new": "research/surveys/gpu_power_scheduling_2026/供电约束下的GPU调度_产业与研究调研.md",
+      "sha256_before": "6655d7607cd486c037084217bc1907fc5a4e7f801710206e97cefcd70a22b25b",
+      "sha256_after": "6655d7607cd486c037084217bc1907fc5a4e7f801710206e97cefcd70a22b25b",
+      "changed": false
+    },
+    {
+      "old": "paper/.DS_Store",
+      "new": "research/papers/acun_2026_dr/.DS_Store",
+      "sha256_before": "f09ddff4b05ebc3fd5c5cf7f0475b9657f5f4634bd75939a88c990294d17f3ad",
+      "sha256_after": "f09ddff4b05ebc3fd5c5cf7f0475b9657f5f4634bd75939a88c990294d17f3ad",
+      "changed": false
+    }
+  ]
+}

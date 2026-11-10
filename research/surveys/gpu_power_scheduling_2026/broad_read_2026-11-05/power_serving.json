@@ -1,0 +1,483 @@
+{
+  "group": "GPU功率、能量与推理服务：正文广读",
+  "stage": "analyze-paper",
+  "round_started_on": "2026-11-05",
+  "completed_on": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "source_count": 5,
+  "new_analysis_package_count": 4,
+  "reused_analysis_package_count": 1,
+  "evidence_status": "partial",
+  "page_convention": "全部PDF页码是本地查看器1-based页序；Kareus含封面。",
+  "scope": "按本地PDF读方法、关键评估与限制；不定baseline/选题，不实验，不进行代码复核。正式身份沿用上轮官方核验，版本差异逐篇保留。",
+  "next_skill": "deep-read Mode C",
+  "cross_domain_transfer": "不适用：未选择跨领域源方法B。",
+  "papers": [
+    {
+      "source_id": "LP05",
+      "analysis_id": "AN-20261105-031-v01",
+      "path": "research/papers/stojkovic_2025_tapas/analysis_broad_v01.md",
+      "title": "TAPAS: Thermal- and Power-Aware Scheduling for LLM Inference in Cloud Platforms",
+      "venue": "ACM ASPLOS 2025, Volume 2",
+      "year": 2025,
+      "official_url": "https://doi.org/10.1145/3676641.3716025",
+      "pdf_url": "https://iacomaweb.web.engr.illinois.edu/iacoma-papers/asplos25_2.pdf",
+      "pdf_path": "research/papers/stojkovic_2025_tapas/paper.pdf",
+      "version": "本地为作者公开的ASPLOS 2025会议排版稿，首页含DOI与正式页码；正式身份复用此前官方核验。",
+      "package_action": "new_partial_package",
+      "problem": "云平台既有不可见的租户 GPU 负载，又有可调整的托管 LLM 服务；怎样避免局部电力、空气流量和 GPU 温度越限，并在设施能力下降时保留服务？",
+      "method": "历史画像预测 VM 功率和温度，先放置 VM，再过滤有越限风险的目的地并路由请求；最后调节实例频率、批量、张量并行度或模型配置。对透明的 SaaS 先调整，对不透明 IaaS 的硬件功率限制作为末级动作。",
+      "power_signal_and_objective": "直接考虑行级供电、冷却和服务器温度限制及故障后的额度下降；历史预测对象主要是负载/功率/温度。本文所读评估不能解释为任意时变外部供电序列上的严格功率保证。",
+      "service_or_quality_contract": "常态 goodput 是满足 TTFT 与 TBT 的 token/s，§3.3 采用相对空载执行时间的 SLO。应急评估另用频率限幅的性能代理及转向较小模型的估计质量损失；两类服务口径不能互换。",
+      "evidence": [
+        {
+          "id": "LP05-E01",
+          "locator": "PDF pp.5–8，§2.2–3.3，图11–15",
+          "label": "DE",
+          "detail": "GPU配置的功率与温度作用不同；减小TP可降低总功率但提高最热GPU温度，小decode批量也可能增加内存温度。"
+        },
+        {
+          "id": "LP05-E02",
+          "locator": "PDF pp.9–11，§4.1–4.6",
+          "label": "DE",
+          "detail": "历史画像放置、约束过滤路由、实例重配置、设施故障处理及泛化条件；重配置期间目标实例不收新请求，模型重载需要时间。"
+        },
+        {
+          "id": "LP05-E03",
+          "locator": "PDF pp.11–12，§5.1–5.3，图19–23",
+          "label": "DE",
+          "detail": "80台服务器一小时硬件回放与千台级轨迹仿真分开；可控SaaS占比影响可用动作及收益。"
+        },
+        {
+          "id": "LP05-E04",
+          "locator": "PDF pp.12–13，§5.4，表2",
+          "label": "DE",
+          "detail": "供电/冷却应急场景单独评估；作者明确无法直接测IaaS性能，以限频比例做代理，质量按模型替换估计。"
+        }
+      ],
+      "limits": {
+        "author": [
+          "§4.1：GPU IaaS VM不支持这里所需的在线迁移；可控SaaS可通过新建、转移和撤销迁移。",
+          "§4.6：更换工作负载需重训配置控制器；改变机房布局/散热系统需更新回归模型。",
+          "§5.4：IaaS真实性能难直接获取，所以采用频率限幅代理。"
+        ],
+        "analyst": [
+          "可调SaaS比例、候选落点及模型替换权限决定空间调度余地；不应将本机两节点场景等同于其机房。",
+          "常态一小时回放、仿真、应急代理评估应分列；未看到跨多个下降/恢复事件逐请求统计可直接支持真实恢复期服务保证。"
+        ],
+        "unknown": [
+          "未审代码、原始轨迹、完整重配置状态机与置信区间；未独立复现。",
+          "估计质量与真实业务质量之间的对应关系尚未独立核验。"
+        ]
+      },
+      "reading_coverage": "本轮读摘要及PDF pp.5–13：背景机制、§3画像、§4方法、§5关键评估与适用限制；参考文献、全部附录和代码未逐项审计。",
+      "reading_depth": "方法、关键评估与限制的正文定位阅读；未审代码/原始数据",
+      "already_addressed": [
+        "历史功率/温度预测与不确定时的保守画像",
+        "请求路由与VM放置的多层协调",
+        "硬件限频前的SaaS多动作调节",
+        "设施故障后的额度重算",
+        "重配置停收请求、模型重载时间及SaaS迁移"
+      ],
+      "idea_leads": [
+        {
+          "label": "AI",
+          "text": "应急表格的性能代理与逐请求服务/质量之间，在哪些事件与服务组成下会出现明显偏离？此处是计量问题线索，尚无本项目失败证据。",
+          "status": "问题线索，未定题/未做新颖性结论"
+        },
+        {
+          "label": "AI",
+          "text": "当可路由余量和可调整SaaS比例降低时，重配置前后的等待损失是否改变动作排序？论文已考虑重配置成本，需先核对其覆盖范围。",
+          "status": "问题线索，未定题/未做新颖性结论"
+        }
+      ],
+      "priority_reason": "最直接连接供电/热约束与在线服务，适合先厘清设施约束、控制权限和服务代理指标。",
+      "transfer_principle": "可借鉴把设施指标、请求指标及动作权限分层；原云规模不能因六卡无法原样复现而从阅读中排除，落地时另核对可测机制。",
+      "evidence_status": "partial"
+    },
+    {
+      "source_id": "LP03",
+      "analysis_id": "AN-20261105-007-v01",
+      "path": "research/papers/stojkovic_2025_dynamollm/analysis_v01.md",
+      "title": "DynamoLLM: Designing LLM Inference Clusters for Performance and Energy Efficiency",
+      "venue": "IEEE HPCA 2025",
+      "year": 2025,
+      "official_url": "https://ieeexplore.ieee.org/document/10946802",
+      "pdf_url": "https://iacoma.cs.uiuc.edu/iacoma-papers/hpca25_2.pdf",
+      "pdf_path": "research/papers/stojkovic_2025_dynamollm/paper.pdf",
+      "version": "本地作者公开HPCA2025会议稿；复用AN007，不覆盖旧包。",
+      "package_action": "reused_and_rechecked",
+      "problem": "请求长短不同且到达负载起伏时，如何协调实例数、模型并行度和GPU频率，在响应目标内节约推理能量？",
+      "method": "按输入和预测输出长度分池，分层控制实例数、TP及频率。用画像和重配置开销表作决策；错峰重配置、复用/转移权重，在允许的显存内同时保留新旧实例；误判时队列提优先级、升频、重路由未开始请求，必要时让用户重试。",
+      "power_signal_and_objective": "目标为需求起伏下的能量最小化；数学约束为GPU数、负载和SLO，没有显式外部时变总瓦数上限。不能把load predictor当供电预测。",
+      "service_or_quality_contract": "服务按TTFT与TBT画像；§IV-D讨论服务/请求的不同SLO及是否分池。本文降低中位/尾部指标的方向并非总一致。",
+      "evidence": [
+        {
+          "id": "LP03-E2",
+          "locator": "PDF pp.6–9，§IV-A–E；复用AN007-E2",
+          "label": "DE",
+          "detail": "能量目标与GPU/负载/SLO约束；分层画像、转移开销、错峰重配置、多SLO与误预测救急。"
+        },
+        {
+          "id": "LP03-E3",
+          "locator": "PDF pp.10–11，§V-A–C，图7–14；复用AN007-E3",
+          "label": "DE",
+          "detail": "一小时12台H100服务器基线回放；尾部改善与中位延迟上升并存；预测误差和分池数量敏感性。"
+        },
+        {
+          "id": "LP03-E4",
+          "locator": "PDF p.11，§V-D–E，图15–16；复用AN007-E4",
+          "label": "DE",
+          "detail": "单日真实硬件回放和周尺度320卡基线仿真明确区分。"
+        }
+      ],
+      "limits": {
+        "author": [
+          "§IV-C：新旧实例同时存活要求显存可容纳；否则先停旧实例，并把负载暂时移到其他实例。",
+          "§V-C：池子过多带来碎片化与空闲能量；高负载下调节余地减少。"
+        ],
+        "analyst": [
+          "应急升到最高频率及向其他池转移请求隐含资源/功率余量；外部功率骤降不等同于其已评估的需求变化。",
+          "“能量最优”只在画像模型及约束中成立；实际分层控制使用局部近似，不能称真实系统全局最优。"
+        ],
+        "unknown": [
+          "复用AN007的工件、私有长轨迹、重复统计缺项；本轮仍未审代码或复现。"
+        ]
+      },
+      "reading_coverage": "复用AN007；本轮重新打开PDF pp.6–11，核验§IV方法/应急/多SLO及§V短时、单日和仿真范围。未重复生成包，未新增代码审计。",
+      "reading_depth": "方法、关键评估与限制的正文定位阅读；未审代码/原始数据",
+      "already_addressed": [
+        "多时间尺度控制与转移开销表",
+        "历史流量/输出长度预测",
+        "错峰重配置、显存条件下新旧实例并存",
+        "多服务/多请求SLO",
+        "预测错误后的升频、重路由与重试"
+      ],
+      "idea_leads": [
+        {
+          "label": "AI",
+          "text": "外部供电额度使“满频假设”和救急资源不可行时，分层可行性判断还保留哪些条件？这是动作权限变化的候选问题，并非已证实差距。",
+          "status": "问题线索，未定题/未做新颖性结论"
+        },
+        {
+          "label": "AI",
+          "text": "分池减少队头阻塞、增加碎片化及重配置余量，三者在不同服务等级构成下怎样共同决定代价？原文已讨论这些因素，需寻找更具体边界。",
+          "status": "问题线索，未定题/未做新颖性结论"
+        }
+      ],
+      "priority_reason": "可作为多时间尺度控制的入门，尤其应同时读误预测恢复、显存约束和中位/尾部延迟。",
+      "transfer_principle": "先理解请求分型、分池和重配置开销；不因原96卡峰值配置排除阅读，六卡只在后续实施时筛机制。",
+      "evidence_status": "partial"
+    },
+    {
+      "source_id": "LP06",
+      "analysis_id": "AN-20261105-032-v01",
+      "path": "research/papers/wu_2026_kareus/analysis_broad_v01.md",
+      "title": "Kareus: Joint Reduction of Dynamic and Static Energy in Large Model Training",
+      "venue": "USENIX OSDI 2026",
+      "year": 2026,
+      "official_url": "https://www.usenix.org/conference/osdi26/presentation/wu-ruofan",
+      "pdf_url": "https://www.usenix.org/system/files/osdi26-wu-ruofan.pdf",
+      "pdf_path": "research/papers/wu_2026_kareus/paper.pdf",
+      "version": "本地为USENIX官方OSDI 2026 PDF，含封面；正式身份复用官方presentation页核验。",
+      "package_action": "new_partial_package",
+      "problem": "训练内核重叠可以缩短设备通电时间，降频可以降低活动功率；二者会互相影响，怎样同时降低静态与动态能量而不盲目延长迭代？",
+      "method": "把可重叠的计算/通信划分为重复分区，联合搜索通信占用SM数、通信启动时刻与GPU频率；用多目标贝叶斯搜索构建时间–能量前沿，再组合到训练迭代。必要时选择顺序执行。",
+      "power_signal_and_objective": "优化训练作业的时间–总能量前沿；dynamic/static指能量组成，不是供电上限时变。搜索中的不确定性用于性能/能量代理模型，并非预测电网功率额度。",
+      "service_or_quality_contract": "关注迭代时间、动态/静态/总能量与给定时间或能量预算内的前沿选择；本轮所读结果不是训练达到同等验证质量的全过程比较。",
+      "evidence": [
+        {
+          "id": "LP06-E01",
+          "locator": "PDF pp.4–6，§2.3–3.2，图3、表1–2",
+          "label": "DE",
+          "detail": "同一计算/通信分区的最佳SM分配、启动时序随频率改变；通信占SM和访存争用可以抵消重叠收益。"
+        },
+        {
+          "id": "LP06-E02",
+          "locator": "PDF pp.7–10，§4–5",
+          "label": "DE",
+          "detail": "分区、多个代理模型/搜索通道、前沿组合与频率粒度；小nanobatch会自动比较顺序执行；静态功率近似常数。"
+        },
+        {
+          "id": "LP06-E03",
+          "locator": "PDF pp.10–13，§6.1–6.3，表3–7",
+          "label": "DE",
+          "detail": "16卡真实实验与千卡级模拟分开；迭代时间/能量前沿比较，原配置和并行度有明确条件。"
+        },
+        {
+          "id": "LP06-E04",
+          "locator": "PDF pp.14–15，§6.4–6.7，表8、图12",
+          "label": "DE",
+          "detail": "消融分别去除频率或内核调度；报告profiling成本，并实测冷却与窗口长度对能量测量的影响。"
+        }
+      ],
+      "limits": {
+        "author": [
+          "§4.5：静态功率近似常数，更精细的电压/漏电模型留待后续。",
+          "§4.4：频率切换有毫秒级代价，采用microbatch级统一频率等约束以缩小空间。",
+          "§6.6：profiling有可见成本，以长期训练摊销；§6.7强调测量窗口需适配硬件。"
+        ],
+        "analyst": [
+          "在线网络争用、温度或外加功率限制改变时，离线前沿的有效范围仍需界定；本文不是运行期动态外部功率预算调度器。",
+          "评估主要是迭代性能与能量；不能直接等同于完整训练达到同等质量所需能量。",
+          "千卡级收益属于模拟外推，不能当作千卡训练的真实部署证据。"
+        ],
+        "unknown": [
+          "工件入口已知但本轮未审实现、数据与环境；未独立复现。",
+          "不同设备/拓扑、短任务以及快速漂移场景中画像重用与摊销边界待核验。"
+        ]
+      },
+      "reading_coverage": "本轮读PDF pp.4–15：§2.3–8中方法、实现、主要真实/模拟评估、消融与计量限制；代码、附录工件说明和原始统计未审。PDF包含封面，页码采用查看器页序。",
+      "reading_depth": "方法、关键评估与限制的正文定位阅读；未审代码/原始数据",
+      "already_addressed": [
+        "频率与计算/通信重叠联合优化",
+        "通信SM数量与启动时机",
+        "小nanobatch顺序执行回退",
+        "profiling温度控制与测量窗口分析",
+        "动态/静态能量分别建模和目标贡献消融"
+      ],
+      "idea_leads": [
+        {
+          "label": "AI",
+          "text": "画像时形成的时间–能量前沿，在网络/温度/外部功率限制变化后哪些部分仍有效？这需要先分清设备状态漂移与模型误差，不能把联合调度本身当新意。",
+          "status": "问题线索，未定题/未做新颖性结论"
+        },
+        {
+          "label": "AI",
+          "text": "不同任务长度和配置更换频率下，profiling可摊销性是否改变前沿选择价值？原文已量化profile成本，后续需查其缓存/重用覆盖。",
+          "status": "问题线索，未定题/未做新颖性结论"
+        }
+      ],
+      "priority_reason": "本组最清楚的“动作彼此改变资源竞争”机制证据，也能防止把动态能量误解为动态电力预算。",
+      "transfer_principle": "借鉴同时观察时间与总能量，以及让测量窗口覆盖传感器/热状态；阅读不受原16卡限制，是否保留重叠机制另行核验。",
+      "evidence_status": "partial"
+    },
+    {
+      "source_id": "RP01",
+      "analysis_id": "AN-20261105-033-v01",
+      "path": "research/papers/kakolyris_2025_throttllem/analysis_broad_v01.md",
+      "title": "throttLL’eM: Predictive GPU Throttling for Energy Efficient LLM Inference Serving",
+      "venue": "IEEE HPCA 2025",
+      "year": 2025,
+      "official_url": "https://ieeexplore.ieee.org/document/10946751/",
+      "pdf_url": "https://www.privateer-project.eu/wp-content/uploads/2026/03/throttLLeM_Predictive_GPU_Throttling_for_Energy_Efficient_LLM_Inference_Serving.pdf",
+      "pdf_path": "research/papers/kakolyris_2025_throttllem/paper_hpca2025.pdf",
+      "version": "本地为项目站公开的IEEE HPCA 2025排版PDF，首页有完整DOI；正式身份复用IEEE条目核验。",
+      "package_action": "new_partial_package",
+      "problem": "LLM请求输出长度不同，批量与KV缓存随token生成而变化；怎样利用未来执行状态的预测降低GPU能量，同时控制响应时间？",
+      "method": "维护正在执行请求的scoreboard，按预测输出长度展开未来各迭代的批量与KV缓存；性能模型预测每次迭代速率，检查准入与SLO，搜索可用最低频率，并按负载调整TP实例。切换用shadow instance和旧实例排空。",
+      "power_signal_and_objective": "需求侧状态随请求改变，功率由频率与实例规模调节；所读方法没有把外部时变总功率额度作为约束输入。不能将预测未来KV/批量称作预测供电。",
+      "service_or_quality_contract": "§V-A：平均TBT阈值与按模型高负载画像设定的p99端到端目标；§IV-F明确不优化TTFT。准入检查可将已经无法满足自身期限但不影响他人的请求标lost，继续best-effort处理。",
+      "evidence": [
+        {
+          "id": "RP01-E01",
+          "locator": "PDF pp.6–8，§IV-A–E",
+          "label": "DE",
+          "detail": "scoreboard投影、GBDT性能模型、KV容量/服务检查、lost请求、统一调频和shadow实例缩放；投影当前批次时假定没有未来新请求。"
+        },
+        {
+          "id": "RP01-E02",
+          "locator": "PDF pp.8–9，§IV-F",
+          "label": "DE",
+          "detail": "明确不优化TTFT；输出长度误差的保守处理；TP依赖节点内快链路，跨节点PP需额外编排。"
+        },
+        {
+          "id": "RP01-E03",
+          "locator": "PDF pp.9–11，§V-A–D，图7–10",
+          "label": "DE",
+          "detail": "实验硬件/模型、平均TBT与p99端到端阈值，oracle和合成长度误差；固定TP和动态TP的比较条件分开。"
+        },
+        {
+          "id": "RP01-E04",
+          "locator": "PDF pp.11–13，§V-E–F，图11–13",
+          "label": "DE",
+          "detail": "突发负载后启动延迟引起短时违约，即便全轨迹p99符合；边界负载下反复切换实例，另分析调频引起批量积累的反馈。"
+        }
+      ],
+      "limits": {
+        "author": [
+          "§IV-F：不针对TTFT优化，频率调节与prefill的时间尺度存在冲突。",
+          "§V-E：突发后的临时违约与实例启动时间有关；除非缩短启动时间，否则不能完全避免。",
+          "§IV-F：TP扩展依赖高速节点内通信，跨节点需要额外PP编排。"
+        ],
+        "analyst": [
+          "救急升最高频和创建shadow实例都要求额外资源/功率可用；在外部供电额度突然下降时动作可行性不能沿用。",
+          "平均TBT、全轨迹端到端p99、短窗口违约和lost请求比例是不同合同，不能合并成“所有请求均满足SLO”。",
+          "长度oracle/合成高斯误差不等同于真实预测误差分布；投影未包含未来新请求。"
+        ],
+        "unknown": [
+          "未审代码、所有错误分布及完整轨迹；未独立复现。",
+          "真实输出长度预测器、lost请求总体比例与重试行为的端到端影响待核验。"
+        ]
+      },
+      "reading_coverage": "本轮读PDF pp.6–13：§IV完整方法/局限与§V主要实验、敏感性、失效时间线和补充设备；摘要与结论已核对。代码、全部附录/引用与原始日志未审。",
+      "reading_depth": "方法、关键评估与限制的正文定位阅读；未审代码/原始数据",
+      "already_addressed": [
+        "KV/批量未来状态预测与缓存容量检查",
+        "输出长度不确定性的保守处理",
+        "频率救急与lost请求best-effort",
+        "shadow实例预热、旧实例排空和冷却期",
+        "突发启动滞后与阈值附近反复切换的观察",
+        "频率改变批量的闭环反馈"
+      ],
+      "idea_leads": [
+        {
+          "label": "AI",
+          "text": "当全局分位数达标但短窗口发生违约时，哪种服务统计能保留事件造成的损失和恢复尾巴？原文已有这一现象，候选问题必须进一步收窄。",
+          "status": "问题线索，未定题/未做新颖性结论"
+        },
+        {
+          "label": "AI",
+          "text": "当外部功率额度收紧使max-frequency或shadow实例不可行时，原准入/服务可行性判断在哪一步失效？目前只是从动作前提导出的候选问题。",
+          "status": "问题线索，未定题/未做新颖性结论"
+        }
+      ],
+      "priority_reason": "最值得和TAPAS对读：清楚看到预测、准入、重配置与SLO统计怎样互相牵制。",
+      "transfer_principle": "借鉴记录事件时间线、区分平均/尾部/单请求指标及真实预测与oracle；不同GPU数不影响先理解这些机制。",
+      "evidence_status": "partial"
+    },
+    {
+      "source_id": "RP04",
+      "analysis_id": "AN-20261105-034-v01",
+      "path": "research/papers/rajput_2026_flipflop/analysis_broad_v01.md",
+      "title": "FlipFlop: A Static Analysis-based Energy Optimization Framework for GPU Kernels",
+      "venue": "ACM/IEEE ICSE 2026, Research Track",
+      "year": 2026,
+      "official_url": "https://conf.researchr.org/details/icse-2026/icse-2026-research-track/265/FlipFlop-A-Static-Analysis-based-Energy-Optimization-Framework-for-GPU-Kernels",
+      "pdf_url": "https://tusharma.in/preprints/ICSE2026_FlipFlop.pdf",
+      "pdf_path": "research/papers/rajput_2026_flipflop/paper_author_icse2026.pdf",
+      "version": "作者主页13页稿；正式会议身份已核，首页Alex Brandt对应会议作者Alexander Brandt；保留Conference’17占位页脚，不视为出版社排版终版。",
+      "package_action": "new_partial_package",
+      "problem": "GPU内核线程块形状和功率设置会改变时间与能量；怎样减少穷举调参成本，并从程序特征找到较好的配置？",
+      "method": "先校准硬件，再静态分析PTX的控制流、指令、访存和资源占用，建立时间/功率模型并筛选线程块与功率上限的Pareto候选；正文还含基于实测偏差的动态修正。",
+      "power_signal_and_objective": "内核层配置和功率上限是优化动作；没有在线请求合同或集群外部时变供电预算。碳数值主要由能量乘固定地区因子换算，不是碳信号调度。",
+      "service_or_quality_contract": "核心为单内核时间–能量折中和避免的profiling配置数；§7是CodeLlama端到端示例，不能把MHA单内核收益直接推广到整个服务。",
+      "evidence": [
+        {
+          "id": "RP04-E01",
+          "locator": "PDF pp.3–5，§3.2–4，表2",
+          "label": "DE",
+          "detail": "硬件与MHA配置实验；文字功率网格与表2配置值不完全一致，需以正式版或工件厘清。"
+        },
+        {
+          "id": "RP04-E02",
+          "locator": "PDF pp.6–9，§5，算法1–3、图4–5",
+          "label": "DE",
+          "detail": "硬件微基准校准、PTX特征、时间/功率建模与实测反馈；“静态分析”不等于无需任何硬件测量。"
+        },
+        {
+          "id": "RP04-E03",
+          "locator": "PDF pp.9–11，§6–7，表3",
+          "label": "DE",
+          "detail": "配置数量削减与推算的profiling成本；CodeLlama案例列出2048×1线程块，与前文≤1024约束的字面描述冲突。"
+        },
+        {
+          "id": "RP04-E04",
+          "locator": "PDF pp.11–12，§9及结论",
+          "label": "DE",
+          "detail": "作者讨论模型/硬件外部有效性，承认以隔离单内核为重点，将多流强争用和按阶段动态DVFS留作后续。"
+        }
+      ],
+      "limits": {
+        "author": [
+          "§9：模型假设可能不适用于所有GPU/负载，主要验证NVIDIA两代设备和MHA。",
+          "结论：隔离单内核是主要范围，重度多流争用和按阶段动态DVFS留待后续。"
+        ],
+        "analyst": [
+          "版本身份必须分开：ICSE2026正式发表已核，但本地稿保留Conference’17占位页脚，没有出版社终版标识。",
+          "§3.2/4功率网格与表2值、§7中2048×1配置与前文线程块限制不一致；这证明当前文字协议需要澄清，不足以直接判定实验无效。",
+          "§4的短周期NVML轮询本身不足以证明微内核能量可准确归因；需要原始时间窗/重复执行与传感器刷新证据。",
+          "§6配置数减少不是直接的开发者劳动节约；§7的prompt smoke test也不足以单独证明HumanEval任务质量不变。"
+        ],
+        "unknown": [
+          "未取得/比对出版社终版，未审工件以解释上述协议问题；本轮不采用其最大收益、开发效率倍率或因果归因作为比较结论。",
+          "未核验微内核计量原始日志、全部泛化内核及功能质量测试。"
+        ]
+      },
+      "reading_coverage": "本轮读PDF pp.2–12的实验设计、算法、RQ1–3、CodeLlama案例、Threats和结论；未审代码/原始数据、引用文献及出版社最终版本。",
+      "reading_depth": "方法、关键评估与限制的正文定位阅读；未审代码/原始数据",
+      "already_addressed": [
+        "硬件校准后PTX分析",
+        "线程块形状与功率上限联合候选筛选",
+        "预测误差的动态反馈校正",
+        "多目标时间–能量排序",
+        "显式提出多流争用作为范围边界"
+      ],
+      "idea_leads": [
+        {
+          "label": "AI",
+          "text": "隔离内核上的节能配置排序，在与通信或其他kernel并发时是否保留？作者已指出并发边界，需结合已有并发优化文献审查，不能据此宣称空白。",
+          "status": "问题线索，未定题/未做新颖性结论"
+        },
+        {
+          "label": "AI",
+          "text": "候选筛选的排序可靠性，能否与计量窗口、校准误差和运行状态变化分开解释？先补协议与计量证据，再决定是否有可研究现象。",
+          "status": "问题线索，未定题/未做新颖性结论"
+        }
+      ],
+      "priority_reason": "提供编译/内核层观察角度；当前版本协议问题使定量证据需降级，不宜先读最大收益宣传。",
+      "transfer_principle": "借鉴把候选搜索成本与执行能量分开、把校准前提显式化；跨GPU适配不能以“都为NVIDIA”替代测量。",
+      "evidence_status": "partial"
+    }
+  ],
+  "connection_candidates": [
+    {
+      "id": "PS-CAND-01",
+      "status": "待Mode C核验；不是MODE_C_PACKAGE或IDEA_PACKAGE",
+      "P": "动作执行后会改变资源竞争或请求状态，离线画像的配置排序何时失效？",
+      "F": [
+        {
+          "label": "DE",
+          "text": "Kareus：频率改变计算/通信重叠的优选配置。",
+          "evidence": "LP06-E01"
+        },
+        {
+          "label": "DE",
+          "text": "throttLL’eM：降频会改变批量形成与后续迭代数。",
+          "evidence": "RP01-E04"
+        },
+        {
+          "label": "SC",
+          "text": "FlipFlop的主要建模范围是隔离内核，并发列为后续边界。",
+          "evidence": "RP04-E04"
+        }
+      ],
+      "M": "AI：控制动作会改变模型自变量及竞争状态；这可能令固定画像失配，但三文的时间尺度不同，不能直接合并为同一已证实机制。",
+      "E": [
+        "AN-20261105-032-v01 / LP06-E01",
+        "AN-20261105-033-v01 / RP01-E04",
+        "AN-20261105-034-v01 / RP04-E04"
+      ],
+      "missing": "缺少同一工作负载上的跨层证据和近期近邻审计；FlipFlop协议需澄清。"
+    },
+    {
+      "id": "PS-CAND-02",
+      "status": "待Mode C核验；不是新算法或选题",
+      "P": "服务统计和可用救急动作如何影响对供电事件与恢复损失的判断？",
+      "F": [
+        {
+          "label": "DE",
+          "text": "throttLL’eM全回放p99达标与突发后的临时违约并存。",
+          "evidence": "RP01-E04"
+        },
+        {
+          "label": "DE",
+          "text": "TAPAS应急性能指标采用限频代理，和常态请求SLO口径不同。",
+          "evidence": "LP05-E04"
+        },
+        {
+          "label": "DE",
+          "text": "DynamoLLM恢复包含最高频率、其他池与重试。",
+          "evidence": "LP03-E2"
+        }
+      ],
+      "M": "AI：平均或长窗口统计可能隐藏短时损失；新增外部功率约束还可能使救急动作不可行。这是两个需分别核验的因素，不应从一个推导另一个。",
+      "E": [
+        "AN-20261105-033-v01 / RP01-E04",
+        "AN-20261105-031-v01 / LP05-E04",
+        "AN-20261105-007-v01 / LP03-E2"
+      ],
+      "missing": "未建立共同服务合同、共同事件时间尺度或硬件证据；需先查PowerSlider/PctoDL及其他在线功率约束近邻。"
+    }
+  ]
+}

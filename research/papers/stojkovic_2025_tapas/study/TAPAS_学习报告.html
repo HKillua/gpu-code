@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TAPAS：面向云平台 LLM 推理的热感知与功率感知调度 —— 中文学习报告</title>
+<script>
+window.MathJax = {tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},
+  options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}, startup:{typeset:true}};
+</script>
+<script id="MathJax-script" async src="https://fastly.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+:root{
+  /* ===== 基础色 ===== */
+  --bg:#ffffff; --panel:#fafbfc; --card:#ffffff; --line:#e6e8eb; --line2:#eceff2;
+  --ink:#1f2328; --ink2:#57606a; --ink3:#666f7a; --ph:#8d959e; --heading:#24313f;
+  --accent:#2b6cb0; --onaccent:#ffffff;
+  --hover:#eef2f7; --active:#e6f0fb; --btnhover:#f1f5f9;
+  --headerbg:rgba(255,255,255,.94); --colheadbg:rgba(255,255,255,.96);
+  --headbg1:#fbfdff; --headbg2:#ffffff; --secline:#eef1f4;
+  /* ===== 表格 / 插图 ===== */
+  --thbg:#f5f7f9; --trhover:#fafcff; --best:#0f766e;
+  --figbg:#ffffff; --figfilter:none;
+  /* ===== 高亮与笔记 ===== */
+  --src:#fde68a; --srcb:#f59e0b; --tgt:#cfe8ff; --tgtb:#3b82f6;
+  --pin:#d1fae5; --pinb:#10b981; --note:#ffe0ee; --noteb:#ec4899;
+  --notebg:#fff6fa; --notering:#f9a8d4; --badgebg:#fce7f3; --badgeink:#9d174d;
+  --ring:#fbcfe8; --flash:#fff3bf; --linkhover:#eaf2fb;
+  /* ===== 其它 ===== */
+  --xdim:#c2c8cf; --danger:#b42318; --dangerbg:#fee2e2; --dangerink:#ffffff;
+  --toastbg:#1f2328; --toastink:#ffffff; --hintkey:#fbbf24;
+  --swborder:rgba(0,0,0,.15); --shadow:rgba(15,20,25,.05); --shadow2:rgba(15,20,25,.14);
+  --lbbg:rgba(15,20,25,.86);
+  --fs:16px; --lh:1.85; --navw:246px; --notew:0px;
+  --nfont:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+}
+/* ================= 主题：切换 body[data-theme] 即整套换色 ================= */
+/* VSCode Dark+ 风格深色 */
+body[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#1e1e1e; --panel:#252526; --card:#252526; --line:#3a3d41; --line2:#333639;
+  --ink:#e6e6e6; --ink2:#b0b8c1; --ink3:#8d949c; --ph:#6e767f; --heading:#d4dbe3;
+  --accent:#4ea1ff; --onaccent:#0a1220;
+  --hover:#2a2d2e; --active:#123a5c; --btnhover:#333639;
+  --headerbg:rgba(30,30,30,.94); --colheadbg:rgba(30,30,30,.96);
+  --headbg1:#232426; --headbg2:#1e1e1e; --secline:#343739;
+  --thbg:#2d2d30; --trhover:#2a2d2e; --best:#5ee08a;
+  --figbg:#eef1f4; --figfilter:brightness(.95) contrast(1.02);
+  --src:rgba(245,158,11,.34); --srcb:#f0a72c; --tgt:rgba(90,168,255,.32); --tgtb:#5aa8ff;
+  --pin:rgba(16,185,129,.30); --pinb:#34d399; --note:rgba(244,114,182,.32); --noteb:#f472b6;
+  --notebg:#2c2029; --notering:#b0507c; --badgebg:#4d2036; --badgeink:#ffc2dc;
+  --ring:#b0507c; --flash:rgba(250,204,21,.30); --linkhover:#22344a;
+  --xdim:#6e767f; --danger:#ff7b72; --dangerbg:#4a221f; --dangerink:#2b0c0a;
+  --toastbg:#eceff3; --toastink:#14181d; --hintkey:#b45309;
+  --swborder:rgba(255,255,255,.28); --shadow:rgba(0,0,0,.4); --shadow2:rgba(0,0,0,.55);
+  --lbbg:rgba(0,0,0,.9);
+}
+/* 靛青夜（比纯深色更柔，蓝调低刺激） */
+body[data-theme="indigo"]{
+  color-scheme:dark;
+  --bg:#11172b; --panel:#171f38; --card:#1a2340; --line:#2e3a5f; --line2:#28324f;
+  --ink:#dfe6f7; --ink2:#a9b6d8; --ink3:#8593b8; --ph:#6d7ba0; --heading:#cdd8f2;
+  --accent:#7aa2f7; --onaccent:#0a1020;
+  --hover:#1e2947; --active:#243b6b; --btnhover:#25314f;
+  --headerbg:rgba(17,23,43,.94); --colheadbg:rgba(17,23,43,.96);
+  --headbg1:#18203a; --headbg2:#11172b; --secline:#2a3454;
+  --thbg:#202b4a; --trhover:#1d2745; --best:#7ee787;
+  --figbg:#eaeef6; --figfilter:brightness(.95) contrast(1.02);
+  --src:rgba(250,204,21,.32); --srcb:#e0af68; --tgt:rgba(122,162,247,.32); --tgtb:#7aa2f7;
+  --pin:rgba(52,211,153,.28); --pinb:#41d19a; --note:rgba(244,114,182,.30); --noteb:#f0a0c8;
+  --notebg:#2a2140; --notering:#a2609a; --badgebg:#43244a; --badgeink:#ffc9e8;
+  --ring:#a2609a; --flash:rgba(224,175,104,.30); --linkhover:#233559;
+  --xdim:#6d7ba0; --danger:#ff8080; --dangerbg:#44202c; --dangerink:#2b0c0a;
+  --toastbg:#e8edf8; --toastink:#131a2c; --hintkey:#b45309;
+  --swborder:rgba(255,255,255,.28); --shadow:rgba(0,0,0,.4); --shadow2:rgba(0,0,0,.55);
+  --lbbg:rgba(4,8,18,.92);
+}
+/* 护眼绿（豆沙绿） */
+body[data-theme="green"]{
+  --bg:#c9e8cd; --panel:#d6efd9; --card:#e2f5e4; --line:#a5cfaa; --line2:#bbdcbf;
+  --ink:#122c18; --ink2:#37533d; --ph:#5d7d64; --ink3:#3d5f45; --heading:#173d24;
+  --accent:#0f5f33; --onaccent:#ffffff;
+  --hover:#bce2c1; --active:#a8dcb0; --btnhover:#cdead0;
+  --headerbg:rgba(201,232,205,.95); --colheadbg:rgba(201,232,205,.97);
+  --headbg1:#d9f1dc; --headbg2:#cfeed3; --secline:#b3d9b8;
+  --thbg:#bfe3c4; --trhover:#d9f2dc; --best:#0a6b39;
+  --figbg:#ffffff; --figfilter:none;
+  --src:#ffe08a; --srcb:#c98a00; --tgt:#b8d7f7; --tgtb:#1d5fc4;
+  --pin:#93dcae; --pinb:#0b7a45; --note:#ffcfe3; --noteb:#c02a63;
+  --notebg:#eaf7ec; --notering:#e39bbd; --badgebg:#ffe0ee; --badgeink:#8d1449;
+  --ring:#e39bbd; --flash:#fff0a8; --linkhover:#d3ecf6;
+  --xdim:#7a9c81; --danger:#a01b13; --dangerbg:#f7d7d4; --dangerink:#ffffff;
+  --toastbg:#122c18; --toastink:#e9f7ec; --hintkey:#ffd166;
+  --swborder:rgba(0,0,0,.2); --shadow:rgba(20,50,28,.10); --shadow2:rgba(20,50,28,.2);
+  --lbbg:rgba(10,30,16,.88);
+}
+/* 米黄纸（暖褐低蓝光，长时间阅读友好） */
+body[data-theme="sepia"]{
+  --bg:#f4ecd8; --panel:#faf4e4; --card:#fffaf0; --line:#dccfb2; --line2:#e6dcc4;
+  --ink:#372f22; --ink2:#5f5443; --ink3:#6a5f4c; --ph:#8b7f68; --heading:#463a28;
+  --accent:#8a5220; --onaccent:#fffaf0;
+  --hover:#ece2ca; --active:#e6d8b8; --btnhover:#f0e7d2;
+  --headerbg:rgba(244,236,216,.95); --colheadbg:rgba(244,236,216,.97);
+  --headbg1:#fbf5e6; --headbg2:#f4ecd8; --secline:#e3d8bd;
+  --thbg:#eee3c9; --trhover:#fbf6ea; --best:#0d6b47;
+  --figbg:#ffffff; --figfilter:none;
+  --src:#ffe08a; --srcb:#c07800; --tgt:#c3dcf5; --tgtb:#1f5fb8;
+  --pin:#b6e3c6; --pinb:#12784b; --note:#ffd4e4; --noteb:#c22a66;
+  --notebg:#fdf1e6; --notering:#e0a3ba; --badgebg:#fbe3ec; --badgeink:#8f1b4c;
+  --ring:#e6b6c6; --flash:#ffeea8; --linkhover:#e8dfc6;
+  --xdim:#a89a80; --danger:#a32017; --dangerbg:#f6dcd6; --dangerink:#fffaf0;
+  --toastbg:#372f22; --toastink:#fffaf0; --hintkey:#e9b949;
+  --swborder:rgba(0,0,0,.2); --shadow:rgba(70,58,40,.10); --shadow2:rgba(70,58,40,.2);
+  --lbbg:rgba(40,32,20,.88);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  font-size:var(--fs);line-height:var(--lh);-webkit-font-smoothing:antialiased}
+
+/* ---------- 顶部 ---------- */
+header{position:sticky;top:0;z-index:40;background:var(--headerbg);
+  backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--line)}
+.hwrap{max-width:1500px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:15px;letter-spacing:.2px;white-space:nowrap}
+.brand small{display:block;font-weight:400;color:var(--ink2);font-size:11.5px;letter-spacing:0}
+.tools{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--card);padding:6px 11px;font-size:12.5px;color:var(--ink2);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--accent);color:var(--onaccent)}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 11px;font-size:12.5px;
+  color:var(--ink2);cursor:pointer}
+.btn.on{background:var(--accent);color:var(--onaccent);border-color:var(--accent)}
+#theme{border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:8px;
+  padding:6px 8px;font:inherit;font-size:12.5px;cursor:pointer}
+#bar{height:2px;background:var(--accent);width:0;transition:width .1s linear}
+
+/* ---------- 布局 ---------- */
+.shell{max-width:1760px;margin:0 auto;padding:24px;display:grid;
+  grid-template-columns:var(--navw) minmax(0,1fr) var(--notew);gap:0}
+body.notes-on{--notew:392px}
+body.nav-off{--navw:0px}
+/* 显式列定位：目录隐藏（display:none）后正文不会滑到宽度 0 的第一列 */
+nav{grid-column:1}
+main{grid-column:2;min-width:0}
+aside.notes{grid-column:3}
+body.nav-off nav{display:none}
+nav{position:sticky;top:74px;align-self:start;max-height:calc(100vh - 100px);overflow:auto;
+  border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:12px;margin-right:26px}
+nav h4{margin:2px 0 8px;font-size:12px;color:var(--ink2);letter-spacing:.08em;text-transform:uppercase}
+nav a{display:block;text-decoration:none;color:var(--ink);padding:5px 8px;border-radius:7px;line-height:1.35}
+nav a:hover{background:var(--hover)}
+nav a.t2{font-size:13.5px;font-weight:600;margin-top:4px}
+nav a.t3{font-size:12.5px;padding-left:18px;color:var(--ink2)}
+nav a.active{background:var(--active);color:var(--accent)}
+nav .ten{display:block;font-size:10.5px;color:var(--ink3);font-weight:400}
+
+/* ---------- 论文头 ---------- */
+.paper{border:1px solid var(--line);border-radius:14px;padding:22px 26px;margin-bottom:20px;
+  background:linear-gradient(180deg,var(--headbg1),var(--headbg2))}
+.paper h1{margin:0 0 4px;font-size:25px;line-height:1.3}
+.paper .h1zh{margin:0 0 12px;font-size:17px;color:var(--accent);font-weight:600}
+.paper .m{font-size:13px;color:var(--ink2);margin:3px 0}
+.chips{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 11px;font-size:12px;color:var(--ink2)}
+.kpi{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kpi div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card)}
+.kpi b{display:block;font-size:19px;color:var(--accent)}
+.kpi span{font-size:11.5px;color:var(--ink2)}
+
+/* ---------- 双栏正文 ---------- */
+.colhead{position:sticky;top:57px;z-index:30;display:grid;grid-template-columns:1fr 1fr;gap:0 30px;
+  background:var(--colheadbg);border-bottom:1px solid var(--line);padding:8px 0;margin-bottom:6px}
+.colhead div{font-size:12px;color:var(--ink2);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.doc{display:grid;grid-template-columns:1fr 1fr;gap:0 30px;align-items:start}
+.cell{padding:2px 0}
+.cell.en{border-right:1px dashed var(--line2);padding-right:26px}
+.cell.zh{padding-left:2px}
+.doc p{margin:.35em 0 .9em}
+.cell.zh p{line-height:1.95}
+.full{grid-column:1/-1}
+h2{font-size:19px;margin:26px 0 6px;padding-top:8px}
+h3{font-size:15.5px;margin:18px 0 4px;color:var(--heading)}
+.cell.zh h2,.cell.zh h3{color:var(--accent)}
+.sec{border-top:2px solid var(--secline);margin-top:10px}
+.cap p{font-size:13px;color:var(--ink2);margin:.2em 0 1.1em}
+ul{margin:.3em 0 1em;padding-left:1.25em}
+li{margin:.25em 0}
+
+/* ---------- 句子高亮 ---------- */
+.s{border-radius:4px;padding:1px 1px;transition:background .12s,box-shadow .12s;cursor:pointer}
+.s.hl-src{background:var(--src);box-shadow:inset 0 -2px 0 var(--srcb)}
+.s.hl-tgt{background:var(--tgt);box-shadow:inset 0 -2px 0 var(--tgtb)}
+.s.pin:not(.noted){background:var(--pin)!important;box-shadow:inset 0 -2px 0 var(--pinb)!important}
+body.nohl .s{cursor:auto}
+body.nohl .s.hl-src,body.nohl .s.hl-tgt{background:transparent;box-shadow:none}
+
+/* ---------- 笔记标记（双击） ---------- */
+.s.noted{background:var(--note)!important;box-shadow:inset 0 -2px 0 var(--noteb)!important}
+.s.noted.pin{box-shadow:inset 0 -2px 0 var(--pinb),inset 0 -7px 0 -5px var(--noteb)!important}
+.s.noted::after{content:"笔记 " attr(data-nc);font-size:10px;color:var(--badgeink);background:var(--badgebg);
+  border:1px solid var(--notering);border-radius:4px;padding:0 4px;margin:0 2px 0 4px;
+  vertical-align:2px;white-space:nowrap;font-weight:600}
+.s.noted.hl-src{outline:2px solid var(--srcb);outline-offset:1px}
+.s.noted.hl-tgt{outline:2px solid var(--tgtb);outline-offset:1px}
+.annot{position:relative}
+.annot.noted{outline:2px solid var(--notering);outline-offset:2px;border-radius:12px;background:var(--notebg)}
+.annot.noted::after{content:"笔记 " attr(data-nc);position:absolute;top:4px;right:6px;font-size:10px;
+  color:var(--badgeink);background:var(--badgebg);border:1px solid var(--notering);border-radius:999px;padding:1px 7px;
+  font-weight:600;z-index:3}
+@keyframes flashbg{0%{background:var(--flash)}100%{background:transparent}}
+.flash{animation:flashbg 1.4s ease-out}
+
+/* ---------- 笔记栏：边注式，永远对齐所批注元素的那一行 ---------- */
+aside.notes{display:none}
+body.notes-on aside.notes{display:block;position:relative;margin-left:24px}
+.ncard{position:absolute;left:0;right:0;background:var(--card);border:1px solid var(--line);
+  border-left:3px solid var(--noteb);border-radius:10px;padding:8px 22px 8px 10px;
+  box-shadow:0 1px 3px var(--shadow);transition:top .18s ease,box-shadow .15s}
+.ncard.act{box-shadow:0 0 0 2px var(--ring)}
+/* 笔记正文与论文正文同字号，随 A−/A+ 一起缩放；--nfont 作为「默认字体」的可回归值 */
+.nbody{--nfont:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue','PingFang SC',
+  'Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  font-family:var(--nfont);
+  font-size:var(--fs);line-height:1.75;word-break:break-word;cursor:text;outline:0;min-height:22px}
+.nbody.ph::before{content:'点这里写笔记…';color:var(--ph);font-size:.85em}
+.nbody ol,.nbody ul{margin:.35em 0;padding-left:1.5em}
+.nbody li{margin:.15em 0}
+.nbody a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;word-break:break-all;
+  cursor:pointer}
+.nbody a:hover{background:var(--linkhover)}
+/* 图片与文字同行，光标 + 退格键即可删除 */
+.nbody img{display:inline-block;vertical-align:middle;max-width:100%;max-height:150px;
+  margin:2px 1px;border-radius:5px;border:1px solid var(--line)}
+.nbody img::selection{background:var(--ring)}
+.nx{position:absolute;top:2px;right:4px;width:18px;height:18px;line-height:17px;text-align:center;
+  border-radius:50%;color:var(--xdim);cursor:pointer;font-size:13px;user-select:none}
+.nx:hover{background:var(--dangerbg);color:var(--danger)}
+/* ---------- 笔记格式工具条（只在当前笔记上显示） ---------- */
+.ntb{display:none;gap:3px;align-items:center;flex-wrap:wrap;margin:0 0 6px;padding-bottom:5px;
+  border-bottom:1px dashed var(--line)}
+.ncard.act .ntb{display:flex}
+.ntb select{font:inherit;font-size:11px;padding:1px 2px;border:1px solid var(--line);border-radius:5px;
+  background:var(--card);color:var(--ink2);max-width:82px}
+.ntb button{width:23px;height:22px;padding:0;border:1px solid var(--line);border-radius:5px;background:var(--card);
+  color:var(--ink2);cursor:pointer;font-size:11.5px;line-height:1}
+.ntb button:hover{background:var(--btnhover);color:var(--ink)}
+.ntb button.on{background:var(--accent);color:var(--onaccent);border-color:var(--accent)}
+.ntb button.wide{width:auto;padding:0 6px;font-size:11px}
+.ntb .sep{width:1px;height:15px;background:var(--line);margin:0 2px}
+.ntb .sw{width:15px;height:15px;border-radius:3px;border:1px solid var(--swborder);cursor:pointer}
+.ntb .sw:hover{transform:scale(1.15)}
+.ntb .sw.on{outline:2px solid var(--ink);outline-offset:1px}
+.ntb input[type=color]{width:22px;height:22px;padding:0;border:1px solid var(--line);border-radius:5px;
+  background:var(--card);cursor:pointer}
+.ncard time{display:block;font-size:10px;color:var(--ph);margin-top:4px}
+#ntoast{position:fixed;right:18px;bottom:18px;z-index:70;background:var(--toastbg);color:var(--toastink);font-size:12px;
+  padding:7px 12px;border-radius:8px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:300px}
+#ntoast.on{opacity:.93}
+#ntoast.err{background:var(--danger);color:var(--dangerink)}
+
+/* ---------- 图 / 公式 / 表 ---------- */
+figure{margin:14px 0 6px;text-align:center;background:var(--figbg);border:1px solid var(--line);border-radius:12px;padding:12px}
+figure img{max-width:100%;height:auto;cursor:zoom-in;filter:var(--figfilter)}
+.eqbox{position:relative;margin:6px 0 14px;padding:8px 44px 8px 14px;background:var(--panel);
+  border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+.eqbody{font-size:15px}
+.eqno{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--ink2)}
+.tablebox{margin:2px 0 18px;overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:12.5px;background:var(--card)}
+th,td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:center;white-space:nowrap}
+th{background:var(--thbg);font-weight:600;color:var(--heading)}
+th small,td small{display:block;color:var(--ink2);font-size:10.5px;font-weight:400}
+td.l,th.l{text-align:left}
+tbody tr:hover{background:var(--trhover)}
+.best{color:var(--best);font-weight:700}
+.refs{grid-column:1/-1;margin:22px 0 40px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:10px 16px}
+.refs summary{cursor:pointer;font-size:13.5px;color:var(--ink2);font-weight:600}
+.refs ol{font-size:12px;color:var(--ink2);line-height:1.7}
+
+/* ---------- 单栏模式 ---------- */
+body.only-en .doc,body.only-zh .doc{grid-template-columns:1fr}
+body.only-en .colhead,body.only-zh .colhead{grid-template-columns:1fr}
+body.only-en .cell.zh,body.only-en .colhead div:nth-child(2){display:none}
+body.only-zh .cell.en,body.only-zh .colhead div:nth-child(1){display:none}
+body.only-en .cell.en{border-right:0;padding-right:0}
+
+/* ---------- 灯箱 ---------- */
+#lb{position:fixed;inset:0;background:var(--lbbg);display:none;z-index:99;
+  align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+#lb.on{display:flex}
+#lb img{max-width:96%;max-height:94%;background:var(--figbg);border-radius:8px}
+.hint{position:fixed;right:18px;bottom:18px;z-index:50;background:var(--toastbg);color:var(--toastink);font-size:12px;
+  padding:8px 12px;border-radius:8px;opacity:.9;max-width:290px;line-height:1.6}
+.hint b{color:var(--hintkey)}
+@media (max-width:1180px){
+  .shell{grid-template-columns:var(--navw) minmax(0,1fr);padding:16px}
+  nav{position:static;max-height:300px;margin-right:16px}
+  .cell.en{padding-right:18px}
+  .doc,.colhead{gap:0 20px}
+  body.notes-on{--notew:0px}
+  body.notes-on aside.notes{position:fixed;top:57px;right:0;bottom:0;width:min(360px,94vw);
+    margin:0;overflow:auto;padding:12px;background:var(--panel);border-left:1px solid var(--line);
+    z-index:60;box-shadow:-10px 0 28px var(--shadow2)}
+  body.notes-on .ncard{position:static;margin-bottom:10px}
+}
+@media (max-width:820px){
+  .doc,.colhead{grid-template-columns:1fr}
+  .cell.en{border-right:0;padding-right:0;border-bottom:1px dashed var(--line2)}
+}
+/* ===== academic-report 单栏报告适配层（叠在牛来核心视觉之上） ===== */
+
+/* 正文单栏容器：居中限宽，替代牛来的双栏 .doc */
+.content{max-width:980px;margin:0 auto;padding:0 6px 80px}
+.content h2{font-size:19px;margin:28px 0 10px;padding-top:10px;border-top:2px solid var(--secline);color:var(--heading)}
+.content h3{font-size:15.5px;margin:20px 0 8px;color:var(--accent)}
+.content p{margin:.6em 0 1em}
+.content a{color:var(--accent)}
+.content strong{font-weight:600}
+
+/* 行内代码与代码块 */
+.content code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.85em;
+  background:var(--codebg);padding:1px 5px;border-radius:4px;color:var(--ink)}
+.content pre{background:var(--codebg);border:1px solid var(--line);border-radius:10px;
+  padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.6}
+.content pre code{background:none;padding:0}
+
+/* Mermaid 图：白底居中卡片 */
+.content pre.mermaid{background:#fff;text-align:center;color:#333;padding:18px 8px;margin:16px 0}
+
+/* 引用块（关键原文引用：英文原句斜体 + 中文） */
+.content blockquote{
+  margin:14px 0;padding:10px 16px;background:var(--quotebg,#f7f8fa);
+  border-left:4px solid var(--quoteline,#c9ddf2);border-radius:0 10px 10px 0;color:var(--ink2)}
+.content blockquote p{margin:.4em 0}
+.content blockquote p:first-child{font-style:italic}
+.content blockquote p:nth-child(2){margin-top:10px;color:var(--ink)}
+
+/* 表格：圆角容器 + hover 行（牛来 .tablebox 已定义边框圆角，此处补行内细节） */
+.content .tablebox{margin:2px 0 18px;overflow-x:auto}
+.content table{font-size:13px;background:var(--card)}
+.content th,.content td{padding:7px 10px}
+.content td.l,.content th.l{text-align:left}
+.content .best{color:var(--best);font-weight:700}
+
+/* 列表 */
+.content ul,.content ol{margin:.5em 0 1em;padding-left:1.6em}
+.content li{margin:.3em 0}
+
+/* 深浅主题下的局部变量补充 */
+body[data-theme="dark"]{--codebg:#262b33;--quotebg:#23272f;--quoteline:#3d5a7a}
+body[data-theme="indigo"]{--codebg:#1c2542;--quotebg:#1a233d;--quoteline:#3d5288}
+body[data-theme="green"]{--codebg:#d8efdb;--quotebg:#ddefe0;--quoteline:#8fc298}
+body[data-theme="sepia"]{--codebg:#efe7d2;--quotebg:#f1ead8;--quoteline:#cbb48a}
+
+/* 打印 */
+@media print{
+  header,nav{display:none !important}
+  .shell{display:block;padding:0}
+  .content h2{page-break-before:always}
+  a{text-decoration:none;color:inherit}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <div class="brand">TAPAS：面向云平台 LLM 推理的热感知与功率感知调度 —— 中文学习报告
+      <small>AI 学术论文中文学习报告 · academic-report</small></div>
+    <div class="tools">
+      <button class="btn on" id="navbtn" title="展开 / 隐藏左侧目录">☰ 目录</button>
+      <div class="seg" id="fs">
+        <button data-f="-1">A−</button><button data-f="1">A+</button>
+      </div>
+      <select id="theme" title="配色主题（护眼）">
+        <option value="light">☀︎ 白底</option>
+        <option value="dark">◐ 深色 VSCode</option>
+        <option value="indigo">☾ 靛青夜</option>
+        <option value="green">◉ 护眼绿</option>
+        <option value="sepia">▤ 米黄纸</option>
+      </select>
+    </div>
+  </div>
+  <div id="bar"></div>
+</header>
+
+<div class="shell">
+  <nav id="toc"><h4>目录 Contents</h4><a class="t2" href="#报告元信息">报告元信息</a><a class="t2" href="#核心指标速览">核心指标速览</a><a class="t2" href="#1--研究背景与问题动机">1. 研究背景与问题动机</a><a class="t3" href="#1-1-LLM-推理集群为什么把热与功率推到台前">1.1 LLM 推理集群为什么把热与功率推到台前</a><a class="t3" href="#1-2-传统热-功率方法为什么在-LLM-推理上不再最优">1.2 传统热/功率方法为什么在 LLM 推理上不再最优</a><a class="t3" href="#1-3-论文的问题定义与三条核心原则">1.3 论文的问题定义与三条核心原则</a><a class="t3" href="#1-4-贡献与评估口径">1.4 贡献与评估口径</a><a class="t2" href="#2--冷却基础设施刻画--2-1">2. 冷却基础设施刻画（§2.1）</a><a class="t3" href="#2-1-风冷气流组织与阈值机制">2.1 风冷气流组织与阈值机制</a><a class="t3" href="#2-2-容量规划与故障冗余">2.2 容量规划与故障冗余</a><a class="t3" href="#2-3-刻画数据集与四个温度维度">2.3 刻画数据集与四个温度维度</a><a class="t3" href="#2-4-三个温度-风量模型-式-1-3">2.4 三个温度/风量模型（式 1–3）</a><a class="t2" href="#3--功率基础设施刻画--2-2">3. 功率基础设施刻画（§2.2）</a><a class="t3" href="#3-1-三级配电层级">3.1 三级配电层级</a><a class="t3" href="#3-2-峰值规划-均匀分配与超配空间">3.2 峰值规划、均匀分配与超配空间</a><a class="t3" href="#3-3-冗余故障后的容量收缩">3.3 冗余故障后的容量收缩</a><a class="t3" href="#3-4-服务器功率模型与行间功率不均衡">3.4 服务器功率模型与行间功率不均衡</a><a class="t2" href="#4--负载侧机会刻画--3">4. 负载侧机会刻画（§3）</a><a class="t3" href="#4-1-GPU-负载放置-随机放置的温度-功率离散度">4.1 GPU 负载放置：随机放置的温度/功率离散度</a><a class="t3" href="#4-2-长生命周期与可预测负载">4.2 长生命周期与可预测负载</a><a class="t3" href="#4-3-IaaS-与-SaaS-可见度与可调性的不对称">4.3 IaaS 与 SaaS：可见度与可调性的不对称</a><a class="t3" href="#4-4-实例配置-五个旋钮的权衡方向">4.4 实例配置：五个旋钮的权衡方向</a><a class="t3" href="#4-5-goodput-与-Pareto-前沿">4.5 goodput 与 Pareto 前沿</a><a class="t2" href="#5--TAPAS-系统设计--4">5. TAPAS 系统设计（§4）</a><a class="t3" href="#5-1-总体架构">5.1 总体架构</a><a class="t3" href="#5-2-工作负载放置--4-1">5.2 工作负载放置（§4.1）</a><a class="t3" href="#5-3-请求路由-三层约束--4-2">5.3 请求路由：三层约束（§4.2）</a><a class="t3" href="#5-4-实例配置--4-3">5.4 实例配置（§4.3）</a><a class="t3" href="#5-5-超配与故障管理--4-4">5.5 超配与故障管理（§4.4）</a><a class="t3" href="#5-6-实现要点--4-5">5.6 实现要点（§4.5）</a><a class="t3" href="#5-7-泛化条件--4-6">5.7 泛化条件（§4.6）</a><a class="t2" href="#6--评估方法--5-1">6. 评估方法（§5.1）</a><a class="t3" href="#6-1-基线与消融变体">6.1 基线与消融变体</a><a class="t3" href="#6-2-负载与双轨评估">6.2 负载与双轨评估</a><a class="t2" href="#7--评估结果--5-2-5-4">7. 评估结果（§5.2–5.4）</a><a class="t3" href="#7-1-运行效果-真实集群与仿真">7.1 运行效果：真实集群与仿真</a><a class="t3" href="#7-2-消融研究-三组件各自贡献与协同-图-21">7.2 消融研究：三组件各自贡献与协同（图 21）</a><a class="t3" href="#7-3-对-IaaS-SaaS-比例的敏感性">7.3 对 IaaS/SaaS 比例的敏感性</a><a class="t3" href="#7-4-超配能力-图-22">7.4 超配能力（图 22）</a><a class="t3" href="#7-5-故障应急管理--5-4-表-2">7.5 故障应急管理（§5.4，表 2）</a><a class="t2" href="#8--与相关工作的定位对比">8. 与相关工作的定位对比</a><a class="t2" href="#9--工程启示-结合本项目两机六卡边界">9. 工程启示（结合本项目两机六卡边界）</a><a class="t3" href="#9-1-可直接借鉴的机制分层">9.1 可直接借鉴的机制分层</a><a class="t3" href="#9-2-规模差异下不能照搬的部分">9.2 规模差异下不能照搬的部分</a><a class="t3" href="#9-3-对选题的线索提示">9.3 对选题的线索提示</a><a class="t2" href="#10--论文局限-证据边界与未知项">10. 论文局限、证据边界与未知项</a><a class="t3" href="#10-1-作者自述限制">10.1 作者自述限制</a><a class="t3" href="#10-2-分析者判断的边界">10.2 分析者判断的边界</a><a class="t3" href="#10-3-未核验项-unknown">10.3 未核验项（unknown）</a><a class="t3" href="#10-4-可复现性与迁移性评级">10.4 可复现性与迁移性评级</a><a class="t2" href="#11--候选问题与-Mode-C-待核验清单">11. 候选问题与 Mode C 待核验清单</a><a class="t3" href="#11-1-与清单阅读问题的对照">11.1 与清单阅读问题的对照</a><a class="t2" href="#附录-关键术语对照表">附录：关键术语对照表</a></nav>
+  <main>
+    <div class="paper">
+  <h1>TAPAS：面向云平台 LLM 推理的热感知与功率感知调度 —— 中文学习报告</h1>
+  <div class="h1zh">AI 学术论文中文学习报告 · academic-report</div>
+  <div class="m"><b>论文标题</b>：TAPAS: Thermal- and Power-Aware Scheduling for LLM Inference in Cloud Platforms（面向云平台 LLM 推理的热感知与功率感知调度）</div><div class="m"><b>作者团队</b>：Jovan Stojkovic、Chaojie Zhang、Íñigo Goiri、Esha Choukse、Haoran Qiu、Rodrigo Fonseca、Josep Torrellas、Ricardo Bianchini</div><div class="m"><b>所属机构</b>：University of Illinois Urbana-Champaign（UIUC）；Microsoft Azure Research；Microsoft Azure。第一作者在 UIUC，工作期间任职于 Microsoft Azure Research</div><div class="m"><b>发表会议</b>：第 30 届 ACM 编程语言与操作系统体系结构支持国际会议（ASPLOS '25），2025 年 3 月 30 日–4 月 3 日，荷兰鹿特丹；DOI: 10.1145/3676641.3716025，ACM ISBN 979-8-4007-1079-7/25/03</div><div class="m"><b>文献类型</b>：会议完整论文（16 页），CC BY 4.0 开放许可</div><div class="m"><b>研究范式</b>：生产数据刻画（数万张 GPU、三区域、三个月）+ 单服务器配置扫描（DGX A100 + Llama2）+ 80 台服务器一小时真实回放 + 千台级离散时间仿真</div><div class="m"><b>一句话主旨</b>：利用历史温度/功率/负载画像与 SaaS 负载的可调性，在"放置—路由—实例配置"三个层级协同做热与功率感知调度，在不破坏 SLO 与质量的前提下压低温度与功率峰值、支撑安全超配并应对设施故障</div><div class="m"><b>对应分析包</b>：AN-20261105-031-v01（LP05，partial）；证据定位 LP05-E01～E04</div><div class="m"><b>阅读重点（清单问题）</b>：供电限制如何传到放置、路由和配置？重点看 §4、§5.4</div>
+  <div class="kpi"><div><b>−17%（仿真一周口径为 −15%）</b><span>最高温度压降（整体方案，消融口径）</span></div><div><b>−23%（仿真一周口径为 −24%）</b><span>行峰值功率压降（整体方案，消融口径）</span></div><div><b>最多 +40% 服务器，限频时间占比 &lt; 0.7%</b><span>可追加容量（超配上限）</span></div><div><b>热限频 −97%、功率限频 −99%</b><span>限频事件降幅（大规模仿真，对比其他可行策略）</span></div></div>
+</div>
+    <article class="content" id="content">
+<h1 id="TAPAS-面向云平台-LLM-推理的热感知与功率感知调度----中文学习报告">TAPAS：面向云平台 LLM 推理的热感知与功率感知调度 —— 中文学习报告</h1>
+<blockquote>
+<p>本报告基于论文 <em>TAPAS: Thermal- and Power-Aware Scheduling for LLM Inference in Cloud Platforms</em>（Stojkovic et al., ASPLOS '25）自下而上精读而成。报告不做"摘要式概括"，而是把基础设施刻画、负载侧机会刻画、系统三组件设计、双轨评估与故障应急逐层拆开，落到可指导工程实践的细度，并在最后结合本项目"两机六卡"的资源边界讨论可迁移性与候选问题。</p>
+</blockquote>
+<h2 id="报告元信息">报告元信息</h2>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>论文标题</strong></td>
+<td>TAPAS: Thermal- and Power-Aware Scheduling for LLM Inference in Cloud Platforms（面向云平台 LLM 推理的热感知与功率感知调度）</td>
+</tr>
+<tr>
+<td><strong>作者团队</strong></td>
+<td>Jovan Stojkovic、Chaojie Zhang、Íñigo Goiri、Esha Choukse、Haoran Qiu、Rodrigo Fonseca、Josep Torrellas、Ricardo Bianchini</td>
+</tr>
+<tr>
+<td><strong>所属机构</strong></td>
+<td>University of Illinois Urbana-Champaign（UIUC）；Microsoft Azure Research；Microsoft Azure。第一作者在 UIUC，工作期间任职于 Microsoft Azure Research</td>
+</tr>
+<tr>
+<td><strong>发表会议</strong></td>
+<td>第 30 届 ACM 编程语言与操作系统体系结构支持国际会议（ASPLOS '25），2025 年 3 月 30 日–4 月 3 日，荷兰鹿特丹；DOI: 10.1145/3676641.3716025，ACM ISBN 979-8-4007-1079-7/25/03</td>
+</tr>
+<tr>
+<td><strong>文献类型</strong></td>
+<td>会议完整论文（16 页），CC BY 4.0 开放许可</td>
+</tr>
+<tr>
+<td><strong>研究范式</strong></td>
+<td>生产数据刻画（数万张 GPU、三区域、三个月）+ 单服务器配置扫描（DGX A100 + Llama2）+ 80 台服务器一小时真实回放 + 千台级离散时间仿真</td>
+</tr>
+<tr>
+<td><strong>一句话主旨</strong></td>
+<td>利用历史温度/功率/负载画像与 SaaS 负载的可调性，在"放置—路由—实例配置"三个层级协同做热与功率感知调度，在不破坏 SLO 与质量的前提下压低温度与功率峰值、支撑安全超配并应对设施故障</td>
+</tr>
+<tr>
+<td><strong>对应分析包</strong></td>
+<td>AN-20261105-031-v01（LP05，partial）；证据定位 LP05-E01～E04</td>
+</tr>
+<tr>
+<td><strong>阅读重点（清单问题）</strong></td>
+<td>供电限制如何传到放置、路由和配置？重点看 §4、§5.4</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="核心指标速览">核心指标速览</h2>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>数值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>最高温度压降（整体方案，消融口径）</strong></td>
+<td><strong>−17%</strong>（仿真一周口径为 −15%）</td>
+</tr>
+<tr>
+<td><strong>行峰值功率压降（整体方案，消融口径）</strong></td>
+<td><strong>−23%</strong>（仿真一周口径为 −24%）</td>
+</tr>
+<tr>
+<td><strong>可追加容量（超配上限）</strong></td>
+<td><strong>最多 +40%</strong> 服务器，限频时间占比 &lt; 0.7%</td>
+</tr>
+<tr>
+<td><strong>限频事件降幅（大规模仿真，对比其他可行策略）</strong></td>
+<td>热限频 <strong>−97%</strong>、功率限频 <strong>−99%</strong></td>
+</tr>
+<tr>
+<td><strong>真实集群回放峰值利用率</strong></td>
+<td>相比基线 <strong>−20%</strong>；与仿真绝对误差 <strong>4%</strong></td>
+</tr>
+<tr>
+<td><strong>全 SaaS 负载下最大压降</strong></td>
+<td>温度 <strong>−23%</strong>、功率 <strong>−28%</strong>；全 IaaS 时仅放置环节有效</td>
+</tr>
+<tr>
+<td><strong>应急容量限额</strong></td>
+<td>冷却（AHU）故障降至 <strong>90%</strong>；供电（UPS）故障降至 <strong>75%</strong></td>
+</tr>
+<tr>
+<td><strong>基线应急动作</strong></td>
+<td>跨服务器统一限频，最高 <strong>35%</strong> 频率上限</td>
+</tr>
+<tr>
+<td><strong>TAPAS 应急质量代价</strong></td>
+<td>最高 <strong>12%</strong> 质量影响（导向小模型导致的准确率下降）</td>
+</tr>
+<tr>
+<td><strong>硬件基准</strong></td>
+<td>NVIDIA A100 TDP <strong>6.5 kW</strong>、H100 TDP <strong>10.2 kW</strong>；GPU 温度阈值 <strong>85°C</strong></td>
+</tr>
+<tr>
+<td><strong>刻画数据集</strong></td>
+<td>数万张 GPU（A100+H100）、三区域、2024-07-01 至 08-30、<strong>10 分钟</strong>粒度均值</td>
+</tr>
+<tr>
+<td><strong>温度回归精度</strong></td>
+<td>分段多项式 MAE <strong>&lt; 1°C</strong></td>
+</tr>
+<tr>
+<td><strong>SLO 口径</strong></td>
+<td>goodput = 满足 TTFT/TBT 的 token/s；TBT/TTFT SLO 定义为空载执行时间的 <strong>5 倍</strong></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="1--研究背景与问题动机">1. 研究背景与问题动机</h2>
+<h3 id="1-1-LLM-推理集群为什么把热与功率推到台前">1.1 LLM 推理集群为什么把热与功率推到台前</h3>
+<p>生成式大语言模型已进入医疗健康、开发者效率、教育等多个领域，直接拉动了对 LLM 推理集群的高需求。云端 LLM 通常运行在由最新 GPU（NVIDIA A100、H100）驱动的虚拟机上。这类 GPU 功耗巨大，而冷却与供电正是数据中心总拥有成本（TCO）的主要组成部分。</p>
+<blockquote>
+<p><em>"The A100 and H100 GPUs have thermal design powers (TDP) of 6.5 kW and 10.2 kW, respectively, and require substantial cooling capabilities to maintain safe operating temperatures."</em></p>
+<p>A100 与 H100 GPU 的热设计功耗（TDP）分别为 6.5 kW 和 10.2 kW，需要强大的冷却能力才能维持安全工作温度。</p>
+</blockquote>
+<p>与通用服务器不同，GPU 服务器与机柜通常受限于<strong>功率密度</strong>而非空间约束。这意味着规划容量时，瓶颈不在"还能不能再塞一台机器"，而在"现有冷却风道与供电额度能不能再扛一份热与电"。</p>
+<p><pre class="mermaid">flowchart TD
+    subgraph DEMAND["需求侧"]
+        A1["生成式 LLM 应用扩散"] --> A2["推理集群高并发"]
+        A2 --> A3["A100/H100 高 TDP<br/>6.5 / 10.2 kW"]
+    end
+    subgraph FACILITY["设施侧瓶颈"]
+        B1["冷却风道与进风温度"]
+        B2["行级 / 层级供电额度"]
+        B3["GPU 85°C 温度阈值"]
+    end
+    A3 --> B1
+    A3 --> B2
+    B1 --> B3
+    B2 --> B3
+    B3 --> C["越限即限频<br/>性能下降 / 容量受限"]</pre></p>
+<h3 id="1-2-传统热-功率方法为什么在-LLM-推理上不再最优">1.2 传统热/功率方法为什么在 LLM 推理上不再最优</h3>
+<p>论文指出，LLM 推理集群的性能进步主要由软件系统、硬件技术与模型架构推动，热与功率问题此前未得到同等关注。传统数据中心的热管理与功率管理已被广泛研究，但 LLM 推理负载有三个传统方法没有覆盖的独特性质：</p>
+<ul>
+<li><strong>毫秒级细粒度执行阶段</strong>：推理由 prefill（并行处理整段提示词）与 decode（逐 token 顺序生成）两个阶段组成，每个阶段有不同的性能、温度与功率画像；传统方法多在服务器或作业的稳态尺度上做决策。</li>
+<li><strong>多配置参数的耦合权衡</strong>：模型并行度、模型大小、量化精度、GPU 频率、批量大小等参数同时影响性能、温度、功率与输出质量，方向并不一致（详见 §4）。</li>
+<li><strong>SaaS / IaaS 共置的可见度不对称</strong>：云平台同时托管对厂商透明、可调的 SaaS 负载，与不透明、不可改的 IaaS 负载，可动作的权限边界完全不同。</li>
+</ul>
+<h3 id="1-3-论文的问题定义与三条核心原则">1.3 论文的问题定义与三条核心原则</h3>
+<p>本文关注同时托管 SaaS 与 IaaS GPU 负载的公有云。SaaS 是云厂商管理、对厂商透明的 GPU 虚拟机，允许调整配置；IaaS 是厂商不可见的不透明 GPU 虚拟机，不可改动。TAPAS 要回答的问题是：<strong>在既有设施约束与两类负载权限不对称的前提下，怎样避免局部电力、风量与 GPU 温度越限，并在设施能力下降时尽量保留服务？</strong></p>
+<p>论文通过三条核心原则组织方案：</p>
+<ol>
+<li><strong>放置（Placement）</strong>：利用温度、功耗、服务负载的历史数据，以热感知、功率感知的方式放置 GPU 虚拟机；</li>
+<li><strong>路由（Routing）</strong>：根据各虚拟机负载与底层设施可用的热/功率余量，在多个 LLM 实例之间路由请求；</li>
+<li><strong>实例配置（Configuration）</strong>：在冷却与功率层级内重配置 SaaS 实例，把温度与功率拉回安全限值。</li>
+</ol>
+<h3 id="1-4-贡献与评估口径">1.4 贡献与评估口径</h3>
+<p>论文自述三项贡献：刻画生产规模下 GPU LLM 推理负载的热与功率特性；提出首个面向 LLM 推理系统的热/功率感知调度方案 TAPAS；基于大规模生产轨迹在 GPU 集群上做全面评估。需要特别注意评估口径被分成三类，不能互换：<strong>常态一小时硬件回放</strong>、<strong>千台级轨迹仿真</strong>、<strong>应急代理评估</strong>（§5.4 用频率限幅比例作性能代理、用模型替换估计质量损失）。</p>
+<hr />
+<h2 id="2--冷却基础设施刻画--2-1">2. 冷却基础设施刻画（§2.1）</h2>
+<h3 id="2-1-风冷气流组织与阈值机制">2.1 风冷气流组织与阈值机制</h3>
+<p>论文聚焦风冷——当今数据中心最常用的方式；其多数洞见也可迁移到液冷等其他技术路线。数据中心按两条行组成一条冷热通道布置：每行的空气处理单元（AHU）把来自数据中心级冷却设备（如蒸发冷却中的绝热冷却塔）的冷风送入冷通道；服务器风扇按负载调速，从前部吸入冷风、穿过服务器（含 GPU）、把热风排入热通道；冷却设备再回收热风重新降温。</p>
+<p>为避免<strong>热风回流</strong>（hot air recirculation，热风返回冷通道），AHU 提供的风量必须大于冷通道内服务器消耗的风量之和。GPU 温度一旦超过阈值（85°C），硬件就会对计算限频，以防止故障与永久损坏。</p>
+<p><pre class="mermaid">flowchart LR
+    subgraph AHU["AHU 空气处理单元"]
+        H["冷风送出"]
+    end
+    H --> COLD["冷通道"]
+    COLD --> S1["服务器吸入冷风<br/>穿过 GPU / 显存"]
+    S1 --> HOT["热通道 热风排出"]
+    HOT --> COOL["冷却设备回收降温"]
+    COOL --> H</pre></p>
+<h3 id="2-2-容量规划与故障冗余">2.2 容量规划与故障冗余</h3>
+<p><strong>常态规划</strong>：运营商通常按峰值负载规划冷却，需要同时保证 (1) 每条通道有足够风量（AHU）防止回流；(2) 数据中心有足够冷却能力把温度降到工作范围。两个条件都满足时，才可以往行内追加机柜。</p>
+<p><strong>故障冗余</strong>：数据中心通常搭建 N+1 等冗余。某台冷却设备故障时由其他设备补偿，但冷却容量随之下降，可能抬升所有冷通道温度；若某台 AHU 故障，由通道内其余 AHU 分担风量，风量不足即引发回流，抬升两条行内所有服务器温度。</p>
+<h3 id="2-3-刻画数据集与四个温度维度">2.3 刻画数据集与四个温度维度</h3>
+<p>为理解冷却基础设施的温度影响，作者研究了 Microsoft Azure 若干数据中心样本：数万张 GPU（A100 与 H100）、三个气候各异区域、2024 年 7 月 1 日至 8 月 30 日共三个月（覆盖冷却需求最高的暖季），另纳入一个较冷区域数据中心以覆盖凉爽气候。采集每台服务器进/出风温度、室外温度，以及各部件（GPU、显存）温度与功率，每 10 分钟上报一次均值；该间隔与所有传感器采样频率一致，并可由平均功率近似发热量。</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>温度维度</th>
+<th>刻画发现</th>
+<th>对调度的含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>室外温度驱动</strong></td>
+<td>进风温度跟随室外温度趋势。室外冷时，冷却把进风维持在约 18°C 以上以避免湿度升高、增加故障；室外超过 15°C 后进风随室外线性上升；室外炎热（25°C）时冷却主动降温；温度本就较高的位置对室外更不敏感。</td>
+<td>进风温度不是常数，而是随气候时段变化的可预测量；放置与路由需要把"室外温度时段"纳入预测。</td>
+</tr>
+<tr>
+<td><strong>空间布局异构</strong></td>
+<td>同一通道内 Server 1 始终比另外两台热约 2°C；部分行比其他行最高高 1°C，行内机柜之间差异最高 2°C；机柜内高度位置影响较小。气流模式难以事先估计，需实测或昂贵仿真。</td>
+<td>存在固定的"热行/热柜"位置，放置时应把更热的负载导向偏冷位置；空间异构可由历史进风温度画像吸收。</td>
+</tr>
+<tr>
+<td><strong>数据中心负载</strong></td>
+<td>服务器发热量增加时进风温度随之升高；炎热区域一台服务器上，室外 35°C 时高/低负载进风相差 2°C。进风与负载的相关性远低于与室外温度的相关性。</td>
+<td>负载是进风温度的次要变量，主变量仍是室外温度与布局；建模时不应把负载系数估计得过大。</td>
+</tr>
+<tr>
+<td><strong>GPU 个体异构</strong></td>
+<td>同一台 DGX A100、相同负载、相同进风下，8 张 GPU 温度差异最高达 10°C；大规模样本中同一数据中心 GPU 温度跨度超过 20°C。偶数编号 GPU（靠近进风口）温度更低。差异来自布局遮挡与工艺偏差。</td>
+<td>单机内最热 GPU 决定限频风险；规划 AHU 风量时必须为个体异构预留余量，不能按平均温度规划。</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2-4-三个温度-风量模型-式-1-3">2.4 三个温度/风量模型（式 1–3）</h3>
+<p><strong>进风温度模型（式 1）</strong>：对每台服务器 s，用回归把进风温度建模为室外温度与数据中心负载的函数。</p>
+<p>$$
+T_{inlet,s} = f_{inlet,s}(T_{outside},\, Load_{DC}), \quad \forall s \in S
+$$</p>
+<p><strong>GPU 温度模型（式 2）</strong>：对服务器 s 中每张 GPU g，把温度建模为该服务器进风温度与 GPU 负载的函数；该回归平均绝对误差小于 1°C，并捕捉漏电导致的进风温度上升。</p>
+<p>$$
+T^{GPU}_{s,g} = f^{GPU}_{s,g}(T_{inlet,s},\, Load_{GPU,g}), \quad \forall s \in S,\, g \in G
+$$</p>
+<p><strong>风量约束（式 3）</strong>：必须保证 AHU 规划风量大于通道内各服务器风量需求之和。服务器风扇风量是 GPU 负载的线性函数 $f_{air}(Load_{GPU,s})$；实测与厂商规格一致——A100、H100 的 PWM 风扇在 80% 转速下风量分别为 840 与 1105 CFM。</p>
+<p>$$
+\sum_{s \in S_{Aisle}} f_{air}(Load_{GPU,s}) \le Prov_{AHU}^{Aisle}, \quad \forall Aisle \in DC
+$$</p>
+<p><strong>洞见 #1</strong>：要实现有效的热管理，云运营商必须同时考虑由室外温度与负载变化带来的<strong>时间异构</strong>、由数据中心与服务器布局带来的<strong>空间异构</strong>，以及风量需求。</p>
+<hr />
+<h2 id="3--功率基础设施刻画--2-2">3. 功率基础设施刻画（§2.2）</h2>
+<h3 id="3-1-三级配电层级">3.1 三级配电层级</h3>
+<p>数据中心通常采用三级配电层级把市电逐级送达单台服务器：最上层自动转换开关（ATS）把电网电力分配到多台不间断电源（UPS）；每台 UPS 分担总负载的一部分，并连接一组配电单元（PDU）对；PDU 对进一步降压，支撑多条机柜行。</p>
+<p><pre class="mermaid">flowchart TD
+    GRID["市电电网"] --> ATS["ATS 自动转换开关"]
+    ATS --> UPS1["UPS 1"]
+    ATS --> UPS2["UPS 2"]
+    ATS --> UPS3["UPS 3"]
+    ATS --> UPS4["UPS 4"]
+    UPS1 --> PDU["PDU 对（降压）"]
+    PDU --> ROW1["机柜行 1"]
+    PDU --> ROW2["机柜行 2"]
+    ROW1 --> SRV["服务器 / GPU"]</pre></p>
+<h3 id="3-2-峰值规划-均匀分配与超配空间">3.2 峰值规划、均匀分配与超配空间</h3>
+<p>为防止断路器跳闸，运营商在层级每一级都按峰值功率规划以覆盖最坏情形。当总功耗超过供电额度时，该层级内服务器被功率限频。为简化设计、降低实现成本，功率限额被均匀地向下分配到各层级，最终限制了预算内可规划的机柜数量。只要仍在行级功率包络之内，运营商就可以通过往行内追加机柜来<strong>超配（oversubscribe）</strong>功率容量。</p>
+<h3 id="3-3-冗余故障后的容量收缩">3.3 冗余故障后的容量收缩</h3>
+<p>为保障高可用，云在功率层级每一级都实现冗余。论文引用的配置为 UPS 级 4N/3、PDU 级 2N。某台 UPS 故障时，其负载被重新分配到其余三台；重负载下这可能把其余三台推到容量上限，迫使每台快速降载以维持限额，实际把数据中心容量降到 <strong>75%</strong>。论文聚焦这一设计，因为它在常态与故障切换之间取得平衡；结论也适用于其他冗余模型。</p>
+<h3 id="3-4-服务器功率模型与行间功率不均衡">3.4 服务器功率模型与行间功率不均衡</h3>
+<p>服务器功率与 GPU 负载强相关；即使空闲，服务器也像传统 CPU 服务器一样消耗可观功率。除 GPU 外，风扇、存储、内存、CPU 及其他部件也消耗相当一部分功率。对每台服务器 s，论文用多项式回归生成功率函数 $f_{power}(Load_{GPU,g,s})$，计入风扇及其他同样依赖负载的部件。</p>
+<p>行级功率是各服务器功率的聚合与复用结果。论文在部分数据中心 100 行上统计 P50/P99 功耗 CDF，呈<strong>重尾分布</strong>：50%、75%、90% 的行，其 P99 功耗分别比最耗电的行低 28%、18%、10%。高功率行在数据中心内形成热点，需要充足功率规划来满足；分配给低需求行的功率被浪费，严重制约安全超配能力。</p>
+<p><strong>行功率约束（式 4）</strong>：</p>
+<p>$$
+\sum_{s \in S_{Row}} Power_s(Load_{GPU,s}) \le Prov_{Row}^{Power}, \quad \forall Row \in DC
+$$</p>
+<p><strong>洞见 #2</strong>：GPU 集群的功率需求为功率超配提供了很大空间；但要安全超配，基础设施必须有效管控那些产生热点的<strong>尾部行</strong>。</p>
+<hr />
+<h2 id="4--负载侧机会刻画--3">4. 负载侧机会刻画（§3）</h2>
+<p>本章回答"负载本身有哪些可被调度利用的特性"，分放置、路由、实例配置三条线。</p>
+<h3 id="4-1-GPU-负载放置-随机放置的温度-功率离散度">4.1 GPU 负载放置：随机放置的温度/功率离散度</h3>
+<p>为分析负载对冷却与供电的影响，作者在某数据中心两条行内部署 80 个虚拟机，并在这两条行上生成 <strong>10 万个随机放置方案</strong>。结果：最差放置使最高温度超过 85°C，典型放置平均约 72°C；最差放置比最优放置峰值功率高出 <strong>27%</strong>。若把更密集负载放到更热服务器上，或把同步峰值负载共置在同一行，厂商就必须按这些极端情形规划足够冷却与功率。</p>
+<p>关键发现：<strong>最高温度与峰值功率之间没有相关性</strong>。这意味着放置虚拟机时必须同时考虑温度与功率两类因素，只优化其中一类会留下另一类热点。</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>放置观察</th>
+<th>数据</th>
+<th>调度含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>温度离散</strong></td>
+<td>最差 &gt;85°C，典型约 72°C</td>
+<td>放置选择本身就能显著改变热点强度，不必依赖事后限频。</td>
+</tr>
+<tr>
+<td><strong>功率离散</strong></td>
+<td>最差比最优峰值功率 +27%</td>
+<td>行级峰值功率受放置影响大，存在通过放置削峰的空间。</td>
+</tr>
+<tr>
+<td><strong>温/功率解耦</strong></td>
+<td>最高温度与峰值功率无相关</td>
+<td>温度热点行与功率热点行不是同一批；约束过滤必须分两条线做。</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="4-2-长生命周期与可预测负载">4.2 长生命周期与可预测负载</h3>
+<p><strong>长生命周期</strong>：多数 GPU 虚拟机生命周期较长，超过 60% 运行两周以上；这类虚拟机通常独占整台服务器，因此某台服务器可能长期专用于某一负载。75% 的服务器在一个月内只承载一个虚拟机。</p>
+<p><strong>周期性与可预测性</strong>：示例虚拟机呈明显昼夜周期规律；聚合到行级后，功耗同样呈周期规律。论文采用模板化方法预测行级与虚拟机级功率：用四周历史数据生成模板，以 5 分钟粒度刻画一天各时刻平均功率。行功率预测在大多数行·小时上误差小于 10%，采用 P99 的保守预测在不到 4% 的行·小时上低估；虚拟机功率预测可利用客户信息，超过 75% 的 VM·小时误差低于 10%，P90/P99 模板低估比例在 2%–7%。</p>
+<p><strong>洞见 #3</strong>：云运营商可利用负载的异构性与可预测性进行智能放置，以缓解热点、平抑温度/功率尖峰。</p>
+<h3 id="4-3-IaaS-与-SaaS-可见度与可调性的不对称">4.3 IaaS 与 SaaS：可见度与可调性的不对称</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>IaaS 负载</th>
+<th>SaaS 负载</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>可见度</strong></td>
+<td>不透明虚拟机，厂商对其特征可见度有限</td>
+<td>由云厂商完全管理，对厂商透明</td>
+</tr>
+<tr>
+<td><strong>可运行负载</strong></td>
+<td>任意模型、任意任务（推理/训练/微调、LLM/扩散/图像识别）</td>
+<td>面向不同应用的多种 LLM 推理服务</td>
+</tr>
+<tr>
+<td><strong>可调性</strong></td>
+<td>虚拟机不可改动</td>
+<td>允许调整配置参数</td>
+</tr>
+<tr>
+<td><strong>可预测性</strong></td>
+<td>波动大、难预测</td>
+<td>长生命周期、功耗周期且可预测</td>
+</tr>
+<tr>
+<td><strong>调度动作权限</strong></td>
+<td>只能在放置时选更冷服务器；末级才是硬件限频</td>
+<td>可放置、可路由、可重配置实例</td>
+</tr>
+</tbody>
+</table></div>
+<p>SaaS 服务面向多个 LLM 推理端点，每个端点运行一组专用虚拟机，可承载多个推理实例并在实例间路由请求。50% 的虚拟机属于跨多行、超过 100 个虚拟机的大型端点。</p>
+<p><strong>负载均衡现状的问题</strong>：传统云平台采用基于分配规则、对功率与温度不敏感的放置算法；在此之上，SaaS 实现跨虚拟机调度请求以改善延迟与吞吐。但若负载均衡器不了解温度状况，可能把等量负载分配给已接近热限频的服务器；不顾及功率状况，则可能把额外负载送入邻接 IaaS 服务器、本就高功率需求行内的虚拟机，加剧功率紧张。</p>
+<p><strong>洞见 #4</strong>：云运营商可利用 SaaS LLM 推理负载的灵活性，进行热感知与功率感知的请求路由，以最大化超配机会。</p>
+<h3 id="4-4-实例配置-五个旋钮的权衡方向">4.4 实例配置：五个旋钮的权衡方向</h3>
+<p>为评估配置选项，论文在一台 NVIDIA DGX A100 服务器上运行 Llama2 推理。LLM 推理由 prefill 与 decode 两个阶段组成。图 16 分别量化了五个参数对温度、功率的影响（红线为 TDP 上限，蓝线为空闲状态）。</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>配置旋钮</th>
+<th>性能</th>
+<th>温度</th>
+<th>功率</th>
+<th>质量</th>
+<th>阶段敏感性与副作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GPU 频率</strong>（2GHz→1GHz）</td>
+<td>↓</td>
+<td>↓</td>
+<td>↓</td>
+<td>−</td>
+<td>提示词阶段对频率更敏感；降频对温/功率影响弱于其他旋钮，但不影响质量、可瞬时生效、开销低。</td>
+</tr>
+<tr>
+<td><strong>模型大小</strong>（70B→7B）</td>
+<td>↑</td>
+<td>↓</td>
+<td>↓</td>
+<td>↓↓</td>
+<td>模型越小计算强度越低、温/功率越低；7B 相比 70B 质量下降 30%–40%，质量代价最大。</td>
+</tr>
+<tr>
+<td><strong>量化</strong>（FP16→FP8）</td>
+<td>↑</td>
+<td>↓</td>
+<td>↓</td>
+<td>↓</td>
+<td>更低精度带来温/功率下降，准确率降低 2%–20%。</td>
+</tr>
+<tr>
+<td><strong>张量并行度</strong>（TP8→TP2）</td>
+<td>↓</td>
+<td>↑</td>
+<td>↓</td>
+<td>−</td>
+<td>TP2 用更少 GPU，服务器总功率下降；但工作量集中到更少 GPU，单卡功率上升，最热 GPU 温度升高。降并行度对提示词阶段功率影响更显著，对 decode 阶段温度影响更显著。</td>
+</tr>
+<tr>
+<td><strong>批量大小</strong>（64→16→1）</td>
+<td>↓</td>
+<td>↓</td>
+<td>↓</td>
+<td>−</td>
+<td>批量越小计算强度越低、温/功率下降；但 decode 阶段需更频繁经内存控制器取数，显存温度反而升高。</td>
+</tr>
+</tbody>
+</table></div>
+<p>两个容易被忽略的反向作用：其一，<strong>降低并行度会降总功率但抬升最热 GPU 温度</strong>；其二，<strong>减小 decode 批量可能升高显存温度</strong>。因此选哪个旋钮，取决于瓶颈是温度还是功率、负载处于提示词还是 decode 阶段。</p>
+<h3 id="4-5-goodput-与-Pareto-前沿">4.5 goodput 与 Pareto 前沿</h3>
+<p>论文以 <strong>goodput</strong> 量化推理服务器性能：在满足 TTFT 与 TBT SLO（定义为空载系统执行时间的 5 倍）前提下每秒处理的 token 数。图 17 展示所有配置下温度/功率与 goodput 的权衡：goodput 以最小模型 Llama2-7B 最快配置归一化，温度与功率以精度最高的最快配置 Llama2-70B 归一化。每个模型都呈现一条 <strong>Pareto 前沿</strong>——在对性能影响最小的前提下使温度与功率最低的配置集合。模型大小同时影响质量，是权衡中权重最大的一维。</p>
+<p><strong>洞见 #5</strong>：云运营商可以通过配置 SaaS 实例，在对 LLM 推理性能与结果质量影响最小的前提下，有效地塑造温度与功率。</p>
+<p><pre class="mermaid">flowchart LR
+    subgraph KNOBS["五个可调旋钮"]
+        K1["GPU 频率"]
+        K2["批量大小"]
+        K3["张量并行度"]
+        K4["模型大小"]
+        K5["量化精度"]
+    end
+    K1 --> OPT["实例配置器<br/>在 Pareto 前沿上选点"]
+    K2 --> OPT
+    K3 --> OPT
+    K4 --> OPT
+    K5 --> OPT
+    OPT --> GOAL["约束内最大化 goodput<br/>守住 TTFT/TBT SLO 与质量"]</pre></p>
+<hr />
+<h2 id="5--TAPAS-系统设计--4">5. TAPAS 系统设计（§4）</h2>
+<h3 id="5-1-总体架构">5.1 总体架构</h3>
+<p>TAPAS 是面向云环境 GPU 集群的热与功率管理框架，专门针对 LLM 推理负载的独特性质。它提升冷却与功率超配能力，同时有效处理基础设施故障，在对负载性能与结果质量影响最小的前提下降低 TCO；系统利用 SaaS 负载的可调性，且不影响 IaaS 负载。</p>
+<p>架构由三部分组成：(1) 扩展传统云端 LLM 推理集群的现有组件——集群级 VM 分配器、端点级负载均衡器；(2) 引入每个 SaaS 虚拟机一个的<strong>实例配置器（Instance Configurator）</strong>；(3) 维护多份<strong>画像（Profiles）</strong>。三个核心方面对应三条原则：虚拟机放置、请求路由、实例配置。</p>
+<p><pre class="mermaid">flowchart TB
+    subgraph IN["输入：离线 + 周度画像"]
+        P["Profiles：DC 布局 / T进风 / TGPU / T室外 / PowerGPU / PowerServer / PowerRow / LoadGPU / LoadDC / 风量"]
+    end
+    OP["SaaS/IaaS 操作员<br/>虚拟机到达"] --> ALLOC["VM 分配器<br/>放置决策"]
+    ALLOC --> ROWS["行 / 通道 / 服务器"]
+    USER["SaaS 用户推理请求"] --> LB["SaaS 前端 · 负载均衡器<br/>端点内路由"]
+    LB --> ROWS
+    subgraph ROWS["设施层级中的虚拟机"]
+        IAAS["IaaS 虚拟机（不透明）"]
+        SAAS["SaaS 虚拟机"]
+        IC["实例配置器<br/>逐实例调参"]
+    end
+    P -.->|画像驱动| ALLOC
+    P -.->|画像驱动| LB
+    P -.->|画像驱动| IC</pre></p>
+<h3 id="5-2-工作负载放置--4-1">5.2 工作负载放置（§4.1）</h3>
+<p>虚拟机到达时，VM 分配器把每个新虚拟机（IaaS 或 SaaS）指派到某台服务器，在满足负载需求的同时尽量降低热或功率热点风险。放置分四步：</p>
+<ol>
+<li><strong>通道与行过滤</strong>：用历史服务器负载数据预测每条通道峰值风量需求与每行峰值功率需求；数据不足（少于一周）的服务器按峰值负载处理。新虚拟机负载参照同用户（IaaS）或同端点（SaaS）已有虚拟机估计；历史不足同样按峰值假设。估算放置后各通道新峰值风量与各行功率需求，过滤掉会突破式 (3)、式 (4) 限额的通道或行内服务器。</li>
+<li><strong>IaaS 放冷服务器</strong>：由于对 IaaS 虚拟机的细粒度控制有限，优先把它们放到更冷的服务器上，以尽量降低热限频风险。对每台服务器，把历史进风温度与预测虚拟机负载代入式 (2) 估计峰值 GPU 温度，选预测温度最低的服务器。</li>
+<li><strong>SaaS 放较暖服务器</strong>：倾向把 SaaS 虚拟机放到较暖服务器，因为应急事件中可调这类实例配置；同时根据该端点预测负载，确保不突破最高 GPU 温度约束。</li>
+<li><strong>IaaS/SaaS 均衡</strong>：要让 SaaS 负载能平衡风量与功率以压低峰值，每条通道与行内都需在两类负载间取得良好平衡；新虚拟机不放到导致任一类型过度集中的通道与行。</li>
+</ol>
+<p><strong>迁移</strong>：除初始放置外，可重算更优放置并迁移虚拟机以纠正预测偏差或负载行为变化。SaaS 可新建虚拟机、转移负载、再退役旧虚拟机；IaaS 迁移必须无缝、不中断。目前受 GPU 显存管理复杂性所限，尚不支持 GPU 虚拟机在线迁移，若能实现将进一步提升性能。</p>
+<p><pre class="mermaid">flowchart TD
+    V["新 VM 到达"] --> F1["按历史/同用户或同端点<br/>估计峰值负载"]
+    F1 --> F2{"通道风量 / 行功率<br/>是否越限？式(3)(4)"}
+    F2 -->|越限| X["过滤掉该通道/行"]
+    F2 -->|通过| F3{"IaaS 还是 SaaS？"}
+    F3 -->|IaaS| C1["代入式(2)估温<br/>选预测最冷服务器"]
+    F3 -->|SaaS| C2["选较暖服务器<br/>校验端点预测温度不越限"]
+    C1 --> B["IaaS/SaaS 均衡校验"]
+    C2 --> B
+    B --> OUT["确定目标服务器"]</pre></p>
+<h3 id="5-3-请求路由-三层约束--4-2">5.3 请求路由：三层约束（§4.2）</h3>
+<p>负载放置到服务器后，TAPAS 利用多实例 SaaS 端点，通过精细路由请求进一步平抑温度与功耗。约束分三个层级：</p>
+<ul>
+<li><strong>通道（Aisle）</strong>：估计各服务器负载，计算通道内虚拟机总风量需求；信息缓存，每 5 分钟重算，发现偏差（如某服务器功耗高于估计）即更新；阻止把请求路由到可能触发风量越限的虚拟机。</li>
+<li><strong>行（Row）</strong>：估计一行内所有服务器负载并聚合为总功率值，评估把请求路由到该行虚拟机是否有超过峰值功率限额的风险。</li>
+<li><strong>服务器（Server）</strong>：跟踪当前负载，用式 (2) 估计每台服务器 GPU 温度是否超阈值；避免路由到有较高过热风险服务器上的虚拟机。</li>
+</ul>
+<p>过滤之后，TAPAS 按以下顺序应用主流负载均衡策略：(1) 优先路由到此前处理过同一客户请求的实例，最大化 KV cache 复用；(2) 集中负载以降低能耗；(3) 在虚拟机间分散请求以优化性能。</p>
+<p><pre class="mermaid">flowchart LR
+    REQ["推理请求"] --> L1{"通道层<br/>风量是否越限？"}
+    L1 -->|是| DROP1["排除该通道 VM"]
+    L1 -->|否| L2{"行层<br/>功率是否越限？"}
+    L2 -->|是| DROP2["排除该行 VM"]
+    L2 -->|否| L3{"服务器层<br/>GPU 温度是否超阈值？式(2)"}
+    L3 -->|是| DROP3["排除该服务器 VM"]
+    L3 -->|否| POL["KV 复用优先 → 集中节能 → 分散优化性能"]</pre></p>
+<h3 id="5-4-实例配置--4-3">5.4 实例配置（§4.3）</h3>
+<p>为保证服务器在负载尖峰或应急期间仍处于冷却与功率限额内，TAPAS 为每个实例计算允许的最大风量、GPU 温度与服务器功率。实例配置器利用图 17 中该 LLM 的热/功率画像，确定在不影响质量前提下最大化 goodput 的最优频率、批量、并行度、量化与模型大小。它找出在当前负载下满足性能 SLO、且不超出功率/温度预算的配置，预测每个配置的 TTFT/TBT 延迟、功耗与温度，在预算内选精度最高、性能最好的配置。</p>
+<p><strong>画像开销</strong>：为 SaaS LLM 服务生成配置空间需 3–4 小时，且仅在新模型注册到 TAPAS 时执行一次；数据中心组织结构画像在部署时执行一次。相比单个 LLM 或数据中心生命周期，这两项开销可忽略。</p>
+<p><strong>动作优先级与切换成本</strong>：所有配置旋钮在推理引擎中都可获得，配置器与引擎通信、动态调参，取值保证 SLO 始终满足。在线决策时计入重设配置所需时间，并在切换过程中阻止把请求发给相关实例。改变模型并行度、大小或量化级别需要重载模型，耗时数秒。考虑这些开销与最大化质量的目标，<strong>调整模型大小与量化通常是最后手段</strong>：SaaS 实例仅在所在行功率/温度余量不足时才切到更低精度模型；配置器先调性能旋钮，再在不违反 SLO 的前提下选能塞进余量的最高精度模型。TAPAS 不会改动 IaaS 实例的精度。</p>
+<p><pre class="mermaid">flowchart TD
+    A["当前负载 + 设施余量"] --> B["先调性能旋钮<br/>频率 / 批量 / 并行度"]
+    B --> C{"余量是否仍不足？"}
+    C -->|否| D["保持最高精度模型"]
+    C -->|是| E["降低量化精度"]
+    E --> F{"余量是否仍不足？"}
+    F -->|否| D
+    F -->|是| G["切换到更小模型（末级）"]
+    G --> H["切换期间停收新请求<br/>计入模型重载时间"]</pre></p>
+<h3 id="5-5-超配与故障管理--4-4">5.5 超配与故障管理（§4.4）</h3>
+<p><strong>超配</strong>：使用 TAPAS 可降低运行同一负载所需的冷却与功率额度。云厂商最初按基准峰值需求规划；随需求增长，运营商可把更多机柜追加到现有行，利用 TAPAS 腾出的余量。TAPAS 仿真器还可配合估计负载评估冷却与功率需求，实现更精确规划。</p>
+<p><strong>故障管理</strong>：若发生冷却或供电故障，TAPAS 重新计算每条通道可用风量、每行功率以及每台服务器进风温度；请求路由把请求调离受约束服务器，实例配置器相应降载；若这些动作仍不足，TAPAS 对 IaaS 虚拟机施加常规功率限频。</p>
+<h3 id="5-6-实现要点--4-5">5.6 实现要点（§4.5）</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>实现方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>画像（Profiles）</strong></td>
+<td>离线画像阶段在部署初期运行基准与验证测试，建模数据中心布局、服务器进风温度、GPU 温度、风扇风量、服务器功率-负载关系；接入新 LLM 时按 §3 流程画像各配置参数。常态运行期间每周细化模型，采集各服务器与行的功率/负载模式预测利用率，采用基于上一周数据的模板化方法；模型与画像通过定期数据更新提供给其余三个组件。</td>
+</tr>
+<tr>
+<td><strong>VM 分配器</strong></td>
+<td>受 Protean 启发的规则式分配器，三条规则：校验规则按峰值风量/功率过滤通道行；偏好规则把 IaaS 导向冷服务器、SaaS 导向较暖服务器（服务器等分冷/中/暖三组）；另一条偏好规则按 IaaS/SaaS 均衡引导放置（分 IaaS 偏重/SaaS 偏重/均衡三类）。规则使用当前集群数据与周度更新的模型画像。</td>
+</tr>
+<tr>
+<td><strong>负载均衡器</strong></td>
+<td>SaaS 端点部署在提供 HTTP REST 接口的专用虚拟机上；对每个虚拟机结合当前状态与服务器热/功率画像，计算违反温度、功率、性能三类限额中任一项的概率，不路由到高违规风险虚拟机；过滤后按 KV 复用→集中节能→分散优化排序。</td>
+</tr>
+<tr>
+<td><strong>实例配置器</strong></td>
+<td>本地实例采用 vLLM（主流推理平台），也可经少量接口修改集成 TensorRT-LLM 等其他平台。本地控制器每周接收更新画像，在每次 LLM 迭代时估计最优运行设置；计算轻量并缓存；必要时更新各实例设置，若需改并行度/模型大小/量化则重启实例。</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="5-7-泛化条件--4-6">5.7 泛化条件（§4.6）</h3>
+<p>TAPAS 的设计原则可推广到其他类别负载。SaaS 虚拟机可运行任意负载，但组件可能需要调整：实例配置器需以不同方式训练，并使用面向特定负载定制的旋钮；IaaS 在 TAPAS 中已被视为不透明盒，可运行不同类型负载而无需改动系统。洞见也可应用于多样数据中心基础设施；预测模型需使用数据中心专属回归函数，随组织、服务器物理布局、冷却机制（液冷还是风冷）而变化。</p>
+<hr />
+<h2 id="6--评估方法--5-1">6. 评估方法（§5.1）</h2>
+<h3 id="6-1-基线与消融变体">6.1 基线与消融变体</h3>
+<p><strong>基线（Baseline）</strong>：对温度与功率不敏感的系统，使用传统虚拟机放置与 LLM 请求路由，不做任何重配置。TAPAS 按 §4.5 实现，并评估六种额外变体以衡量各组件及组合对放置（Place）、路由（Route）、配置（Config）的影响。</p>
+<h3 id="6-2-负载与双轨评估">6.2 负载与双轨评估</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>评估轨</th>
+<th>规模与构成</th>
+<th>做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>真实集群回放</strong></td>
+<td>缩减版生产轨迹，模拟两条行共 80 台 A100 服务器，IaaS/SaaS 各半，持续一小时</td>
+<td>IaaS 直接使用历史功率读数，除跨行放置虚拟机外不改动负载；SaaS 采集各端点调用轨迹，用 Llama2 回放执行。</td>
+</tr>
+<tr>
+<td><strong>大规模仿真</strong></td>
+<td>一周生产轨迹，约一千台服务器、数千张 GPU，IaaS/SaaS 各半；SaaS 用 Llama2，请求来自 10 个端点子集，每端点 23–100 个虚拟机</td>
+<td>离散时间仿真器按 §2 建模数据中心；复现 IaaS 负载与 SaaS 请求执行。冷却建模用式 (1)–(3)；功率用真实 IaaS 读数并按式 (4) 映射 SaaS 功耗；跟踪限频事件对冷却与供电的影响。</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>回归模型选择</strong>：论文评估了随机森林、多层感知机、线性、多项式、分段多项式等回归模型。分段多项式 MAE 小于 1°C，计算快、存储省，并能对未见取值有效泛化；随机森林容易过拟合，难以预测低于训练集的温度。</p>
+<p><pre class="mermaid">flowchart TD
+    subgraph TRACE["生产轨迹（一周，约千台服务器）"]
+        T1["IaaS 历史功率读数"]
+        T2["SaaS Llama2 请求轨迹<br/>10 端点 / 23–100 VM"]
+    end
+    T1 --> REAL["真实集群：80 台 A100 两行 · 1 小时回放"]
+    T2 --> REAL
+    T1 --> SIM["大规模仿真：千台级 · 一周"]
+    T2 --> SIM
+    REAL --> V["对比 Baseline / Place / Route / Config / 组合 / TAPAS"]
+    SIM --> V</pre></p>
+<hr />
+<h2 id="7--评估结果--5-2-5-4">7. 评估结果（§5.2–5.4）</h2>
+<h3 id="7-1-运行效果-真实集群与仿真">7.1 运行效果：真实集群与仿真</h3>
+<p><strong>真实集群（图 19）</strong>：以 1 分钟为间隔对比基线与 TAPAS 的行峰值功率。常态运行下，TAPAS 在维持延迟 SLO 与结果质量的同时有效压低峰值功率，相比基线峰值利用率降低 <strong>20%</strong>。该实验与仿真相比仅有 <strong>4%</strong> 绝对误差，验证了仿真器准确性。</p>
+<p><strong>大规模仿真（图 20）</strong>：以 5 分钟为间隔展示一周内最高温度与行功率。相比基线，TAPAS 把最高温度降低 <strong>15%</strong>、峰值功率降低 <strong>24%</strong>，且不损害结果质量。</p>
+<blockquote>
+<p>口径提醒：摘要给出的整体压降为温度 −17%、行峰值功率 −23%（消融整体方案口径）；§5.2 仿真一周口径为 −15% / −24%。两者来自不同实验切片，引用时需标注口径，不应混用为同一数字。</p>
+</blockquote>
+<h3 id="7-2-消融研究-三组件各自贡献与协同-图-21">7.2 消融研究：三组件各自贡献与协同（图 21）</h3>
+<p>图 21 展示一周内基线与各变体的最高温度（上）与峰值功率（下），按规划最大值归一化。常态下所有策略都不影响质量、不造成 SLO 违规。在 IaaS/SaaS 各半（中间一组）时：</p>
+<ul>
+<li>单个策略相比基线可把温度与功率各最多降低 <strong>12%</strong>，手段是平衡或降低本地负载；</li>
+<li><strong>Place 略优</strong>，因为它在行之间同时平衡 IaaS 与 SaaS；Route 与 Config 只优化 SaaS 负载；</li>
+<li>组合两个组件带来额外改善；TAPAS 通过集成放置、路由、配置的整体方案取得最大压降——温度 <strong>17%</strong>、功率 <strong>23%</strong>。</li>
+</ul>
+<h3 id="7-3-对-IaaS-SaaS-比例的敏感性">7.3 对 IaaS/SaaS 比例的敏感性</h3>
+<p>随 SaaS/IaaS 比例变化的结果符合预期：</p>
+<ul>
+<li><strong>全 IaaS</strong>：TAPAS 的作用仅限于虚拟机放置——没有可调 SaaS 实例，路由与配置旋钮都无法发力；</li>
+<li><strong>全 SaaS</strong>：凭借可调性，TAPAS 相比基线取得最大压降，温度 <strong>23%</strong>、功率 <strong>28%</strong>。</li>
+</ul>
+<p>这一敏感性直接揭示了 TAPAS 的能力边界：<strong>可调整 SaaS 占比决定了调度空间的大小</strong>。</p>
+<p><pre class="mermaid">flowchart LR
+    subgraph MIX["负载构成"]
+        M1["全 IaaS"] --> R1["仅 Place 有效<br/>路由/配置无发力点"]
+        M2["50/50 混合"] --> R2["三组件叠加<br/>整体 −17% 温度 / −23% 功率"]
+        M3["全 SaaS"] --> R3["灵活性最大<br/>−23% 温度 / −28% 功率"]
+    end</pre></p>
+<h3 id="7-4-超配能力-图-22">7.4 超配能力（图 22）</h3>
+<p>论文分析热与功率基础设施被超配场景下 TAPAS 的有效性。未超配（None）时，基线与 TAPAS 都不会因温度或功率约束出现限频。随服务器追加：基线很快出现限频事件，尤其超配超过 <strong>20%</strong> 之后；TAPAS 最多可多承载 <strong>40%</strong> 的服务器而不影响结果质量，并把热/功率限频时间占比维持在 <strong>0.7%</strong> 以下，实现安全的热与功率超配。</p>
+<h3 id="7-5-故障应急管理--5-4-表-2">7.5 故障应急管理（§5.4，表 2）</h3>
+<p>发生温度（AHU）或功率（UPS）故障时，数据中心必须立即适配分别降至 <strong>90%</strong> 和 <strong>75%</strong> 的容量限额。表 2 对比基线与 TAPAS 在五分钟峰值负载期间的性能与质量影响。</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>功率应急·基线 IaaS</th>
+<th>功率应急·基线 SaaS</th>
+<th>功率应急·TAPAS IaaS</th>
+<th>功率应急·TAPAS SaaS</th>
+<th>温度应急·基线 IaaS</th>
+<th>温度应急·基线 SaaS</th>
+<th>温度应急·TAPAS IaaS</th>
+<th>温度应急·TAPAS SaaS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>性能</strong></td>
+<td>−35%</td>
+<td>−28%</td>
+<td><strong>0%</strong></td>
+<td><strong>+16%</strong></td>
+<td>−22%</td>
+<td>−19%</td>
+<td><strong>0%</strong></td>
+<td><strong>+10%</strong></td>
+</tr>
+<tr>
+<td><strong>质量</strong></td>
+<td>0%</td>
+<td>0%</td>
+<td>0%</td>
+<td>−12%</td>
+<td>0%</td>
+<td>0%</td>
+<td>0%</td>
+<td>−6%</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>口径与动作</strong>：由于难以精确测量 IaaS 性能影响，论文把 IaaS 与 SaaS 效果都表示为相对最高频率被限频的频率百分比，并按受影响负载比例折算。基线为维持限额在各服务器施加最高达 <strong>35%</strong> 的统一限频，导致显著性能下降；TAPAS 在最多 <strong>12%</strong> 质量影响（导向小模型导致的准确率下降）下维持甚至提升性能，通过有选择的动作——仅在必要时把请求导向小模型——有效管理温度与功率。</p>
+<blockquote>
+<p><em>"As precise IaaS performance impact is challenging to measure, we present the effects on both IaaS and SaaS workloads as the percentage of frequency capped relative to maximum frequency, adjusted by the fraction of workloads affected."</em></p>
+<p>由于难以精确测量 IaaS 性能影响，我们把 IaaS 与 SaaS 负载的效果都表示为相对最高频率被限频的频率百分比，并按受影响负载比例做了折算。</p>
+</blockquote>
+<p><strong>重要边界</strong>：表 2 的 Perf 是受影响负载加权的相对频率限制代理，Quality 是小模型路由带来的估计质量损失，并非全部用户请求的直接测量；不能由表 2 推导真实端到端延迟、逐请求质量或恢复期积压已获保证。</p>
+<p><pre class="mermaid">flowchart TD
+    FAIL["AHU 故障 → 限额 90%<br/>UPS 故障 → 限额 75%"] --> RECALC["重算各通道风量 / 各行功率 / 各服务器进风温度"]
+    RECALC --> R1["路由调离受约束服务器"]
+    R1 --> R2["实例配置器降载"]
+    R2 --> R3{"是否仍越限？"}
+    R3 -->|否| END["守住限额"]
+    R3 -->|是| R4["对 IaaS 施加常规硬件功率限频（末级）"]</pre></p>
+<hr />
+<h2 id="8--与相关工作的定位对比">8. 与相关工作的定位对比</h2>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>方向</th>
+<th>代表工作</th>
+<th>核心思路</th>
+<th>与 TAPAS 的区别</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>数据中心冷却管理</strong></td>
+<td>CoolProvision、TESLA、CoolAir、CoolEdge、CoolDC 等</td>
+<td>自适应冷却系统，借助温水、浸没冷却、自然冷却等优化热控制，缓解热点、提升效率；CoolProvision 在维持性能前提下优化低配冷却。</td>
+<td>TAPAS 不调节冷却设备本身，而是通过虚拟机放置、请求路由与实例配置减少 LLM 推理集群中的热点。</td>
+</tr>
+<tr>
+<td><strong>热感知调度</strong></td>
+<td>RT-TAS、PTDS、Virtual Melting Temperature 等</td>
+<td>优化作业/虚拟机放置以减少热问题：RT-TAS 做集成 GPU-CPU 的热均衡任务到核分配；PTDS 优化 VM 到主机调度以防热点、降冷却能耗。</td>
+<td>传统热/功率感知调度在 LLM 服务的独特挑战下效果次优；TAPAS 针对推理阶段画像、配置旋钮与 SaaS/IaaS 不对称设计。</td>
+</tr>
+<tr>
+<td><strong>数据中心功率管理</strong></td>
+<td>Flex、SmartOClock、SmoothOperator、Thunderbolt、Power routing、Dynamo</td>
+<td>Flex 通过离线放置与在线切负载安全超配预留功率；SmartOClock 基于功率预测做负载感知超频；SmoothOperator 把同步功率模式服务均匀散布以削峰；Thunderbolt 做 QoS 感知大规模限频。</td>
+<td>TAPAS 聚焦 LLM 推理集群，把功率利用率提升与放置—路由—配置三层调度结合。</td>
+</tr>
+<tr>
+<td><strong>LLM 服务</strong></td>
+<td>POLCA、μ-Serve、vLLM/PagedAttention、Orca、Splitwise、DistServe、Sarathi-Serve 等</td>
+<td>POLCA 提出 LLM 推理集群功率超配框架；μ-Serve 通过模型并行与预测式请求调度做功率感知服务；其余在 KV cache、连续批处理、调度、自动扩缩容、prefill-decode 分离、硬件异构、地理负载均衡等方向优化。</td>
+<td>这些服务优化与 TAPAS 正交；TAPAS 在其之上叠加设施级热/功率感知。</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>关键区分</strong>：TAPAS 的新颖性不在某个推理引擎优化或单一冷却/限频算法，而在于把<strong>设施侧历史画像</strong>与<strong>负载侧三层可动作空间</strong>打通：放置选落点、路由避热点、配置调旋钮，且动作顺序与权限按 SaaS/IaaS 不对称分配。</p>
+<hr />
+<h2 id="9--工程启示-结合本项目两机六卡边界">9. 工程启示（结合本项目两机六卡边界）</h2>
+<blockquote>
+<p>本节是分析者判断，不是论文已验证结论；本项目资源边界为两台服务器、各三张 RTX 3090，所有迁移性判断都需在该规模上重新核验，不冒充原规模完整复现。</p>
+</blockquote>
+<h3 id="9-1-可直接借鉴的机制分层">9.1 可直接借鉴的机制分层</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>TAPAS 机制</th>
+<th>可迁移要点</th>
+<th>六卡小规模下的适配方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>设施/请求/动作权限三层分离</strong></td>
+<td>先分清设施约束（温度、功率、风量）、服务指标（TTFT/TBT/goodput）、可动作对象（谁可调、谁不可改）。</td>
+<td>两机六卡虽无机柜行/通道，但可区分"整机功率上限""单卡温度""进程内可调参数"三层；先把可观测边界画清，再谈调度。</td>
+</tr>
+<tr>
+<td><strong>历史画像 + 保守假设</strong></td>
+<td>数据不足时按峰值负载假设；用周期模板预测行/VM 功率；保守分位（P99）低估比例可控。</td>
+<td>小规模可先采短时段稳态曲线作为负载画像；冷启动/数据不足时按峰值保守取值，避免乐观预测导致越限。</td>
+</tr>
+<tr>
+<td><strong>配置旋钮的反向作用认知</strong></td>
+<td>降并行度降总功率但抬升最热卡温度；减 decode 批量可能抬升显存温度。</td>
+<td>六卡实验调并行度/批量时，必须同时记录单卡温度、显存温度与总功率，不能只看平均功率或平均温度。</td>
+</tr>
+<tr>
+<td><strong>动作优先级</strong></td>
+<td>先调性能旋钮（频率/批量/并行度），量化与换小模型作为末级；切换期停收请求并计入重载时间。</td>
+<td>小规模实验设计降载对照时，应把"切换等待/重载时间"纳入代价，不能只比较稳态功率。</td>
+</tr>
+<tr>
+<td><strong>温/功率解耦</strong></td>
+<td>最高温度与峰值功率不相关，约束过滤需分两条线。</td>
+<td>评测时温度热点与功率热点分别报告，避免用功率达标代替温度达标。</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="9-2-规模差异下不能照搬的部分">9.2 规模差异下不能照搬的部分</h3>
+<ul>
+<li><strong>行/通道级放置与超配</strong>：TAPAS 的放置收益建立在数百机柜、跨多行的负载聚合与复用之上；两机六卡没有行级复用空间，放置策略退化为单机内进程/卡分配。</li>
+<li><strong>SaaS/IaaS 不对称</strong>：本项目实验负载通常全部可控，不存在"不可改的 IaaS 邻居"；TAPAS 对 IaaS 的末级限频逻辑在小规模复现中缺乏对应对象。</li>
+<li><strong>超配 40%、限频 −97%/−99% 等数字</strong>：来自千台级仿真与生产轨迹，是原规模结论；六卡上只能观察机制是否存在，不能据此宣称同等收益。</li>
+<li><strong>故障场景</strong>：AHU/UPS 冗余与容量收缩（90%/75%）是设施级事件；两机环境只能用注入式功率/温度约束模拟，不能等同于真实设施故障。</li>
+</ul>
+<h3 id="9-3-对选题的线索提示">9.3 对选题的线索提示</h3>
+<p>TAPAS 把"供电/冷却限制"沿<strong>放置 → 路由 → 配置</strong>三个动作层向下传导。对照本项目关心的"时变功率预算下不同紧急程度作业的调度与恢复"，可重点核验：TAPAS 的动作空间里<strong>没有显式的作业优先级/紧急程度区分</strong>，也没有跨多个下降—恢复事件的积压补齐模型；这两类是否构成可区分的机制缺口，需要在 Mode C 与最近邻对比中继续核验，不能仅凭关键词差异声称创新。</p>
+<hr />
+<h2 id="10--论文局限-证据边界与未知项">10. 论文局限、证据边界与未知项</h2>
+<h3 id="10-1-作者自述限制">10.1 作者自述限制</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>限制</th>
+<th>出处</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IaaS 在线迁移不支持</strong></td>
+<td>§4.1</td>
+<td>GPU IaaS 虚拟机不支持这里所需的在线迁移；可控 SaaS 可通过新建、转移、撤销迁移实现搬迁。</td>
+</tr>
+<tr>
+<td><strong>跨负载/跨机房需重训</strong></td>
+<td>§4.6</td>
+<td>更换工作负载需重训配置控制器；改变机房布局或散热系统需更新回归模型。</td>
+</tr>
+<tr>
+<td><strong>IaaS 性能用代理测量</strong></td>
+<td>§5.4</td>
+<td>IaaS 真实性能难直接获取，采用频率限幅比例作代理，质量按模型替换估计。</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="10-2-分析者判断的边界">10.2 分析者判断的边界</h3>
+<ul>
+<li><strong>可调 SaaS 比例决定调度余地</strong>：候选落点、模型替换权限与可控 SaaS 比例共同决定空间调度余量；不应把本机两节点场景等同于其机房。</li>
+<li><strong>三类评估口径需分列</strong>：常态一小时回放、大规模仿真、应急代理评估不能互换；论文未提供跨多个下降/恢复事件、逐请求统计以直接支持真实恢复期服务保证。</li>
+<li><strong>代理指标与真实服务的偏离</strong>：应急表格的性能代理与逐请求服务/质量之间，在哪些事件与服务组成下会明显偏离，是计量问题线索，尚无本项目失败证据。</li>
+<li><strong>重配置代价覆盖范围</strong>：当可路由余量和可调 SaaS 比例降低时，重配置前后的等待损失是否改变动作排序，需先核对论文对切换成本的覆盖范围。</li>
+</ul>
+<h3 id="10-3-未核验项-unknown">10.3 未核验项（unknown）</h3>
+<ul>
+<li>未审代码、原始轨迹、完整重配置状态机与置信区间；未独立复现。</li>
+<li>估计质量与真实业务质量之间的对应关系尚未独立核验。</li>
+<li>生产轨迹/请求的隐私协议未独立核验；本报告未复制用户请求或运行业务数据。</li>
+</ul>
+<h3 id="10-4-可复现性与迁移性评级">10.4 可复现性与迁移性评级</h3>
+<p><strong>复现评级：unknown</strong>（未审完整工件/数据，未复现；未知不等于低）。可借鉴原则是把设施指标、请求指标及动作权限分层；原云规模不能因六卡无法原样复现而从阅读中排除，落地时另核对可测机制。跨领域迁移：不适用——本轮只形成来源阅读线索，未选择源方法 B。</p>
+<hr />
+<h2 id="11--候选问题与-Mode-C-待核验清单">11. 候选问题与 Mode C 待核验清单</h2>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>编号</th>
+<th>候选问题（AI 分析判断，非新颖性结论）</th>
+<th>支撑证据</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LP05-P1</td>
+<td>应急表格的性能代理与逐请求服务/质量之间，在哪些事件与服务组成下会出现明显偏离？</td>
+<td>LP05-E01、E02、E03、E04</td>
+<td>候选，待 Mode C 及最近邻核验</td>
+</tr>
+<tr>
+<td>LP05-P2</td>
+<td>当可路由余量和可调 SaaS 比例降低时，重配置前后的等待损失是否改变动作排序？论文已考虑重配置成本，需先核对覆盖范围。</td>
+<td>LP05-E01、E02、E03、E04</td>
+<td>候选，待 Mode C 及最近邻核验</td>
+</tr>
+<tr>
+<td>LP05-F1</td>
+<td>功率与最热部件温度对同一并行度/批量动作可呈不同方向变化（降并行度降总功率但升最热卡温度；小 decode 批量升显存温度）。</td>
+<td>LP05-E01</td>
+<td>论文设备与模型上的观察，未取得原始测量或复测</td>
+</tr>
+<tr>
+<td>LP05-F2</td>
+<td>论文把应急期服务损失显式纳入讨论，但性能与质量主要是代理口径；不能由表 2 推导真实端到端延迟、逐请求质量或恢复期积压保证。</td>
+<td>LP05-E04</td>
+<td>同上，口径边界已标注</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="11-1-与清单阅读问题的对照">11.1 与清单阅读问题的对照</h3>
+<p>清单要求回答：<strong>"供电限制如何传到放置、路由和配置？"</strong> 综合 §4 与 §5.4，传导链为：设施故障/预算收缩 → 重算通道风量、行功率、服务器进风温度三类余量 → 放置层过滤越限通道/行并把 IaaS 导向冷服务器 → 路由层在通道/行/服务器三层排除越限风险虚拟机 → 配置层按"性能旋钮优先、量化/换模末级"调整 SaaS 实例 → 仍不足时才对 IaaS 硬件限频。供电限制沿这条链逐层落地，且每一层的可用动作都受 SaaS 可调比例约束。</p>
+<hr />
+<h2 id="附录-关键术语对照表">附录：关键术语对照表</h2>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>英文</th>
+<th>中文</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SaaS (Software-as-a-Service)</td>
+<td>软件即服务</td>
+<td>云厂商托管、对厂商透明、可调配置的 GPU 虚拟机</td>
+</tr>
+<tr>
+<td>IaaS (Infrastructure-as-a-Service)</td>
+<td>基础设施即服务</td>
+<td>不透明、厂商不可见、不可改的 GPU 虚拟机</td>
+</tr>
+<tr>
+<td>goodput</td>
+<td>有效吞吐</td>
+<td>满足 TTFT/TBT SLO 前提下每秒处理的 token 数</td>
+</tr>
+<tr>
+<td>TTFT</td>
+<td>首 token 延迟</td>
+<td>Time To First Token，prefill 完成到首个输出 token 的时间</td>
+</tr>
+<tr>
+<td>TBT</td>
+<td>每 token 间隔</td>
+<td>Time Between Tokens，decode 阶段相邻 token 间隔</td>
+</tr>
+<tr>
+<td>TP (Tensor Parallelism)</td>
+<td>张量并行</td>
+<td>把单层权重切到多卡的模型并行方式，论文对比 TP8/TP4/TP2</td>
+</tr>
+<tr>
+<td>AHU</td>
+<td>空气处理单元</td>
+<td>通道内送风、维持冷通道风量的设备</td>
+</tr>
+<tr>
+<td>UPS / PDU / ATS</td>
+<td>不间断电源 / 配电单元 / 自动转换开关</td>
+<td>三级配电层级的组成部件</td>
+</tr>
+<tr>
+<td>oversubscription</td>
+<td>超配</td>
+<td>在峰值不同时发生的假设下，按低于各负载峰值之和规划容量</td>
+</tr>
+<tr>
+<td>thermal/power capping</td>
+<td>热/功率限频</td>
+<td>越限后硬件降低频率/功耗以守住温度或功率限额</td>
+</tr>
+<tr>
+<td>Pareto frontier</td>
+<td>Pareto 前沿</td>
+<td>在不牺牲某一目标前提下无法再改善另一目标的配置集合</td>
+</tr>
+<tr>
+<td>KV cache</td>
+<td>键值缓存</td>
+<td>推理中缓存的注意力键值对；同客户请求复用可加速</td>
+</tr>
+<tr>
+<td>TDP</td>
+<td>热设计功耗</td>
+<td>GPU 出厂标定的最大散热设计功率</td>
+</tr>
+</tbody>
+</table></div>
+    </article>
+  </main>
+</div>
+
+<script src="https://fastly.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+(function(){
+  var body=document.body, doc=document;
+
+  /* ---- 主题（5 套护眼） ---- */
+  var themeSel=doc.getElementById('theme');
+  function applyTheme(t){
+    body.setAttribute('data-theme',t);
+    if(themeSel) themeSel.value=t;
+  }
+  try{ applyTheme(localStorage.getItem('arTheme')||'light'); }catch(e){ applyTheme('light'); }
+  if(themeSel) themeSel.addEventListener('change',function(){
+    applyTheme(this.value);
+    try{ localStorage.setItem('arTheme',this.value); }catch(e){}
+  });
+
+  /* ---- 字号 A− / A+ ---- */
+  var fsBtn=doc.getElementById('fs');
+  var rootStyle=doc.documentElement.style;
+  function setFs(v){
+    var cl=parseFloat(getComputedStyle(doc.documentElement).getPropertyValue('--fs'))||16;
+    cl=Math.max(13,Math.min(22,cl+v));
+    rootStyle.setProperty('--fs',cl+'px');
+    try{ localStorage.setItem('arFs',cl); }catch(e){}
+  }
+  try{
+    var savedFs=parseFloat(localStorage.getItem('arFs'));
+    if(savedFs) rootStyle.setProperty('--fs',savedFs+'px');
+  }catch(e){}
+  if(fsBtn){
+    fsBtn.addEventListener('click',function(ev){
+      var b=ev.target.closest('button'); if(!b) return;
+      setFs(parseInt(b.dataset.f,10)||0);
+    });
+  }
+
+  /* ---- 目录显示/隐藏 ---- */
+  var navBtn=doc.getElementById('navbtn');
+  if(navBtn) navBtn.addEventListener('click',function(){
+    body.classList.toggle('nav-off');
+    this.classList.toggle('on',!body.classList.contains('nav-off'));
+  });
+
+  /* ---- 目录：当前章节高亮 ---- */
+  var links=Array.prototype.slice.call(doc.querySelectorAll('nav a'));
+  var secs=Array.prototype.slice.call(doc.querySelectorAll('.content h2[id],.content h3[id]'));
+  var spy=function(){
+    var pos=window.scrollY+140, cur=null;
+    secs.forEach(function(s){ if(s.offsetTop<=pos) cur=s.id; });
+    links.forEach(function(a){
+      a.classList.toggle('active', a.getAttribute('href')==='#'+cur);
+    });
+  };
+  window.addEventListener('scroll',spy,{passive:true});
+  setTimeout(spy,200);
+
+  /* ---- 阅读进度条 ---- */
+  var bar=doc.getElementById('bar');
+  function prog(){
+    var h=doc.documentElement, max=h.scrollHeight-h.clientHeight;
+    bar.style.width=(max>0?(window.scrollY/max*100):0)+'%';
+  }
+  window.addEventListener('scroll',prog,{passive:true});
+  prog();
+
+  /* ---- Mermaid ---- */
+  if(window.mermaid){
+    try{
+      mermaid.initialize({startOnLoad:true,theme:'neutral',securityLevel:'loose',
+        flowchart:{htmlLabels:true,curve:'basis'}});
+      mermaid.run();
+    }catch(e){ console.warn('mermaid render failed:',e); }
+  } else {
+    console.warn('mermaid CDN 未加载，图表以代码形式显示');
+  }
+})();
+</script>
+</body>
+</html>

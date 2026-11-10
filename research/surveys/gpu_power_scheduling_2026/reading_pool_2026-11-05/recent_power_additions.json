@@ -1,0 +1,299 @@
+{
+  "group": "新增 GPU 功率、能量与在线推理能效",
+  "verified_on": "2026-11-05",
+  "stage": "analyze-paper 摘要初筛与文献下载",
+  "main_pool_count": 4,
+  "downloaded_pdf_count": 5,
+  "selection": "围绕 2025–2026 正式高水平出版物定向补充。正式主池 4 篇，另外保留 GreenLLM 待核验会议稿和 PowerTrip 预印本线索。阅读深度均为初筛。",
+  "pdf_path_base": "仓库根目录",
+  "papers": [
+    {
+      "source_id": "RP01",
+      "short_name": "throttLL’eM",
+      "title": "throttLL’eM: Predictive GPU Throttling for Energy Efficient LLM Inference Serving",
+      "authors": [
+        "Andreas Kosmas Kakolyris",
+        "Dimosthenis Masouros",
+        "Petros Vavaroutsos",
+        "Sotirios Xydis",
+        "Dimitrios Soudris"
+      ],
+      "year": 2025,
+      "venue": "IEEE HPCA 2025",
+      "publication_status": "正式发表",
+      "official_url": "https://ieeexplore.ieee.org/document/10946751/",
+      "pdf_url": "https://www.privateer-project.eu/wp-content/uploads/2026/03/throttLLeM_Predictive_GPU_Throttling_for_Energy_Efficient_LLM_Inference_Serving.pdf",
+      "doi": "10.1109/HPCA61900.2025.00103",
+      "question": "在线 LLM 推理的批量与 KV 缓存随请求变化时，怎样选择频率和实例规模以节约能量，同时满足响应目标？",
+      "method": "先预测后续 KV 缓存占用与批量，再用性能预测指导逐迭代调频和实例缩放。",
+      "directness": "直接研究在线 GPU 推理能效。摘要的约束是服务质量；外部总瓦数时变的输入、可行性与越限保证需要后续正文核验。",
+      "reading_depth": "摘要初筛与 PDF 首页核验；方法、实验和局限尚未逐节审读",
+      "version": "研究项目网站公开的 IEEE 排版正式版；首页标 HPCA 2025 和完整 DOI。",
+      "pdf_path": "research/papers/kakolyris_2025_throttllem/paper_hpca2025.pdf",
+      "pdf_pages": 16,
+      "download_status": "downloaded_and_opened",
+      "downloaded_on": "2026-11-05",
+      "evidence": "IEEE 正式摘要和 PDF 第1页，官方 DOI 与题名对应。",
+      "key_preconditions": "需要运行期状态信息、性能预测以及实例与频率控制能力；六卡机器的驱动和动作权限待设备核验。",
+      "verification": {
+        "pdf_readable": true,
+        "first_page_checked": true,
+        "checks": [
+          "题名",
+          "作者",
+          "首页版本线索"
+        ],
+        "note": "本轮核对题名与作者并读取摘要；首页会场或出版标识另见 version。"
+      },
+      "analysis_path": null,
+      "analysis_package_status": "摘要初筛，未生成 ANALYSIS_PACKAGE"
+    },
+    {
+      "source_id": "RP02",
+      "short_name": "MLPerf Power",
+      "title": "MLPerf Power: Benchmarking the Energy Efficiency of Machine Learning Systems from μWatts to MWatts for Sustainable AI",
+      "authors": [
+        "Arya Tschand",
+        "Arun Tejusve Raghunath Rajan",
+        "Sachin Idgunji",
+        "Anirban Ghosh",
+        "Jeremy Holleman",
+        "Csaba Kiraly",
+        "Pawan Ambalkar",
+        "Ritika Borkar",
+        "Ramesh Chukka",
+        "Trevor Cockrell",
+        "Oliver Curtis",
+        "Grigori Fursin",
+        "Miro Hodak",
+        "Hiwot Kassa",
+        "Anton Lokhmotov",
+        "Dejan Miskovic",
+        "Yuechao Pan",
+        "Manu Prasad Manmathan",
+        "Liz Raymond",
+        "Tom St. John",
+        "Arjun Suresh",
+        "Rowan Taubitz",
+        "Sean Zhan",
+        "Scott Wasson",
+        "David Kanter",
+        "Vijay Janapa Reddi"
+      ],
+      "year": 2025,
+      "venue": "IEEE HPCA 2025",
+      "publication_status": "正式发表",
+      "official_url": "https://ieeexplore.ieee.org/document/10946778/",
+      "pdf_url": "https://arxiv.org/pdf/2410.12032v2",
+      "doi": "10.1109/HPCA61900.2025.00092",
+      "question": "怎样跨设备、跨任务测量机器学习系统能效，并保证比较口径清楚？",
+      "method": "建立覆盖多个功率量级的机器学习能效基准方法，兼顾硬件、负载和系统相互作用。",
+      "directness": "供电研究的测量近邻。重点是测量与比较能耗，调度器的功率响应需要另行评价。",
+      "reading_depth": "摘要初筛与 PDF 首页核验；方法、实验和局限尚未逐节审读",
+      "version": "论文已发表于 HPCA 2025；本地为作者公开 arXiv:2410.12032v2（2025-02-06），首页标 HPCA 2025。未逐字比对出版社终版。",
+      "pdf_path": "research/papers/tschand_2025_mlperf_power/paper_arxiv_v2_hpca2025.pdf",
+      "pdf_pages": 16,
+      "download_status": "downloaded_and_opened",
+      "downloaded_on": "2026-11-05",
+      "evidence": "IEEE 正式条目、作者公开版本首页和摘要；正式页码 1201–1216。",
+      "key_preconditions": "阅读时须继续查每种测试的系统边界、测量设备和精度；是否适配两机 3090 的整机计量条件待核验。",
+      "verification": {
+        "pdf_readable": true,
+        "first_page_checked": true,
+        "checks": [
+          "题名",
+          "作者",
+          "首页版本线索"
+        ],
+        "note": "本轮核对题名与作者并读取摘要；首页会场或出版标识另见 version。"
+      },
+      "analysis_path": null,
+      "analysis_package_status": "摘要初筛，未生成 ANALYSIS_PACKAGE"
+    },
+    {
+      "source_id": "RP03",
+      "short_name": "VAHRM",
+      "title": "VAHRM: Variation-Aware Resource Management in Heterogeneous Supercomputing Systems",
+      "authors": [
+        "Kohei Yoshida",
+        "Ryuichi Sakamoto",
+        "Kento Sato",
+        "Abhinav Bhatele",
+        "Hayato Yamaki",
+        "Hiroki Honda",
+        "Shinobu Miwa"
+      ],
+      "year": 2025,
+      "venue": "IEEE Transactions on Parallel and Distributed Systems, 36(8), 1713–1727",
+      "publication_status": "正式发表",
+      "official_url": "https://ieeexplore.ieee.org/document/11031465",
+      "pdf_url": "https://www.cs.umd.edu/~bhatele/pubs/pdf/2025/tpds2025.pdf",
+      "doi": "10.1109/TPDS.2025.3577252",
+      "question": "制造差异使相同型号计算资源的耗电不同，作业应该分给哪批资源才能兼顾能效与周转时间？",
+      "method": "先建立考虑制造差异的 GPU 功率模型，再将较节能的资源优先分给耗能大的作业，并考虑排队与周转时间。",
+      "directness": "GPU 资源分配和能效的邻接工作。摘要目标含总能效和作业周转；外部动态功率额度尚待正文核验。",
+      "reading_depth": "摘要初筛与 PDF 首页核验；方法、实验和局限尚未逐节审读",
+      "version": "作者大学网站保存的 IEEE 期刊正式排版版，首页标 36卷8期、2025年8月、1713页，DOI 和出版日期齐全。",
+      "pdf_path": "research/papers/yoshida_2025_vahrm/paper_tpds2025.pdf",
+      "pdf_pages": 15,
+      "download_status": "downloaded_and_opened",
+      "downloaded_on": "2026-11-05",
+      "evidence": "PDF 第1页摘要与期刊页眉；IEEE 出版者 Crossref 元数据核对卷期和页码。",
+      "key_preconditions": "需要不同设备在各负载下的能效画像。六张卡是否存在对决策有意义的差异，需要测量才能判断。",
+      "verification": {
+        "pdf_readable": true,
+        "first_page_checked": true,
+        "checks": [
+          "题名",
+          "作者",
+          "首页版本线索"
+        ],
+        "note": "本轮核对题名与作者并读取摘要；首页会场或出版标识另见 version。"
+      },
+      "analysis_path": null,
+      "analysis_package_status": "摘要初筛，未生成 ANALYSIS_PACKAGE"
+    },
+    {
+      "source_id": "RP04",
+      "short_name": "FlipFlop",
+      "title": "FlipFlop: A Static Analysis-based Energy Optimization Framework for GPU Kernels",
+      "authors": [
+        "Saurabhsingh Rajput",
+        "Alexander Brandt",
+        "Vadim Elisseev",
+        "Tushar Sharma"
+      ],
+      "year": 2026,
+      "venue": "ACM/IEEE ICSE 2026, Research Track",
+      "publication_status": "正式发表",
+      "official_url": "https://conf.researchr.org/details/icse-2026/icse-2026-research-track/265/FlipFlop-A-Static-Analysis-based-Energy-Optimization-Framework-for-GPU-Kernels",
+      "pdf_url": "https://tusharma.in/preprints/ICSE2026_FlipFlop.pdf",
+      "doi": "10.1145/3744916.3787793",
+      "question": "开发者怎样从 GPU 内核代码判断线程块配置对能耗和执行时间的影响？",
+      "method": "静态分析 PTX 特征，建立性能与耗电模型，推荐时间–能耗折中较好的线程块配置。",
+      "directness": "GPU 软件能效的邻接工作，控制对象为内核启动配置。集群级功率预算与请求优先级需要其他层级研究。",
+      "reading_depth": "摘要初筛与 PDF 首页核验；方法、实验和局限尚未逐节审读",
+      "version": "作者主页公开的 13 页版本，由 ICSE 2026 Research Track 官方条目链接；首页署名 Alex Brandt，官方会议作者名为 Alexander Brandt。本地版本未标出版社 DOI/版权页，不能当作出版社排版终版。",
+      "pdf_path": "research/papers/rajput_2026_flipflop/paper_author_icse2026.pdf",
+      "pdf_pages": 13,
+      "download_status": "downloaded_and_opened",
+      "downloaded_on": "2026-11-05",
+      "evidence": "官方 Research Track 独立页面及摘要；Crossref 出版者条目记 2026-04-12、453–465页；本地首页核验题名和作者。",
+      "key_preconditions": "需要获得内核 PTX 并校准硬件相关模型；对现有训练/推理框架中可修改内核的范围需后续确认。",
+      "verification": {
+        "pdf_readable": true,
+        "first_page_checked": true,
+        "checks": [
+          "题名",
+          "作者",
+          "首页版本线索"
+        ],
+        "note": "本轮核对题名与作者并读取摘要；首页会场或出版标识另见 version。"
+      },
+      "analysis_path": null,
+      "analysis_package_status": "摘要初筛，未生成 ANALYSIS_PACKAGE"
+    }
+  ],
+  "watchlist": [
+    {
+      "source_id": "RPW01",
+      "short_name": "GreenLLM",
+      "title": "GreenLLM: SLO-Aware Dynamic Frequency Scaling for Energy-Efficient LLM Serving",
+      "authors": [
+        "Qunyou Liu",
+        "Darong Huang",
+        "Marina Zapater",
+        "David Atienza"
+      ],
+      "year": 2026,
+      "venue": "DAC 2026（作者机构库登记；出版社记录待补）",
+      "publication_status": "待核验会议稿；本轮不计入新增正式主池",
+      "official_url": "https://infoscience.epfl.ch/entities/publication/5a812f00-c322-4ff8-a5b4-a890db0bbf93",
+      "pdf_url": "https://infoscience.epfl.ch/bitstreams/0fbaf326-706e-46d9-9ab9-e266033ceeb7/download",
+      "doi": null,
+      "question": "输入处理和逐 token 生成的计算性质不同，是否应采用不同的节能控制方法？",
+      "method": "输入阶段用排队感知的模型选择频率，生成阶段用双环反馈调频并控制 token 间隔。",
+      "directness": "直接研究 SLO 约束下的在线推理节能。摘要未建立外部逐时功率预算的控制保证。",
+      "reading_depth": "摘要初筛与 PDF 首页核验；方法、实验和局限尚未逐节审读",
+      "version": "EPFL 机构库公开的 DAC2026_GPU_DVFS_Liu_Huang_CameraReady.pdf，7页，首页 DAC26 但 DOI/ISBN 仍为 X 占位。",
+      "pdf_path": "research/papers/liu_2026_greenllm/paper_author_dac2026.pdf",
+      "pdf_pages": 7,
+      "download_status": "downloaded_and_opened",
+      "downloaded_on": "2026-11-05",
+      "evidence": "EPFL 机构库摘要、作者发表清单和已下载首页；DBLP 登记 DOI 10.1145/3770743.3804074，但此轮出版社页面不可访问且 Crossref 未检得该条目。",
+      "key_preconditions": "需进一步核对正式发表元数据、方法与评估，再讨论六卡适用范围。",
+      "verification": {
+        "pdf_readable": true,
+        "first_page_checked": true,
+        "checks": [
+          "题名",
+          "作者",
+          "首页版本线索"
+        ],
+        "note": "本轮核对题名与作者并读取摘要；首页会场或出版标识另见 version。"
+      },
+      "analysis_path": null,
+      "analysis_package_status": "摘要初筛，未生成 ANALYSIS_PACKAGE",
+      "doi_candidate": "10.1145/3770743.3804074",
+      "downloaded_from": "https://infoscience.epfl.ch/server/api/core/bitstreams/0fbaf326-706e-46d9-9ab9-e266033ceeb7/content",
+      "status_reason": "机构库称 DAC 2026 会议稿，但出版社记录未独立核实，本地稿保留出版字段占位。"
+    },
+    {
+      "source_id": "RPW02",
+      "short_name": "PowerTrip",
+      "title": "PowerTrip: Exploiting Federated Heterogeneous Datacenter Power for Distributed ML Training",
+      "authors": [
+        "Talha Mehboob",
+        "Luanzheng Guo",
+        "Nathan Tallent",
+        "Michael Zink",
+        "David Irwin"
+      ],
+      "year": 2025,
+      "venue": "arXiv 预印本",
+      "official_url": "https://arxiv.org/abs/2507.17904",
+      "pdf_url": "https://arxiv.org/pdf/2507.17904v1",
+      "doi": "10.48550/arXiv.2507.17904",
+      "question": "各地机房供电不同、跨站通信较慢时，如何选参与训练的站点？",
+      "directness": "直接涉及分布式训练的供电可用性与通信代价；正式高水平发表尚未核实。",
+      "reading_depth": "摘要初筛",
+      "version": "arXiv:2507.17904v1，2025-07-23",
+      "publication_status": "预印本；未核到正式会议/期刊记录",
+      "pdf_path": null,
+      "download_status": "not_selected_for_download_in_this_batch",
+      "analysis_path": null
+    }
+  ],
+  "excluded_or_extended": [
+    {
+      "short_name": "Using Analytical Performance/Power Model and Fine-Grained DVFS to Enhance AI Accelerator Energy Efficiency",
+      "year": 2025,
+      "venue": "ASPLOS 2025",
+      "doi": "10.1145/3669940.3707231",
+      "official_url": "https://www.asplos-conference.org/asplos2025/program.html",
+      "pdf_url": "https://cs.nju.edu.cn/tianchen/lunwen/2025/asplos25-zibo.pdf",
+      "reason": "正式论文，但原文摘要的细粒度 DVFS 评估主体为 Ascend NPU。本组收窄 GPU 范围，保留为扩展线索。"
+    },
+    {
+      "short_name": "Revisiting Disaggregated Large Language Model Serving for Performance and Energy Implications",
+      "year": 2026,
+      "official_url": "https://research.ibm.com/publications/revisiting-disaggregated-large-language-model-serving-for-performance-and-energy-implications",
+      "bibliography_url": "https://dblp.org/rec/conf/euromlsys/LiZCLN26",
+      "doi": "10.1145/3805621.3807662",
+      "reason": "IBM 页面以 EuroSys 2026 展示，DBLP 归入 EuroMLSys 配套 workshop。本轮不计 EuroSys 主会论文。"
+    },
+    {
+      "short_name": "PowerFlow",
+      "official_url": "https://arxiv.org/abs/2304.06381",
+      "reason": "命中的 GPU 调度同名研究为 2023 预印本，超出本轮 2025–2026 新增范围；其他同名条目不作主题匹配。"
+    },
+    {
+      "short_name": "GAMMA",
+      "reason": "未核到与本题相符的 2025–2026 正式功率调度论文；同名命中多为图算法，未纳入。"
+    },
+    {
+      "short_name": "LithOS",
+      "reason": "同批由网络/弹性组负责，避免重复归档。"
+    }
+  ]
+}

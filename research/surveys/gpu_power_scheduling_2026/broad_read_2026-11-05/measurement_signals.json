@@ -1,0 +1,306 @@
+{
+  "group": "measurement_and_external_signals",
+  "stage": "analyze-paper",
+  "round_started_on": "2026-11-05",
+  "completed_on": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "source_count": 5,
+  "watchlist_count": 1,
+  "new_main_analysis_package_count": 2,
+  "reused_main_analysis_package_count": 3,
+  "evidence_status": "partial",
+  "scope": "20篇正式近期主池中的5篇及1篇单列观察稿；正文定点广读，不是代码审计/复现",
+  "papers": [
+    {
+      "source_id": "LC02",
+      "aliases": [],
+      "short_name": "GREEN",
+      "title": "GREEN: Carbon-efficient Resource Scheduling for Machine Learning Clusters",
+      "year": 2025,
+      "venue": "NSDI 2025",
+      "official_url": "https://www.usenix.org/conference/nsdi25/presentation/xu-kaiqiang",
+      "analysis_id": "AN-20261105-023-v01",
+      "analysis_path": "research/papers/xu_2025_green/analysis_breadth_v01.md",
+      "local_pdf": "research/papers/xu_2025_green/paper.pdf",
+      "version": "原已核版本",
+      "package_action": "reused_and_rechecked",
+      "problem": "固定GPU容量下，怎样利用训练作业的时间弹性减少碳排放，并控制完成时间损失？",
+      "method": "按单位能量进度调节卡数，用双层队列、历史碳强度和功率估计安排任务；保存与重启计入JCT。",
+      "limits_summary": "优化碳排放/JCT，不是外部时变硬功率控制；791个作业与Pollux/Zeus对照的150个兼容子集须分开。",
+      "reading_coverage": "复用AN023；本轮复核§§4–8（本地PDF pp6–12）：计量、弹性、双层队列、checkpoint、实验集合和局限。",
+      "idea_leads": [
+        {
+          "mark": "AI",
+          "text": "固定容量中的延期与积压怎样共同限定可调空间？已有状态开销计账不能当新颖性。"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "LC02-E1",
+          "where": "§4、§8.1，PDF pp.6/10；功率计量、CIC与资源",
+          "url": "https://www.usenix.org/system/files/nsdi25-xu-kaiqiang.pdf"
+        },
+        {
+          "id": "LC02-E2",
+          "where": "§§5–7，PDF pp.6–10；弹性与双层队列、保存宽限",
+          "url": "https://www.usenix.org/system/files/nsdi25-xu-kaiqiang.pdf"
+        },
+        {
+          "id": "LC02-E3",
+          "where": "§8.1–8.3，PDF pp.10–12；作业分母及结果",
+          "url": "https://www.usenix.org/system/files/nsdi25-xu-kaiqiang.pdf"
+        }
+      ],
+      "evidence_status": "partial"
+    },
+    {
+      "source_id": "LC03",
+      "aliases": [],
+      "short_name": "SPADE",
+      "title": "SPADE: Signal-Aware DAG Scheduling and Dynamic Provisioning for Data Processing Clusters",
+      "year": 2026,
+      "venue": "OSDI 2026",
+      "official_url": "https://www.usenix.org/conference/osdi26/presentation/lechowicz",
+      "analysis_id": "AN-20261105-024-v01",
+      "analysis_path": "research/papers/lechowicz_2026_spade/analysis_breadth_v01.md",
+      "local_pdf": "research/papers/lechowicz_2026_spade/paper.pdf",
+      "version": "原已核版本",
+      "package_action": "reused_and_rechecked",
+      "problem": "外部信号变化时，DAG里哪些任务值得等待，哪些必须推进以免阻塞下游？",
+      "method": "相对任务重要性与信号阈值联合决定调度/暂缓，并动态供给executor；用SAP分离任务选择与供给的贡献。",
+      "limits_summary": "CPU Spark DAG；信号感知与硬执行分开。51VM/100executor，时间压缩与利用率能量模型；整体makespan接近仍可牺牲尾JCT。",
+      "reading_coverage": "复用AN024；本轮复核§2.1、§§3–5，PDF pp4、6–11：硬/软语义、原型、lookahead与尾部。",
+      "idea_leads": [
+        {
+          "mark": "AI",
+          "text": "平均/整体指标接近时，等待损失是否集中于某些依赖位置或服务等级？GPU迁移尚未开展。"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "LC03-E1",
+          "where": "§2.1，PDF p.4；软目标与硬执行层",
+          "url": "https://www.usenix.org/system/files/osdi26-lechowicz.pdf"
+        },
+        {
+          "id": "LC03-E2",
+          "where": "§3/Alg.1、§4，PDF pp.6–8；相对重要性与SAP",
+          "url": "https://www.usenix.org/system/files/osdi26-lechowicz.pdf"
+        },
+        {
+          "id": "LC03-E3",
+          "where": "§5.1、§5.3/Table2/Fig6，PDF pp.9–11；51VM/100executor、计量、重复、尾部",
+          "url": "https://www.usenix.org/system/files/osdi26-lechowicz.pdf"
+        }
+      ],
+      "evidence_status": "partial"
+    },
+    {
+      "source_id": "S02",
+      "aliases": [
+        "LC01"
+      ],
+      "short_name": "Phoenix现场演示",
+      "title": "期刊版本以 AI data centres as grid-interactive assets 为题，Nature Energy，在线发表 2025-12-05，2026 年 2 月卷期，11:254–261。详细章节和图号引用预印本。",
+      "year": 2026,
+      "venue": "Nature Energy 2026；在线2025",
+      "official_url": "https://www.nature.com/articles/s41560-025-01927-1",
+      "analysis_id": "AN-20261105-002-v01",
+      "analysis_path": "research/papers/colangelo_2025_grid_interactive/analysis_v01.md",
+      "local_pdf": "research/papers/colangelo_2025_grid_interactive/paper_preprint.pdf",
+      "version": "Philip Colangelo 等，Turning AI Data Centers into Grid-Interactive Assets: Results from a Field Demonstration in Phoenix, Arizona，arXiv:2507.00909v1，2025-07-01。",
+      "package_action": "reused_and_rechecked",
+      "problem": "电力公司指定降载窗口与斜坡后，AI作业能否按事先约定的退化等级参与？",
+      "method": "功率—吞吐画像、Flex等级、预知事件窗口与控制动作，结合限功率、暂停和卡数调整。",
+      "limits_summary": "本地读arXiv v1，期刊版仅核书目；允许3–6h窗口内平均吞吐退化，不等于在线请求尾延迟无损。GPU功率不等于设施进线功率。",
+      "reading_coverage": "复用AN002；本轮复核预印本§§2–5与服务档位、事件/计量、checkpoint低频假设；沿用既有部分工件证据。",
+      "idea_leads": [
+        {
+          "mark": "AI",
+          "text": "短于原演示的窗口或更严格服务组合下，动作可行空间怎样变化？这是待检验联系，不是实测缺陷。"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "S02-E1",
+          "where": "arXiv v1，§§2.1、4.1，表 1，作业组合与 Flex 合约",
+          "url": "https://arxiv.org/html/2507.00909v1#S4.SS1"
+        },
+        {
+          "id": "S02-E2",
+          "where": "arXiv v1，§§2.2–2.3，图 2–5，事件、基线与性能",
+          "url": "https://arxiv.org/html/2507.00909v1#S2.SS2"
+        },
+        {
+          "id": "S02-E3",
+          "where": "arXiv v1，§§3.3–3.5，图 6，动作代价、假设与场地边界",
+          "url": "https://arxiv.org/html/2507.00909v1#S3.SS3"
+        },
+        {
+          "id": "S02-E4",
+          "where": "arXiv v1，§§4.2–4.4、§5，策略、测量与实现",
+          "url": "https://arxiv.org/html/2507.00909v1#S4.SS4"
+        },
+        {
+          "id": "S02-E5",
+          "where": "作者工件 README 的 Data、AI Orchestration Usage、Emerald AI Conductor Pseudocode",
+          "url": "https://github.com/ai-emerald/emerald-ai-demo-may-2025/blob/34403aef78c2690a8e4f0ba8f7f62d302cdba967/README.md"
+        },
+        {
+          "id": "S02-E6",
+          "where": "data/SRP_exp_performance.csv 的 pt_mpt_13b_sm 记录及 Flexibility 列，图 2 图源",
+          "url": "https://github.com/ai-emerald/emerald-ai-demo-may-2025/blob/34403aef78c2690a8e4f0ba8f7f62d302cdba967/data/SRP_exp_performance.csv"
+        },
+        {
+          "id": "S02-E7",
+          "where": "控制端的 checkpoint 与 dvfs_set_power_cap；补丁中的 EmeraldCallback.batch_end、save_interval_fn 和 control_power.py",
+          "urls": [
+            "https://github.com/ai-emerald/emerald-ai-demo-may-2025/blob/34403aef78c2690a8e4f0ba8f7f62d302cdba967/orchestrator_commands.py",
+            "https://github.com/ai-emerald/emerald-ai-demo-may-2025/blob/34403aef78c2690a8e4f0ba8f7f62d302cdba967/llm-foundry-d91c4beb-add-emerald.patch"
+          ]
+        }
+      ],
+      "evidence_status": "partial"
+    },
+    {
+      "source_id": "LP07",
+      "aliases": [],
+      "short_name": "ML.ENERGY Benchmark",
+      "title": "The ML.ENERGY Benchmark: Toward Automated Inference Energy Measurement and Optimization",
+      "year": 2025,
+      "venue": "NeurIPS 2025 Datasets and Benchmarks",
+      "official_url": "https://proceedings.neurips.cc/paper_files/paper/2025/hash/9dc510e3d7b0b3b2a58ffed7a3ad6b0f-Abstract-Datasets_and_Benchmarks_Track.html",
+      "analysis_id": "AN-20261105-041-v01",
+      "analysis_path": "research/papers/chung_2025_ml_energy_benchmark/analysis_broad_v01.md",
+      "local_pdf": "research/papers/chung_2025_ml_energy_benchmark/paper.pdf",
+      "version": "NeurIPS2025 D&B正式公开PDF",
+      "package_action": "new_partial_package",
+      "problem": "怎样对生成式服务测GPU能量，并按应用延迟选择配置？",
+      "method": "扫描模型、设备、并行和batch，测稳定期每token能量并归账，构建时间—能量前沿；附录比较换出/重算、TP与PD。",
+      "limits_summary": "默认稳定饱和区间、GPU计量；平均TPOT不等于请求尾部合同。附录已研究抢占与通信能量。",
+      "reading_coverage": "正文§§2–6，PDF pp2–10；Appendix B/C/E重点pp23–28；未审完整checklist、源码或日志。",
+      "idea_leads": [
+        {
+          "mark": "AI",
+          "text": "稳定期配置排序在包含启动、低负载、排空和恢复的完整有限窗口里是否仍成立？"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "LP07-E1",
+          "location": "§§2.1–2.4、§3.1–3.3，PDF pp.2–5：边界、稳定期及配置前沿",
+          "local_pdf": "paper.pdf"
+        },
+        {
+          "id": "LP07-E2",
+          "location": "§4.1–4.3，PDF pp.6–10，Fig3–7：设备、结果与解释",
+          "local_pdf": "paper.pdf"
+        },
+        {
+          "id": "LP07-E3",
+          "location": "Appendix B.1–B.4，PDF pp.23–25，Fig8–9、Table4–5：抢占/通信/PD/chunk",
+          "local_pdf": "paper.pdf"
+        },
+        {
+          "id": "LP07-E4",
+          "location": "Appendix E，PDF p.28：作者局限",
+          "local_pdf": "paper.pdf"
+        }
+      ],
+      "evidence_status": "partial"
+    },
+    {
+      "source_id": "RP02",
+      "aliases": [],
+      "short_name": "MLPerf Power",
+      "title": "MLPerf Power: Benchmarking the Energy Efficiency of Machine Learning Systems from μWatts to MWatts for Sustainable AI",
+      "year": 2025,
+      "venue": "HPCA 2025",
+      "official_url": "https://ieeexplore.ieee.org/document/10946778/",
+      "analysis_id": "AN-20261105-042-v01",
+      "analysis_path": "research/papers/tschand_2025_mlperf_power/analysis_broad_v01.md",
+      "local_pdf": "research/papers/tschand_2025_mlperf_power/paper_arxiv_v2_hpca2025.pdf",
+      "version": "论文已发表于 HPCA 2025；本地为作者公开 arXiv:2410.12032v2（2025-02-06），首页标 HPCA 2025。未逐字比对出版社终版。",
+      "package_action": "new_partial_package",
+      "problem": "不同规模ML系统的性能、功率和能效应怎样统一边界与报告？",
+      "method": "按执行窗口对齐性能与功率；不同场景用外部分析仪或节点遥测，配合质量标准；分析行业提交结果。",
+      "limits_summary": "执行期排除部分初始化等；整系统仍不完全包含冷却/存储。1841项提交是观察样本，不能当单机制随机因果实验。",
+      "reading_coverage": "正文§§II–VII，PDF pp3–13：边界、仪器、提交比较、局限；本地arXiv v2带HPCA标识，未逐字比终版。",
+      "idea_leads": [
+        {
+          "mark": "AI",
+          "text": "GPU/整机与不同窗口会不会改变策略排序？至少60s聚合不能证明短时硬功率履约。"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "RP02-E1",
+          "location": "§III-C、§IV-A，PDF pp.5–6：误区、窗口和边界",
+          "local_pdf": "paper_arxiv_v2_hpca2025.pdf"
+        },
+        {
+          "id": "RP02-E2",
+          "location": "§IV-B–D，PDF pp.6–8：分析仪、遥测、估计及报告",
+          "local_pdf": "paper_arxiv_v2_hpca2025.pdf"
+        },
+        {
+          "id": "RP02-E3",
+          "location": "§V-B/C/F，PDF pp.9–12：规模、长度换算和非随机提交结果",
+          "local_pdf": "paper_arxiv_v2_hpca2025.pdf"
+        },
+        {
+          "id": "RP02-E4",
+          "location": "§III、§V-C、§VI，PDF pp.4/10/12–13：覆盖与未来方向",
+          "local_pdf": "paper_arxiv_v2_hpca2025.pdf"
+        }
+      ],
+      "evidence_status": "partial"
+    }
+  ],
+  "watchlist": [
+    {
+      "source_id": "RPW01",
+      "aliases": [],
+      "short_name": "GreenLLM（观察项）",
+      "title": "GreenLLM: SLO-Aware Dynamic Frequency Scaling for Energy-Efficient LLM Serving",
+      "year": 2026,
+      "venue": "作者机构库标DAC 2026，出版待核",
+      "official_url": "https://infoscience.epfl.ch/entities/publication/5a812f00-c322-4ff8-a5b4-a890db0bbf93",
+      "analysis_id": "AN-20261105-047-v01",
+      "analysis_path": "research/papers/liu_2026_greenllm/analysis_broad_v01.md",
+      "local_pdf": "research/papers/liu_2026_greenllm/paper_author_dac2026.pdf",
+      "version": "EPFL 机构库公开的 DAC2026_GPU_DVFS_Liu_Huang_CameraReady.pdf，7页，首页 DAC26 但 DOI/ISBN 仍为 X 占位。",
+      "package_action": "new_partial_package",
+      "problem": "按prefill/decode的不同服务要求，在变化流量中怎样调频节能？",
+      "method": "prefill队列/长度模型，decode粗细双环反馈、滞回与限速。",
+      "limits_summary": "仅作者稿；8×A100；DOI/ISBN占位、能量边界与模型公式待澄清。高负载SLO达标率下降，不是全设置零违约。",
+      "reading_coverage": "作者稿§§2–6，PDF pp2–6；元数据未完整核验，不计正式20篇主池。",
+      "idea_leads": [
+        {
+          "mark": "AI",
+          "text": "已有phase-aware和双环DVFS，不能把分阶段/滞回本身当成待添加的新机制。"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "RPW01-E1",
+          "location": "§3.1–3.2，PDF pp.3–4：phase-aware建模、双环与滞回",
+          "local_pdf": "paper_author_dac2026.pdf"
+        },
+        {
+          "id": "RPW01-E2",
+          "location": "§4/Table2–3，PDF pp.4–5：8卡与负载",
+          "local_pdf": "paper_author_dac2026.pdf"
+        },
+        {
+          "id": "RPW01-E3",
+          "location": "§5.1–5.3/Table4–5，PDF pp.5–6：通过率和负载边界",
+          "local_pdf": "paper_author_dac2026.pdf"
+        }
+      ],
+      "evidence_status": "partial"
+    }
+  ],
+  "cross_domain_transfer": "不适用：未选择源方法B或开展适配",
+  "next_skill": "deep-read Mode C"
+}

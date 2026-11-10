@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DynamoLLM 精读报告：把「实例数 / 并行度 / 频率」拆成三层来省电</title>
+<script>
+window.MathJax = {tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},
+  options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}, startup:{typeset:true}};
+</script>
+<script id="MathJax-script" async src="https://fastly.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+:root{
+  /* ===== 基础色 ===== */
+  --bg:#ffffff; --panel:#fafbfc; --card:#ffffff; --line:#e6e8eb; --line2:#eceff2;
+  --ink:#1f2328; --ink2:#57606a; --ink3:#666f7a; --ph:#8d959e; --heading:#24313f;
+  --accent:#2b6cb0; --onaccent:#ffffff;
+  --hover:#eef2f7; --active:#e6f0fb; --btnhover:#f1f5f9;
+  --headerbg:rgba(255,255,255,.94); --colheadbg:rgba(255,255,255,.96);
+  --headbg1:#fbfdff; --headbg2:#ffffff; --secline:#eef1f4;
+  /* ===== 表格 / 插图 ===== */
+  --thbg:#f5f7f9; --trhover:#fafcff; --best:#0f766e;
+  --figbg:#ffffff; --figfilter:none;
+  /* ===== 高亮与笔记 ===== */
+  --src:#fde68a; --srcb:#f59e0b; --tgt:#cfe8ff; --tgtb:#3b82f6;
+  --pin:#d1fae5; --pinb:#10b981; --note:#ffe0ee; --noteb:#ec4899;
+  --notebg:#fff6fa; --notering:#f9a8d4; --badgebg:#fce7f3; --badgeink:#9d174d;
+  --ring:#fbcfe8; --flash:#fff3bf; --linkhover:#eaf2fb;
+  /* ===== 其它 ===== */
+  --xdim:#c2c8cf; --danger:#b42318; --dangerbg:#fee2e2; --dangerink:#ffffff;
+  --toastbg:#1f2328; --toastink:#ffffff; --hintkey:#fbbf24;
+  --swborder:rgba(0,0,0,.15); --shadow:rgba(15,20,25,.05); --shadow2:rgba(15,20,25,.14);
+  --lbbg:rgba(15,20,25,.86);
+  --fs:16px; --lh:1.85; --navw:246px; --notew:0px;
+  --nfont:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+}
+/* ================= 主题：切换 body[data-theme] 即整套换色 ================= */
+/* VSCode Dark+ 风格深色 */
+body[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#1e1e1e; --panel:#252526; --card:#252526; --line:#3a3d41; --line2:#333639;
+  --ink:#e6e6e6; --ink2:#b0b8c1; --ink3:#8d949c; --ph:#6e767f; --heading:#d4dbe3;
+  --accent:#4ea1ff; --onaccent:#0a1220;
+  --hover:#2a2d2e; --active:#123a5c; --btnhover:#333639;
+  --headerbg:rgba(30,30,30,.94); --colheadbg:rgba(30,30,30,.96);
+  --headbg1:#232426; --headbg2:#1e1e1e; --secline:#343739;
+  --thbg:#2d2d30; --trhover:#2a2d2e; --best:#5ee08a;
+  --figbg:#eef1f4; --figfilter:brightness(.95) contrast(1.02);
+  --src:rgba(245,158,11,.34); --srcb:#f0a72c; --tgt:rgba(90,168,255,.32); --tgtb:#5aa8ff;
+  --pin:rgba(16,185,129,.30); --pinb:#34d399; --note:rgba(244,114,182,.32); --noteb:#f472b6;
+  --notebg:#2c2029; --notering:#b0507c; --badgebg:#4d2036; --badgeink:#ffc2dc;
+  --ring:#b0507c; --flash:rgba(250,204,21,.30); --linkhover:#22344a;
+  --xdim:#6e767f; --danger:#ff7b72; --dangerbg:#4a221f; --dangerink:#2b0c0a;
+  --toastbg:#eceff3; --toastink:#14181d; --hintkey:#b45309;
+  --swborder:rgba(255,255,255,.28); --shadow:rgba(0,0,0,.4); --shadow2:rgba(0,0,0,.55);
+  --lbbg:rgba(0,0,0,.9);
+}
+/* 靛青夜（比纯深色更柔，蓝调低刺激） */
+body[data-theme="indigo"]{
+  color-scheme:dark;
+  --bg:#11172b; --panel:#171f38; --card:#1a2340; --line:#2e3a5f; --line2:#28324f;
+  --ink:#dfe6f7; --ink2:#a9b6d8; --ink3:#8593b8; --ph:#6d7ba0; --heading:#cdd8f2;
+  --accent:#7aa2f7; --onaccent:#0a1020;
+  --hover:#1e2947; --active:#243b6b; --btnhover:#25314f;
+  --headerbg:rgba(17,23,43,.94); --colheadbg:rgba(17,23,43,.96);
+  --headbg1:#18203a; --headbg2:#11172b; --secline:#2a3454;
+  --thbg:#202b4a; --trhover:#1d2745; --best:#7ee787;
+  --figbg:#eaeef6; --figfilter:brightness(.95) contrast(1.02);
+  --src:rgba(250,204,21,.32); --srcb:#e0af68; --tgt:rgba(122,162,247,.32); --tgtb:#7aa2f7;
+  --pin:rgba(52,211,153,.28); --pinb:#41d19a; --note:rgba(244,114,182,.30); --noteb:#f0a0c8;
+  --notebg:#2a2140; --notering:#a2609a; --badgebg:#43244a; --badgeink:#ffc9e8;
+  --ring:#a2609a; --flash:rgba(224,175,104,.30); --linkhover:#233559;
+  --xdim:#6d7ba0; --danger:#ff8080; --dangerbg:#44202c; --dangerink:#2b0c0a;
+  --toastbg:#e8edf8; --toastink:#131a2c; --hintkey:#b45309;
+  --swborder:rgba(255,255,255,.28); --shadow:rgba(0,0,0,.4); --shadow2:rgba(0,0,0,.55);
+  --lbbg:rgba(4,8,18,.92);
+}
+/* 护眼绿（豆沙绿） */
+body[data-theme="green"]{
+  --bg:#c9e8cd; --panel:#d6efd9; --card:#e2f5e4; --line:#a5cfaa; --line2:#bbdcbf;
+  --ink:#122c18; --ink2:#37533d; --ph:#5d7d64; --ink3:#3d5f45; --heading:#173d24;
+  --accent:#0f5f33; --onaccent:#ffffff;
+  --hover:#bce2c1; --active:#a8dcb0; --btnhover:#cdead0;
+  --headerbg:rgba(201,232,205,.95); --colheadbg:rgba(201,232,205,.97);
+  --headbg1:#d9f1dc; --headbg2:#cfeed3; --secline:#b3d9b8;
+  --thbg:#bfe3c4; --trhover:#d9f2dc; --best:#0a6b39;
+  --figbg:#ffffff; --figfilter:none;
+  --src:#ffe08a; --srcb:#c98a00; --tgt:#b8d7f7; --tgtb:#1d5fc4;
+  --pin:#93dcae; --pinb:#0b7a45; --note:#ffcfe3; --noteb:#c02a63;
+  --notebg:#eaf7ec; --notering:#e39bbd; --badgebg:#ffe0ee; --badgeink:#8d1449;
+  --ring:#e39bbd; --flash:#fff0a8; --linkhover:#d3ecf6;
+  --xdim:#7a9c81; --danger:#a01b13; --dangerbg:#f7d7d4; --dangerink:#ffffff;
+  --toastbg:#122c18; --toastink:#e9f7ec; --hintkey:#ffd166;
+  --swborder:rgba(0,0,0,.2); --shadow:rgba(20,50,28,.10); --shadow2:rgba(20,50,28,.2);
+  --lbbg:rgba(10,30,16,.88);
+}
+/* 米黄纸（暖褐低蓝光，长时间阅读友好） */
+body[data-theme="sepia"]{
+  --bg:#f4ecd8; --panel:#faf4e4; --card:#fffaf0; --line:#dccfb2; --line2:#e6dcc4;
+  --ink:#372f22; --ink2:#5f5443; --ink3:#6a5f4c; --ph:#8b7f68; --heading:#463a28;
+  --accent:#8a5220; --onaccent:#fffaf0;
+  --hover:#ece2ca; --active:#e6d8b8; --btnhover:#f0e7d2;
+  --headerbg:rgba(244,236,216,.95); --colheadbg:rgba(244,236,216,.97);
+  --headbg1:#fbf5e6; --headbg2:#f4ecd8; --secline:#e3d8bd;
+  --thbg:#eee3c9; --trhover:#fbf6ea; --best:#0d6b47;
+  --figbg:#ffffff; --figfilter:none;
+  --src:#ffe08a; --srcb:#c07800; --tgt:#c3dcf5; --tgtb:#1f5fb8;
+  --pin:#b6e3c6; --pinb:#12784b; --note:#ffd4e4; --noteb:#c22a66;
+  --notebg:#fdf1e6; --notering:#e0a3ba; --badgebg:#fbe3ec; --badgeink:#8f1b4c;
+  --ring:#e6b6c6; --flash:#ffeea8; --linkhover:#e8dfc6;
+  --xdim:#a89a80; --danger:#a32017; --dangerbg:#f6dcd6; --dangerink:#fffaf0;
+  --toastbg:#372f22; --toastink:#fffaf0; --hintkey:#e9b949;
+  --swborder:rgba(0,0,0,.2); --shadow:rgba(70,58,40,.10); --shadow2:rgba(70,58,40,.2);
+  --lbbg:rgba(40,32,20,.88);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  font-size:var(--fs);line-height:var(--lh);-webkit-font-smoothing:antialiased}
+
+/* ---------- 顶部 ---------- */
+header{position:sticky;top:0;z-index:40;background:var(--headerbg);
+  backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--line)}
+.hwrap{max-width:1500px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:15px;letter-spacing:.2px;white-space:nowrap}
+.brand small{display:block;font-weight:400;color:var(--ink2);font-size:11.5px;letter-spacing:0}
+.tools{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--card);padding:6px 11px;font-size:12.5px;color:var(--ink2);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--accent);color:var(--onaccent)}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 11px;font-size:12.5px;
+  color:var(--ink2);cursor:pointer}
+.btn.on{background:var(--accent);color:var(--onaccent);border-color:var(--accent)}
+#theme{border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:8px;
+  padding:6px 8px;font:inherit;font-size:12.5px;cursor:pointer}
+#bar{height:2px;background:var(--accent);width:0;transition:width .1s linear}
+
+/* ---------- 布局 ---------- */
+.shell{max-width:1760px;margin:0 auto;padding:24px;display:grid;
+  grid-template-columns:var(--navw) minmax(0,1fr) var(--notew);gap:0}
+body.notes-on{--notew:392px}
+body.nav-off{--navw:0px}
+/* 显式列定位：目录隐藏（display:none）后正文不会滑到宽度 0 的第一列 */
+nav{grid-column:1}
+main{grid-column:2;min-width:0}
+aside.notes{grid-column:3}
+body.nav-off nav{display:none}
+nav{position:sticky;top:74px;align-self:start;max-height:calc(100vh - 100px);overflow:auto;
+  border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:12px;margin-right:26px}
+nav h4{margin:2px 0 8px;font-size:12px;color:var(--ink2);letter-spacing:.08em;text-transform:uppercase}
+nav a{display:block;text-decoration:none;color:var(--ink);padding:5px 8px;border-radius:7px;line-height:1.35}
+nav a:hover{background:var(--hover)}
+nav a.t2{font-size:13.5px;font-weight:600;margin-top:4px}
+nav a.t3{font-size:12.5px;padding-left:18px;color:var(--ink2)}
+nav a.active{background:var(--active);color:var(--accent)}
+nav .ten{display:block;font-size:10.5px;color:var(--ink3);font-weight:400}
+
+/* ---------- 论文头 ---------- */
+.paper{border:1px solid var(--line);border-radius:14px;padding:22px 26px;margin-bottom:20px;
+  background:linear-gradient(180deg,var(--headbg1),var(--headbg2))}
+.paper h1{margin:0 0 4px;font-size:25px;line-height:1.3}
+.paper .h1zh{margin:0 0 12px;font-size:17px;color:var(--accent);font-weight:600}
+.paper .m{font-size:13px;color:var(--ink2);margin:3px 0}
+.chips{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 11px;font-size:12px;color:var(--ink2)}
+.kpi{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kpi div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card)}
+.kpi b{display:block;font-size:19px;color:var(--accent)}
+.kpi span{font-size:11.5px;color:var(--ink2)}
+
+/* ---------- 双栏正文 ---------- */
+.colhead{position:sticky;top:57px;z-index:30;display:grid;grid-template-columns:1fr 1fr;gap:0 30px;
+  background:var(--colheadbg);border-bottom:1px solid var(--line);padding:8px 0;margin-bottom:6px}
+.colhead div{font-size:12px;color:var(--ink2);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.doc{display:grid;grid-template-columns:1fr 1fr;gap:0 30px;align-items:start}
+.cell{padding:2px 0}
+.cell.en{border-right:1px dashed var(--line2);padding-right:26px}
+.cell.zh{padding-left:2px}
+.doc p{margin:.35em 0 .9em}
+.cell.zh p{line-height:1.95}
+.full{grid-column:1/-1}
+h2{font-size:19px;margin:26px 0 6px;padding-top:8px}
+h3{font-size:15.5px;margin:18px 0 4px;color:var(--heading)}
+.cell.zh h2,.cell.zh h3{color:var(--accent)}
+.sec{border-top:2px solid var(--secline);margin-top:10px}
+.cap p{font-size:13px;color:var(--ink2);margin:.2em 0 1.1em}
+ul{margin:.3em 0 1em;padding-left:1.25em}
+li{margin:.25em 0}
+
+/* ---------- 句子高亮 ---------- */
+.s{border-radius:4px;padding:1px 1px;transition:background .12s,box-shadow .12s;cursor:pointer}
+.s.hl-src{background:var(--src);box-shadow:inset 0 -2px 0 var(--srcb)}
+.s.hl-tgt{background:var(--tgt);box-shadow:inset 0 -2px 0 var(--tgtb)}
+.s.pin:not(.noted){background:var(--pin)!important;box-shadow:inset 0 -2px 0 var(--pinb)!important}
+body.nohl .s{cursor:auto}
+body.nohl .s.hl-src,body.nohl .s.hl-tgt{background:transparent;box-shadow:none}
+
+/* ---------- 笔记标记（双击） ---------- */
+.s.noted{background:var(--note)!important;box-shadow:inset 0 -2px 0 var(--noteb)!important}
+.s.noted.pin{box-shadow:inset 0 -2px 0 var(--pinb),inset 0 -7px 0 -5px var(--noteb)!important}
+.s.noted::after{content:"笔记 " attr(data-nc);font-size:10px;color:var(--badgeink);background:var(--badgebg);
+  border:1px solid var(--notering);border-radius:4px;padding:0 4px;margin:0 2px 0 4px;
+  vertical-align:2px;white-space:nowrap;font-weight:600}
+.s.noted.hl-src{outline:2px solid var(--srcb);outline-offset:1px}
+.s.noted.hl-tgt{outline:2px solid var(--tgtb);outline-offset:1px}
+.annot{position:relative}
+.annot.noted{outline:2px solid var(--notering);outline-offset:2px;border-radius:12px;background:var(--notebg)}
+.annot.noted::after{content:"笔记 " attr(data-nc);position:absolute;top:4px;right:6px;font-size:10px;
+  color:var(--badgeink);background:var(--badgebg);border:1px solid var(--notering);border-radius:999px;padding:1px 7px;
+  font-weight:600;z-index:3}
+@keyframes flashbg{0%{background:var(--flash)}100%{background:transparent}}
+.flash{animation:flashbg 1.4s ease-out}
+
+/* ---------- 笔记栏：边注式，永远对齐所批注元素的那一行 ---------- */
+aside.notes{display:none}
+body.notes-on aside.notes{display:block;position:relative;margin-left:24px}
+.ncard{position:absolute;left:0;right:0;background:var(--card);border:1px solid var(--line);
+  border-left:3px solid var(--noteb);border-radius:10px;padding:8px 22px 8px 10px;
+  box-shadow:0 1px 3px var(--shadow);transition:top .18s ease,box-shadow .15s}
+.ncard.act{box-shadow:0 0 0 2px var(--ring)}
+/* 笔记正文与论文正文同字号，随 A−/A+ 一起缩放；--nfont 作为「默认字体」的可回归值 */
+.nbody{--nfont:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue','PingFang SC',
+  'Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  font-family:var(--nfont);
+  font-size:var(--fs);line-height:1.75;word-break:break-word;cursor:text;outline:0;min-height:22px}
+.nbody.ph::before{content:'点这里写笔记…';color:var(--ph);font-size:.85em}
+.nbody ol,.nbody ul{margin:.35em 0;padding-left:1.5em}
+.nbody li{margin:.15em 0}
+.nbody a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;word-break:break-all;
+  cursor:pointer}
+.nbody a:hover{background:var(--linkhover)}
+/* 图片与文字同行，光标 + 退格键即可删除 */
+.nbody img{display:inline-block;vertical-align:middle;max-width:100%;max-height:150px;
+  margin:2px 1px;border-radius:5px;border:1px solid var(--line)}
+.nbody img::selection{background:var(--ring)}
+.nx{position:absolute;top:2px;right:4px;width:18px;height:18px;line-height:17px;text-align:center;
+  border-radius:50%;color:var(--xdim);cursor:pointer;font-size:13px;user-select:none}
+.nx:hover{background:var(--dangerbg);color:var(--danger)}
+/* ---------- 笔记格式工具条（只在当前笔记上显示） ---------- */
+.ntb{display:none;gap:3px;align-items:center;flex-wrap:wrap;margin:0 0 6px;padding-bottom:5px;
+  border-bottom:1px dashed var(--line)}
+.ncard.act .ntb{display:flex}
+.ntb select{font:inherit;font-size:11px;padding:1px 2px;border:1px solid var(--line);border-radius:5px;
+  background:var(--card);color:var(--ink2);max-width:82px}
+.ntb button{width:23px;height:22px;padding:0;border:1px solid var(--line);border-radius:5px;background:var(--card);
+  color:var(--ink2);cursor:pointer;font-size:11.5px;line-height:1}
+.ntb button:hover{background:var(--btnhover);color:var(--ink)}
+.ntb button.on{background:var(--accent);color:var(--onaccent);border-color:var(--accent)}
+.ntb button.wide{width:auto;padding:0 6px;font-size:11px}
+.ntb .sep{width:1px;height:15px;background:var(--line);margin:0 2px}
+.ntb .sw{width:15px;height:15px;border-radius:3px;border:1px solid var(--swborder);cursor:pointer}
+.ntb .sw:hover{transform:scale(1.15)}
+.ntb .sw.on{outline:2px solid var(--ink);outline-offset:1px}
+.ntb input[type=color]{width:22px;height:22px;padding:0;border:1px solid var(--line);border-radius:5px;
+  background:var(--card);cursor:pointer}
+.ncard time{display:block;font-size:10px;color:var(--ph);margin-top:4px}
+#ntoast{position:fixed;right:18px;bottom:18px;z-index:70;background:var(--toastbg);color:var(--toastink);font-size:12px;
+  padding:7px 12px;border-radius:8px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:300px}
+#ntoast.on{opacity:.93}
+#ntoast.err{background:var(--danger);color:var(--dangerink)}
+
+/* ---------- 图 / 公式 / 表 ---------- */
+figure{margin:14px 0 6px;text-align:center;background:var(--figbg);border:1px solid var(--line);border-radius:12px;padding:12px}
+figure img{max-width:100%;height:auto;cursor:zoom-in;filter:var(--figfilter)}
+.eqbox{position:relative;margin:6px 0 14px;padding:8px 44px 8px 14px;background:var(--panel);
+  border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+.eqbody{font-size:15px}
+.eqno{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--ink2)}
+.tablebox{margin:2px 0 18px;overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:12.5px;background:var(--card)}
+th,td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:center;white-space:nowrap}
+th{background:var(--thbg);font-weight:600;color:var(--heading)}
+th small,td small{display:block;color:var(--ink2);font-size:10.5px;font-weight:400}
+td.l,th.l{text-align:left}
+tbody tr:hover{background:var(--trhover)}
+.best{color:var(--best);font-weight:700}
+.refs{grid-column:1/-1;margin:22px 0 40px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:10px 16px}
+.refs summary{cursor:pointer;font-size:13.5px;color:var(--ink2);font-weight:600}
+.refs ol{font-size:12px;color:var(--ink2);line-height:1.7}
+
+/* ---------- 单栏模式 ---------- */
+body.only-en .doc,body.only-zh .doc{grid-template-columns:1fr}
+body.only-en .colhead,body.only-zh .colhead{grid-template-columns:1fr}
+body.only-en .cell.zh,body.only-en .colhead div:nth-child(2){display:none}
+body.only-zh .cell.en,body.only-zh .colhead div:nth-child(1){display:none}
+body.only-en .cell.en{border-right:0;padding-right:0}
+
+/* ---------- 灯箱 ---------- */
+#lb{position:fixed;inset:0;background:var(--lbbg);display:none;z-index:99;
+  align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+#lb.on{display:flex}
+#lb img{max-width:96%;max-height:94%;background:var(--figbg);border-radius:8px}
+.hint{position:fixed;right:18px;bottom:18px;z-index:50;background:var(--toastbg);color:var(--toastink);font-size:12px;
+  padding:8px 12px;border-radius:8px;opacity:.9;max-width:290px;line-height:1.6}
+.hint b{color:var(--hintkey)}
+@media (max-width:1180px){
+  .shell{grid-template-columns:var(--navw) minmax(0,1fr);padding:16px}
+  nav{position:static;max-height:300px;margin-right:16px}
+  .cell.en{padding-right:18px}
+  .doc,.colhead{gap:0 20px}
+  body.notes-on{--notew:0px}
+  body.notes-on aside.notes{position:fixed;top:57px;right:0;bottom:0;width:min(360px,94vw);
+    margin:0;overflow:auto;padding:12px;background:var(--panel);border-left:1px solid var(--line);
+    z-index:60;box-shadow:-10px 0 28px var(--shadow2)}
+  body.notes-on .ncard{position:static;margin-bottom:10px}
+}
+@media (max-width:820px){
+  .doc,.colhead{grid-template-columns:1fr}
+  .cell.en{border-right:0;padding-right:0;border-bottom:1px dashed var(--line2)}
+}
+/* ===== academic-report 单栏报告适配层（叠在牛来核心视觉之上） ===== */
+
+/* 正文单栏容器：居中限宽，替代牛来的双栏 .doc */
+.content{max-width:980px;margin:0 auto;padding:0 6px 80px}
+.content h2{font-size:19px;margin:28px 0 10px;padding-top:10px;border-top:2px solid var(--secline);color:var(--heading)}
+.content h3{font-size:15.5px;margin:20px 0 8px;color:var(--accent)}
+.content p{margin:.6em 0 1em}
+.content a{color:var(--accent)}
+.content strong{font-weight:600}
+
+/* 行内代码与代码块 */
+.content code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.85em;
+  background:var(--codebg);padding:1px 5px;border-radius:4px;color:var(--ink)}
+.content pre{background:var(--codebg);border:1px solid var(--line);border-radius:10px;
+  padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.6}
+.content pre code{background:none;padding:0}
+
+/* Mermaid 图：白底居中卡片 */
+.content pre.mermaid{background:#fff;text-align:center;color:#333;padding:18px 8px;margin:16px 0}
+
+/* 引用块（关键原文引用：英文原句斜体 + 中文） */
+.content blockquote{
+  margin:14px 0;padding:10px 16px;background:var(--quotebg,#f7f8fa);
+  border-left:4px solid var(--quoteline,#c9ddf2);border-radius:0 10px 10px 0;color:var(--ink2)}
+.content blockquote p{margin:.4em 0}
+.content blockquote p:first-child{font-style:italic}
+.content blockquote p:nth-child(2){margin-top:10px;color:var(--ink)}
+
+/* 表格：圆角容器 + hover 行（牛来 .tablebox 已定义边框圆角，此处补行内细节） */
+.content .tablebox{margin:2px 0 18px;overflow-x:auto}
+.content table{font-size:13px;background:var(--card)}
+.content th,.content td{padding:7px 10px}
+.content td.l,.content th.l{text-align:left}
+.content .best{color:var(--best);font-weight:700}
+
+/* 列表 */
+.content ul,.content ol{margin:.5em 0 1em;padding-left:1.6em}
+.content li{margin:.3em 0}
+
+/* 深浅主题下的局部变量补充 */
+body[data-theme="dark"]{--codebg:#262b33;--quotebg:#23272f;--quoteline:#3d5a7a}
+body[data-theme="indigo"]{--codebg:#1c2542;--quotebg:#1a233d;--quoteline:#3d5288}
+body[data-theme="green"]{--codebg:#d8efdb;--quotebg:#ddefe0;--quoteline:#8fc298}
+body[data-theme="sepia"]{--codebg:#efe7d2;--quotebg:#f1ead8;--quoteline:#cbb48a}
+
+/* 打印 */
+@media print{
+  header,nav{display:none !important}
+  .shell{display:block;padding:0}
+  .content h2{page-break-before:always}
+  a{text-decoration:none;color:inherit}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <div class="brand">DynamoLLM 精读报告：把「实例数 / 并行度 / 频率」拆成三层来省电
+      <small>AI 学术论文中文学习报告 · academic-report</small></div>
+    <div class="tools">
+      <button class="btn on" id="navbtn" title="展开 / 隐藏左侧目录">☰ 目录</button>
+      <div class="seg" id="fs">
+        <button data-f="-1">A−</button><button data-f="1">A+</button>
+      </div>
+      <select id="theme" title="配色主题（护眼）">
+        <option value="light">☀︎ 白底</option>
+        <option value="dark">◐ 深色 VSCode</option>
+        <option value="indigo">☾ 靛青夜</option>
+        <option value="green">◉ 护眼绿</option>
+        <option value="sepia">▤ 米黄纸</option>
+      </select>
+    </div>
+  </div>
+  <div id="bar"></div>
+</header>
+
+<div class="shell">
+  <nav id="toc"><h4>目录 Contents</h4><a class="t2" href="#一-这篇论文到底在解决什么">一、这篇论文到底在解决什么</a><a class="t2" href="#二-背景-两阶段计算决定了-什么样的请求怕什么旋钮">二、背景：两阶段计算决定了「什么样的请求怕什么旋钮」</a><a class="t2" href="#三-三条洞察-能效的机会在哪里">三、三条洞察：能效的机会在哪里</a><a class="t3" href="#3-1-洞察一-能效画像在四个维度上异构">3.1 洞察一：能效画像在四个维度上异构</a><a class="t3" href="#3-2-洞察二-负载高度动态-最优配置会迅速过期">3.2 洞察二：负载高度动态，最优配置会迅速过期</a><a class="t3" href="#3-3-洞察三-三类重配置都有-不可忽视-的开销">3.3 洞察三：三类重配置都有「不可忽视」的开销</a><a class="t2" href="#四-DynamoLLM-的设计-为什么必须分层控制">四、DynamoLLM 的设计：为什么必须分层控制</a><a class="t3" href="#4-1-不分层会怎样-一个-MILP-就够了-但它太慢">4.1 不分层会怎样：一个 MILP 就够了，但它太慢</a><a class="t3" href="#4-2-每层各自-只看自己的旋钮--代价是什么">4.2 每层各自「只看自己的旋钮」，代价是什么</a><a class="t3" href="#4-3-碎片化-floor-分配---往最大请求池推">4.3 碎片化：floor 分配 + 往最大请求池推</a><a class="t3" href="#4-4-预测错后怎么恢复-emergency-四步">4.4 预测错后怎么恢复：emergency 四步</a><a class="t3" href="#4-5-重切分-二分图最大权匹配---NVLink-直连">4.5 重切分：二分图最大权匹配 + NVLink 直连</a><a class="t3" href="#4-6-画像与预测-数据驱动-不要求模型结构知识">4.6 画像与预测：数据驱动，不要求模型结构知识</a><a class="t2" href="#五-评估-数字说明了什么-没说明什么">五、评估：数字说明了什么，没说明什么</a><a class="t3" href="#5-1-实验设置与对照组设计">5.1 实验设置与对照组设计</a><a class="t3" href="#5-2-能耗与延迟-一个-方向相反-的结果">5.2 能耗与延迟：一个「方向相反」的结果</a><a class="t3" href="#5-3-敏感性-三个-边界条件">5.3 敏感性：三个「边界条件」</a><a class="t3" href="#5-4-长时与大规模-真实硬件-1-天-仿真-1-周">5.4 长时与大规模：真实硬件 1 天、仿真 1 周</a><a class="t2" href="#六-放进六篇清单里看-DynamoLLM-的位置">六、放进六篇清单里看：DynamoLLM 的位置</a><a class="t2" href="#七-工程启示-对两机六卡能做什么-不能做什么">七、工程启示：对两机六卡能做什么、不能做什么</a><a class="t2" href="#八-局限与审稿视角">八、局限与审稿视角</a><a class="t2" href="#九-如果要继续往下读-读哪里">九、如果要继续往下读，读哪里</a><a class="t2" href="#十-一页速记">十、一页速记</a></nav>
+  <main>
+    <div class="paper">
+  <h1>DynamoLLM 精读报告：把「实例数 / 并行度 / 频率」拆成三层来省电</h1>
+  <div class="h1zh">AI 学术论文中文学习报告 · academic-report</div>
+  <div class="m"><b>论文</b>：DynamoLLM: Designing LLM Inference Clusters for Performance and Energy Efficiency</div><div class="m"><b>发表</b>：IEEE HPCA 2025（第 31 届高性能计算机体系结构国际研讨会），pp.1348–1362</div><div class="m"><b>作者/机构</b>：Jovan Stojkovic、Chaojie Zhang†、Íñigo Goiri†、Josep Torrellas、Esha Choukse†；UIUC，†Microsoft Azure Research – Systems</div><div class="m"><b>研究对象</b>：面向 LLM 在线推理集群的能耗管理框架（首个该类框架）</div><div class="m"><b>核心手段</b>：请求按输入/输出长度分 9 桶 → 分池；每池三层控制器分别调实例数、张量并行度、GPU 频率</div><div class="m"><b>实验平台</b>：单机 8×H100（DGX H100）+ Azure 生产 trace（1 小时开源 / 1 天 / 1 周）</div><div class="m"><b>主要结论</b>：能耗 −52%、运营碳排 −38%、用户成本 −61%，同时满足延迟 SLO</div><div class="m"><b>与本项目的关系</b>：六篇清单第 4 篇；回答「为什么分层控制」「预测错后怎么恢复」两个问题</div><div class="m"><b>阅读重点</b>：§III 三条洞察、§IV-B 分层节律、§IV-C 重配置开销削减、§IV-D 应急恢复</div>
+  
+</div>
+    <article class="content" id="content">
+<h1 id="DynamoLLM-精读报告-把-实例数---并行度---频率-拆成三层来省电">DynamoLLM 精读报告：把「实例数 / 并行度 / 频率」拆成三层来省电</h1>
+<blockquote>
+<p>对象：Jovan Stojkovic, Chaojie Zhang, Íñigo Goiri, Josep Torrellas, Esha Choukse，<em>DynamoLLM: Designing LLM Inference Clusters for Performance and Energy Efficiency</em>，IEEE HPCA 2025，pp.1348–1362，DOI 10.1109/HPCA61900.2025.00102。UIUC 与 Microsoft Azure Research – Systems 合作。</p>
+</blockquote>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>论文</td>
+<td>DynamoLLM: Designing LLM Inference Clusters for Performance and Energy Efficiency</td>
+</tr>
+<tr>
+<td>发表</td>
+<td>IEEE HPCA 2025（第 31 届高性能计算机体系结构国际研讨会），pp.1348–1362</td>
+</tr>
+<tr>
+<td>作者/机构</td>
+<td>Jovan Stojkovic、Chaojie Zhang†、Íñigo Goiri†、Josep Torrellas、Esha Choukse†；UIUC，†Microsoft Azure Research – Systems</td>
+</tr>
+<tr>
+<td>研究对象</td>
+<td>面向 LLM 在线推理集群的能耗管理框架（首个该类框架）</td>
+</tr>
+<tr>
+<td>核心手段</td>
+<td>请求按输入/输出长度分 9 桶 → 分池；每池三层控制器分别调实例数、张量并行度、GPU 频率</td>
+</tr>
+<tr>
+<td>实验平台</td>
+<td>单机 8×H100（DGX H100）+ Azure 生产 trace（1 小时开源 / 1 天 / 1 周）</td>
+</tr>
+<tr>
+<td>主要结论</td>
+<td>能耗 −52%、运营碳排 −38%、用户成本 −61%，同时满足延迟 SLO</td>
+</tr>
+<tr>
+<td>与本项目的关系</td>
+<td>六篇清单第 4 篇；回答「为什么分层控制」「预测错后怎么恢复」两个问题</td>
+</tr>
+<tr>
+<td>阅读重点</td>
+<td>§III 三条洞察、§IV-B 分层节律、§IV-C 重配置开销削减、§IV-D 应急恢复</td>
+</tr>
+</tbody>
+</table></div>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>数值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>服务级平均能耗节省</td>
+<td>52%</td>
+</tr>
+<tr>
+<td>运营碳排放下降</td>
+<td>38%（CAISO 下周产 5t → 3.1t CO2）</td>
+</tr>
+<tr>
+<td>用户成本下降</td>
+<td>61%（服务器数 40 → 24.6，$1362.7/小时）</td>
+</tr>
+<tr>
+<td>集群功耗 P50 / P99</td>
+<td>−43% / −9%（相对 SinglePool）</td>
+</tr>
+<tr>
+<td>延迟 P99 TTFT / TBT</td>
+<td>−5.3% / −11.0%</td>
+</tr>
+<tr>
+<td>延迟 P50 TTFT / TBT</td>
+<td>+11.4% / +7.6%（用 SLO 余量换能耗）</td>
+</tr>
+<tr>
+<td>1 小时回放能耗</td>
+<td>相对 SinglePool −35%</td>
+</tr>
+<tr>
+<td>1 天真实硬件能耗</td>
+<td>−42%（11 台 → 动态台数）</td>
+</tr>
+<tr>
+<td>1 周仿真能耗</td>
+<td>Conversation −47%、Coding −56%</td>
+</tr>
+<tr>
+<td>建一个新实例</td>
+<td>6–8 分钟（VM 1–2min + 分布式环境 2min + 权重 3min + 引擎 18s + 装载 15s）</td>
+</tr>
+<tr>
+<td>改并行度</td>
+<td>1–2 分钟（现有系统停机卸载重载）</td>
+</tr>
+<tr>
+<td>改一次频率</td>
+<td>50–80 ms，而一次 decode 迭代约 20 ms</td>
+</tr>
+<tr>
+<td>输出长度预测准确率</td>
+<td>81%（BERT-base + 2 层 FC + softmax）</td>
+</tr>
+<tr>
+<td>画像预测准确率</td>
+<td>&gt;98%</td>
+</tr>
+<tr>
+<td>选定池数</td>
+<td>9 个（2/4/6/9/12/16 池平均需 75.1/79.6/81.3/85.7/87.1/91.2 张 GPU）</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="一-这篇论文到底在解决什么">一、这篇论文到底在解决什么</h2>
+<p>LLM 推理集群今天面临的矛盾很具体：延迟 SLO 是硬的，GPU 是贵且费电的，而这两者并非只能靠「多买卡、跑满频」来同时满足。论文开门见山地把问题拆成三层：</p>
+<ul>
+<li><strong>性能层</strong>：请求有 TTFT（首 token 时间）与 TBT（token 间隔）两类延迟约束，且不同服务严格程度不同；</li>
+<li><strong>硬件层</strong>：H100 这类功率密集 GPU 让推理集群的能耗与碳排迅速成为可观成本项；</li>
+<li><strong>调度层</strong>：现有系统要么静态按峰值配置（大量欠利用），要么只用单一旋钮（频率或扩缩容），无法同时兼顾异构请求与波动负载。</li>
+</ul>
+<blockquote>
+<p><em>"Today, LLM inference clusters receive a large number of queries with strict Service Level Objectives (SLOs). To achieve the desired performance, these models execute on power-hungry GPUs, causing inference clusters to consume large amounts of energy and, consequently, result in substantial carbon emissions."</em></p>
+<p>如今 LLM 推理集群接收大量附带严格 SLO 的查询。为达到期望性能，这些模型运行在高功耗 GPU 上，使推理集群消耗大量能源，并因此产生可观的碳排放。</p>
+</blockquote>
+<p>作者的主张是：<strong>能效提升的空间不在「把频率调低一点」，而在「承认请求之间根本不同，然后把不同请求放到不同形状的机器配置上」</strong>。这句话是全篇的骨架，也是它与 TAPAS、GREEN 等邻近工作的最大分野——后两者把「功率/碳」当作外部信号来约束调度，DynamoLLM 把「能耗」当作系统内部的目标函数来配置集群形状。</p>
+<p><pre class="mermaid">mindmap
+  root(("DynamoLLM"))
+    问题
+      延迟SLO硬约束
+      GPU功率密度高
+      静态按峰值配置欠利用
+    洞察
+      洞察1 负载能效画像异构
+      洞察2 负载高度动态
+      洞察3 重配置开销显著
+    设计
+      请求分9桶
+      实例池
+      三层控制器
+      开销削减
+      预测式调度
+    收益
+      能耗降52%
+      碳排降38%
+      成本降61%</pre></p>
+<p><strong>关键洞察</strong>：
+- 论文的贡献顺序是「先证伪单一旋钮，再提出多旋钮协同」，这与多数系统论文「先给架构再给数据」的写法相反，读者要顺着 §III 的三条 Insight 才能理解 §IV 每个设计选择为什么必须存在。
+- 「首个 LLM 推理能源管理框架」这一表述的边界是：它管理的是<strong>集群组织形状</strong>（实例数/并行度/频率），不含芯片级 DVFS 策略、不含电网侧需求响应、不含内含碳核算。</p>
+<hr />
+<h2 id="二-背景-两阶段计算决定了-什么样的请求怕什么旋钮">二、背景：两阶段计算决定了「什么样的请求怕什么旋钮」</h2>
+<p>要理解后面所有配置选择，必须先接受一个物理事实：LLM 推理的两个阶段对硬件的需求方向相反。</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>计算特征</th>
+<th>随什么扩展</th>
+<th>对什么敏感</th>
+<th>典型耗时占比（长输出请求）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Prefill（预填充）</strong></td>
+<td>输入 token <strong>并行</strong>过一遍前向，矩阵乘密集，算力受限</td>
+<td>随<strong>输入</strong> token 数线性增长</td>
+<td><strong>GPU 频率</strong>与算力并行度；降频直接拉长 TTFT</td>
+<td>短，通常在首 token前一次性完成</td>
+</tr>
+<tr>
+<td><strong>Decode（解码）</strong></td>
+<td>每步只生成 1 个 token，需反复读权重与 KV cache，<strong>访存受限</strong></td>
+<td>随<strong>输出</strong> token 数线性增长</td>
+<td><strong>显存带宽与容量</strong>；降频对 TBT 影响相对小，但 KV cache 增长会挤占显存</td>
+<td>长，占总时延的绝大部分</td>
+</tr>
+</tbody>
+</table></div>
+<p>这张表的工程含义非常直接：<strong>输入长的请求（LS/LM/LL）是「算力饥饿」，降频会立刻违反 TTFT SLO；输出长的请求（SL/ML/LL）是「带宽饥饿」，在 SLO 余量内降频几乎是免费省电</strong>。论文表 I 的热力图正是这张表的量化版本。</p>
+<blockquote>
+<p><em>"Requests with a large number of input tokens are compute intensive and, thus, sensitive to GPU frequency. Conversely, requests with a few input tokens and many output tokens have low compute but high memory requirements; reducing their GPU frequency would save energy without significantly impacting performance."</em></p>
+<p>输入 token 多的请求计算密集，因此对 GPU 频率敏感。相反，输入 token 少而输出 token 多的请求计算量低但显存需求高；降低其 GPU 频率可在不显著影响性能的前提下省电。</p>
+</blockquote>
+<p>并行度方面，论文只讨论张量并行（TP），理由很实际：多数开源模型能装进单机 8 卡，而 TP 在同机 NVLink 上代价最低；PP 更适合跨机，但本文的配置空间聚焦 TP2/TP4/TP8。</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>并行方式</th>
+<th>切什么</th>
+<th>通信模式</th>
+<th>适用边界</th>
+<th>本文用法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>TP（张量并行）</strong></td>
+<td>每层权重切片到每卡</td>
+<td>每层都要跨全部卡做 all-reduce，带宽敏感</td>
+<td>同机、NVLink 互联（8 卡内）</td>
+<td>主配置维度，记 TP2/TP4/TP8</td>
+</tr>
+<tr>
+<td><strong>PP（流水并行）</strong></td>
+<td>按层切，层内张量不切</td>
+<td>仅相邻 stage 间传激活</td>
+<td>跨机、层数多的大模型</td>
+<td>文中说明可扩展，未作为主实验维度</td>
+</tr>
+</tbody>
+</table></div>
+<p><pre class="mermaid">flowchart LR
+    subgraph IN["输入请求"]
+        A["输入 token 序列"]
+        B["输出 token 序列"]
+    end
+    subgraph PH["两个计算阶段"]
+        C["Prefill 并行处理输入<br/>算力受限"]
+        D["Decode 逐 token 串行<br/>显存受限"]
+    end
+    A -->|"长度决定"| C
+    B -->|"长度决定"| D
+    C -->|"敏感旋钮"| E["GPU 频率 / TP 并行度"]
+    D -->|"敏感旋钮"| F["显存容量 / 带宽 / 频率余量"]
+    E --> G["TTFT SLO"]
+    F --> H["TBT SLO"]</pre></p>
+<p><strong>关键洞察</strong>：
+- 「降频省电」这句话在 LLM 推理中<strong>不是普适真理</strong>：只对 decode 主导、且 SLO 有富余的请求成立。
+- 反过来，「加卡提速」也不是普适解：当请求是 decode 主导时，加卡带来的边际收益被通信与显存带宽摊薄，反而增加空耗。
+- 这两点合起来解释了为什么<strong>必须做请求分类</strong>，而不是全局调一个频率。</p>
+<hr />
+<h2 id="三-三条洞察-能效的机会在哪里">三、三条洞察：能效的机会在哪里</h2>
+<h3 id="3-1-洞察一-能效画像在四个维度上异构">3.1 洞察一：能效画像在四个维度上异构</h3>
+<p>论文用 9 个桶（SS/SM/SL/MS/MM/ML/LS/LM/LL）把请求按输入输出长度切开，阈值取 Conversation trace 的第 33/66/100 百分位，SLO 取「无负载单请求延迟的 5 倍」。</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>变化方式</th>
+<th>观察到的差异</th>
+<th>对配置的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>请求长度（9 桶）</strong></td>
+<td>输入短/中/长 × 输出短/中/长</td>
+<td>SS 最优是 TP2@1.2GHz（0.79 Wh）；LL 只能用 TP8，最优 TP8@1.6GHz（13.21 Wh），能耗差 <strong>16.7 倍</strong></td>
+<td>不同桶的最优并行度与频率完全不同，混跑被迫按 LL 配置</td>
+</tr>
+<tr>
+<td><strong>请求负载</strong></td>
+<td>650 / 2000 / 4000 TPS</td>
+<td>低负载最省 TP4@1.2GHz；高负载 TP2 不可行，最省 TP4@2GHz</td>
+<td>同一请求类型，负载变了最优配置也变</td>
+</tr>
+<tr>
+<td><strong>模型规模</strong></td>
+<td>Llama2-13B → Falcon-180B</td>
+<td>13B/8x7B 可 TP2@1.2GHz（≈0.99 Wh）；8x22B/180B 只能 TP8</td>
+<td>参数量大 → 对频率与并行度更敏感，被迫跑高频</td>
+</tr>
+<tr>
+<td><strong>SLO 松紧</strong></td>
+<td>5× vs 10× 无负载延迟</td>
+<td>SL 型请求 5× 下最优 TP4@1.2GHz；放宽到 10× 可用 TP2@1.6GHz</td>
+<td>SLO 松紧直接改变可行配置集合</td>
+</tr>
+</tbody>
+</table></div>
+<p>这张表的量化依据是论文表 I–III，最值得记住的两个数字是 <strong>0.79 Wh（SS 最优）与 13.21 Wh（LL 最优）</strong>：同一模型、同一负载档，仅因请求形状不同，能效差接近 17 倍。这也解释了为什么「把请求混在一个池里」天然不划算——系统必须按最受限的那类请求配置全部资源。</p>
+<blockquote>
+<p><em>"Note that the lowest power configuration that meets SLOs (TP8 at 1.2 GHz), is not the energy-optimal one due to the increased execution time."</em></p>
+<p>注意，满足 SLO 的最低<strong>功耗</strong>配置（TP8@1.2GHz）并非<strong>能耗</strong>最优，因为执行时间被拉长。</p>
+</blockquote>
+<p>这句话是全文最重要的方法论提醒：<strong>功耗（W）与能耗（Wh）不是同一个目标</strong>。降频降低瞬时功率，却可能拉长执行时间，使总能耗上升。任何只盯功率的调度都会掉进这个陷阱。</p>
+<h3 id="3-2-洞察二-负载高度动态-最优配置会迅速过期">3.2 洞察二：负载高度动态，最优配置会迅速过期</h3>
+<p>论文用两类生产 trace 说明动态性的三个来源：</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>动态性来源</th>
+<th>证据</th>
+<th>幅度</th>
+<th>后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>请求类型分布变化</strong></td>
+<td>Conversation 输出长输入短，Coding 正相反；两者内部各类型占比都显著，热度随时间变</td>
+<td>一周内类型占比此消彼长</td>
+<td>固定分池会「池选对了、大小错了」</td>
+</tr>
+<tr>
+<td><strong>负载昼夜波动</strong></td>
+<td>Conversation 峰值 = 均值 1.7×、谷值 3.3×；Coding 峰值 = 均值 2.8×、谷值 34.6×</td>
+<td>Coding 谷值深达峰值 1/34.6</td>
+<td>峰值静态配置 → 谷时大量空转</td>
+</tr>
+<tr>
+<td><strong>SLO 与模型多样性</strong></td>
+<td>同一实例可被多服务分时复用；同一服务可并发用多个模型</td>
+<td>配置需求随「当前是谁在用」变化</td>
+<td>单一全局配置无法同时满足</td>
+</tr>
+</tbody>
+</table></div>
+<p>这里有个容易被忽略的推论：<strong>池太少无法细调，池太多碎片化</strong>。论文用 2/4/6/9/12/16 池做敏感性实验，平均需要 75.1/79.6/81.3/85.7/87.1/91.2 张 GPU——池数从 2 增到 16，GPU 需求上升 21%，但 TTFT 下降。最终选 9 池，是在「细调收益」与「碎片化成本」之间的折中。</p>
+<p><pre class="mermaid">flowchart TD
+    subgraph DYN["动态性的三个来源"]
+        A["请求类型分布漂移<br/>Conversation vs Coding"]
+        B["负载昼夜与周末波动<br/>峰值/谷值差达 34.6 倍"]
+        C["SLO 与模型多样性<br/>同一实例被多服务复用"]
+    end
+    A --> D["最优配置过期"]
+    B --> D
+    C --> D
+    D -->|"池太少"| E["无法细调频率与并行度<br/>能耗偏高"]
+    D -->|"池太多"| F["资源碎片化<br/>空闲 GPU 空耗"]
+    E --> G["折中：历史数据定池数<br/>9 池"]
+    F --> G
+    G --> H["负载下降时与下一更大请求池合并"]</pre></p>
+<p><strong>关键洞察</strong>：
+- DynamoLLM 的分池不是「一类请求一个池」的机械映射，而是<strong>带合并规则的弹性分池</strong>：某类负载下降时，池会并入「服务更长请求的下一个池」，用「让邻居多吃一点」换取「不要留一个半空的池」。
+- 换言之，碎片化治理不是事后整理资源，而是<strong>把碎片预先推给唯一可能超配的那个池</strong>（最大请求池），这是后面 §IV-B 的 floor 分配策略的来源。</p>
+<h3 id="3-3-洞察三-三类重配置都有-不可忽视-的开销">3.3 洞察三：三类重配置都有「不可忽视」的开销</h3>
+<p>这是全文最「系统」的一节，也是它区别于纯调度论文的地方：它先量化切换成本，再设计切换方式。</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>变更对象</th>
+<th>具体开销</th>
+<th>量级</th>
+<th>为什么不能放关键路径</th>
+<th>论文的削减手段</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>实例数（建新实例）</strong></td>
+<td>建 VM、初始化分布式环境（Ray/MPI）、下载权重、配引擎、装载权重与 KV cache</td>
+<td>合计 <strong>6–8 分钟</strong>（VM 1–2min、分布式环境 2min、权重 3min、引擎 18s、装载 15s）</td>
+<td>请求到达时来不及；若同步做，尾延迟直接被拉爆</td>
+<td>集群本地缓存权重 + 引擎全状态快照启 VM + 预测峰值后台预建</td>
+</tr>
+<tr>
+<td><strong>并行度（重切分）</strong></td>
+<td>重新切权重、搬到正确显存、引擎同步进程</td>
+<td>现有系统停机卸载重载 <strong>1–2 分钟</strong></td>
+<td>切换期实例不能服务</td>
+<td>图匹配最大化权重原地不动 + NVLink 直连并发搬运 + 新旧实例并存</td>
+</tr>
+<tr>
+<td><strong>频率（调频）</strong></td>
+<td>调 OS、系统调用到驱动、与固件交互</td>
+<td><strong>50–80 ms</strong>，而一次 decode 迭代仅 <strong>20 ms</strong></td>
+<td>一次调频可让单步延迟翻倍</td>
+<td>nvidia-smi 常驻内存 + 控制器特权模式</td>
+</tr>
+</tbody>
+</table></div>
+<p>这里最反直觉的数字是频率那一行：<strong>调一次频率的耗时是一次 decode 迭代的 2.5–4 倍</strong>。所以「每秒调一次频」在工程上是灾难——论文 fig4 用「每轮迭代后台重设频率」演示了吞吐显著下降。</p>
+<p>值得注意的是论文明确否掉了 TDP 限功率路线，理由有两条：频率调节粒度更细；降 TDP 会触发更频繁的 power-capping，而 power-capping 是<strong>反应式</strong>的、会把频率直接压到最低，性能损失比主动调频更糟。</p>
+<p><pre class="mermaid">flowchart LR
+    subgraph OV["三类重配置开销"]
+        A["建实例<br/>6-8 分钟"]
+        B["重切分<br/>1-2 分钟"]
+        C["调频率<br/>50-80 ms"]
+    end
+    A -->|"削减"| A1["权重本地缓存"]
+    A --> A2["引擎状态快照启 VM"]
+    A --> A3["预测峰值后台预建"]
+    B -->|"削减"| B1["二分图最大权匹配<br/>最大化原地不动"]
+    B --> B2["NVLink 直连并发搬运"]
+    B --> B3["新旧实例并存过渡"]
+    C -->|"削减"| C1["nvidia-smi 常驻内存"]
+    C --> C2["控制器特权模式"]
+    A1 --> D["重配置进入可承受区间"]
+    A2 --> D
+    A3 --> D
+    B1 --> D
+    B2 --> D
+    B3 --> D
+    C1 --> D
+    C2 --> D</pre></p>
+<hr />
+<h2 id="四-DynamoLLM-的设计-为什么必须分层控制">四、DynamoLLM 的设计：为什么必须分层控制</h2>
+<p>这是本文对清单问题「<strong>实例数、并行度、频率为什么分层控制？</strong>」的直接回答。</p>
+<h3 id="4-1-不分层会怎样-一个-MILP-就够了-但它太慢">4.1 不分层会怎样：一个 MILP 就够了，但它太慢</h3>
+<p>论文把「选最优配置」写成一个 MILP：给定 GPU 数 N、总负载 L、SLO，求各并行度的实例数 N_TPi、频率 f_i、每实例负载 L_TPi，使总能耗最小。</p>
+<p>$$
+\min \sum_{i}\Big(N_{TP_i}\times Energy_{TP_i,f_i}(L_{TP_i})\Big),\quad i\in\{2,4,8\}
+$$</p>
+<p>约束三条：① 用掉的 GPU 数 $\sum i\times N_{TP_i}\le N$；② 分出去的负载 $\sum N_{TP_i}\times L_{TP_i}\ge L$；③ 每个实例的预测性能 $\le$ SLO。</p>
+<p>这个模型的<strong>解是全局最优</strong>，但论文实测单次求解要约「数百毫秒」。这意味着：</p>
+<ul>
+<li>若每 5 秒重算一次全局最优，控制面自身就会吃掉可观的算力与延迟预算；</li>
+<li>若每 30 分钟才重算一次，则无法跟上 5 秒级的负载抖动与频率机会。</li>
+</ul>
+<p><strong>所以分层不是为了「模块化好看」，而是因为三类旋钮的最优决策频率根本不同</strong>：</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>层级</th>
+<th>管的旋钮</th>
+<th>节律</th>
+<th>为什么是这个节律</th>
+<th>单次决策的搜索空间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cluster Manager</strong></td>
+<td>池数、每池实例数（扩缩容）</td>
+<td><strong>30 分钟</strong> 一个 epoch</td>
+<td>建实例 6–8 分钟，只能做「粗粒度、低频」决策；再快也没有物理意义</td>
+<td>各请求类型的池规模分配（含碎片化取舍）</td>
+</tr>
+<tr>
+<td><strong>Pool Manager</strong></td>
+<td>池内实例数 × 张量并行度（重切分）</td>
+<td><strong>5 分钟</strong></td>
+<td>重切分 50–100 ms～1–2 s 级，可承受中等频率</td>
+<td>固定 GPU 数下的 TP 组合</td>
+</tr>
+<tr>
+<td><strong>Instance Manager</strong></td>
+<td>GPU 频率</td>
+<td><strong>5 秒</strong></td>
+<td>调频 50–80 ms，相对便宜，可跟负载抖动</td>
+<td>单实例在若干频率点上的可行性筛选</td>
+</tr>
+</tbody>
+</table></div>
+<p>这条推理链是：<strong>开销决定节律，节律决定抽象层级，抽象层级决定搜索空间大小</strong>。三者一一对应，谁也替代不了谁。论文还额外说明，因为各层通信稀疏（30 分钟 / 5 分钟 / 5 秒），这套层级<strong>不会引入控制面开销</strong>。</p>
+<p><pre class="mermaid">flowchart TD
+    subgraph L1["Cluster Manager（每 30 分钟）"]
+        A["接收请求 → 预测类型 → 转发到池"]
+        B["按预测峰值 PL 与单节点容量 ML<br/>分配 floor(PL/ML) 节点"]
+        C["剩余负载转给下一更大请求池"]
+    end
+    subgraph L2["Pool Manager（每 5 分钟）"]
+        D["池内请求调度：选能耗最小实例"]
+        E["检查是否需重切分到更省电 TP"]
+        F["MILP 简化版：固定 GPU 数与最高频<br/>只调并行度"]
+    end
+    subgraph L3["Instance Manager（每 5 秒）"]
+        G["请求调度到推理引擎"]
+        H["先用性能画像筛掉违 SLO 的频率"]
+        I["再用能耗画像选最低能耗频率"]
+    end
+    A --> D
+    B -->|"约束：GPU 数与负载"| D
+    C --> D
+    D --> G
+    E -->|"约束：并行度"| H
+    F --> E
+    H --> I
+    G --> H</pre></p>
+<h3 id="4-2-每层各自-只看自己的旋钮--代价是什么">4.2 每层各自「只看自己的旋钮」，代价是什么</h3>
+<p>分层必然带来次优：上层在算实例数时假设「下层跑最高性能配置」（TP8@1980MHz），下层在算并行度时假设「频率固定最高」。这等于每层都预留了保守余量，因此整体不是全局最优。</p>
+<p>论文的取舍是：<strong>用「近似最优 + 可高频执行」换「全局最优 + 无法高频执行」</strong>。这个取舍在评估里得到验证——DynamoLLM 相对 SinglePool 节能 35%，而单旋钮方案（ScaleFreq −19%、ScaleShard −6%、ScaleInst −2%）都明显更差；换言之，分层损失的「最优性」远小于单旋钮损失的「覆盖面」。</p>
+<h3 id="4-3-碎片化-floor-分配---往最大请求池推">4.3 碎片化：floor 分配 + 往最大请求池推</h3>
+<p>扩缩容本身会产生碎片：若每池都按峰值 ceil 分配，各池都会多出一点空转容量。DynamoLLM 的做法是：</p>
+<ol>
+<li>每池按 <code>floor(PL/ML)</code> 少分一个实例；</li>
+<li>少的那部分负载，在下一个 epoch 转给「下一个更大请求类型」的池；</li>
+<li>于是只有最大请求类型的池可能超配，集群级碎片被压到最小。</li>
+</ol>
+<p>这是一个很「工程」的设计：它不追求每池精确匹配，而是<strong>把不确定性集中到一个愿意承担它的地方</strong>。副作用是最大请求池的负载会略微偏紧，但因为它本来就要跑最重配置，多承担一点的边际成本最低。</p>
+<h3 id="4-4-预测错后怎么恢复-emergency-四步">4.4 预测错后怎么恢复：emergency 四步</h3>
+<p>这是清单问题「<strong>预测错后怎样恢复？</strong>」的答案，位于 §IV-D。DynamoLLM 的两类预测都会错：输出长度（下一步才知真值）与负载（突发不可预知）。</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>误判类型</th>
+<th>直接后果</th>
+<th>是否违反 SLO</th>
+<th>处理方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>高估输出长度</strong></td>
+<td>请求进入更高性能池</td>
+<td>不违反，只是能耗次优</td>
+<td>不干预，靠下一轮重配置自然收敛</td>
+</tr>
+<tr>
+<td><strong>低估输出长度</strong></td>
+<td>请求进入低性能池</td>
+<td>可能违反 TBT/TTFT</td>
+<td>触发 emergency（四步）</td>
+</tr>
+<tr>
+<td><strong>低估负载（突发）</strong></td>
+<td>池内资源不足以吸收</td>
+<td>队列堆积 → 违约</td>
+<td>触发 emergency（四步）</td>
+</tr>
+</tbody>
+</table></div>
+<p>emergency 的处置是<strong>由轻到重、逐级升级</strong>的四步：</p>
+<ol>
+<li><strong>队列重排</strong>：把即将超期的请求优先处理（不改配置，零开销）；</li>
+<li><strong>拉满频率</strong>：仍将违约时把该实例 GPU 频率提到最大（约 50–80ms 生效）；</li>
+<li><strong>re-steer</strong>：积压持续时，把尚未开始执行的请求经 Pool Manager 转到池内其他实例；</li>
+<li><strong>squash</strong>：以上都无效，把等待超过阈值的请求判失败，提示用户重试，由前端改投其他池或等负载平稳。</li>
+</ol>
+<p>值得强调的是<strong>第 4 步不是失败处理，而是系统的过载保护阀</strong>：与其让所有请求一起烂掉（尾延迟全面爆表），不如牺牲少数请求保住整体 SLO。这与 SpotGPU 的「弹射链」、TAPAS 的「降级」思路同源，但 DynamoLLM 是把它放在<strong>推理实例内部</strong>而不是集群调度器里。</p>
+<p><pre class="mermaid">flowchart TD
+    A["实例管理器检测：即将违约 或 积压恶化"] --> B["第1步 队列重排<br/>优先即将超期请求"]
+    B --> C{"仍将违约?"}
+    C -->|"否"| Z["恢复：保持在 SLO 内"]
+    C -->|"是"| D["第2步 GPU 频率拉满<br/>50-80ms 生效"]
+    D --> E{"积压持续或恶化?"}
+    E -->|"否"| Z
+    E -->|"是"| F["第3步 re-steer<br/>未开始执行的请求转池内其他实例"]
+    F --> G{"全部尝试仍不足?"}
+    G -->|"否"| Z
+    G -->|"是"| H["第4步 squash<br/>超阈值等待请求判失败"]
+    H --> I["提示用户重试<br/>前端改投其他池或待负载平稳"]</pre></p>
+<p><strong>关键洞察</strong>：
+- 这套恢复机制的关键不在「四步」，而在<strong>触发时机</strong>：靠「即将违约」的预测而非「已经违约」的事实，把干预提前到还能救回来的窗口。
+- 高估与低估被<strong>区别对待</strong>，这是很务实的设计：高估只是浪费电，不值得为它付出停机代价；低估会掉 SLO，必须立刻救。这种「不对称处置」比统一回滚更省。</p>
+<h3 id="4-5-重切分-二分图最大权匹配---NVLink-直连">4.5 重切分：二分图最大权匹配 + NVLink 直连</h3>
+<p>重切分的核心问题是「尽量少搬权重」。论文把「当前 GPU 上的权重分布」与「目标 TP 配置」建成二分图，边权 = 需传输的数据量，然后做最大权匹配，使总传输量最小。</p>
+<p>两个方向的开销差异很值得记：</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>方向</th>
+<th>权重流向</th>
+<th>老实例状态</th>
+<th>耗时（Llama2-70B，300GB/s NVLink）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>小 TP → 大 TP（TP4→TP8）</strong></td>
+<td>前 4 卡各出一半给后 4 卡，4 路并发</td>
+<td>只外发、内存不增，<strong>几乎不中断</strong></td>
+<td>传 1/8 模型 ≈ <strong>50 ms</strong></td>
+</tr>
+<tr>
+<td><strong>大 TP → 小 TP（TP8→TP4）</strong></td>
+<td>两卡权重合并到一卡</td>
+<td>接收方显存减少、吞吐下降</td>
+<td>传 1/4 模型 ≈ <strong>100 ms</strong></td>
+</tr>
+<tr>
+<td>表 VI 极值</td>
+<td>视源/目标组合</td>
+<td>—</td>
+<td>最优组合 <strong>0 开销</strong>，最差 <strong>4τ</strong>（4×50ms）</td>
+</tr>
+</tbody>
+</table></div>
+<p>还有一层容易漏掉的成本：权重到位后，vLLM 这类引擎要同步新实例进程，耗时数百毫秒到数秒，<strong>期间不能接负载</strong>。DynamoLLM 的处理是让老实例在新实例同步期间继续服务，新实例上线后才下线老实例；前提是每卡上「老+新」显存之和不超过容量，否则只能先停老再建新，并把部分负载临时挪走。</p>
+<p><pre class="mermaid">flowchart LR
+    subgraph PRE["输入"]
+        A["当前权重分布"]
+        B["目标 TP 配置"]
+    end
+    A --> C["构造二分图<br/>节点=新旧 GPU"]
+    B --> C
+    C --> D["边权=需传输数据量"]
+    D --> E["最大权匹配<br/>最小化总传输量"]
+    E --> F["生成传输计划<br/>源/目的 GPU 对"]
+    F --> G["NVLink 直连并发搬运"]
+    G --> H{"方向判断"}
+    H -->|"小到大 TP"| I["老实例几乎不中断<br/>≈50ms"]
+    H -->|"大到小 TP"| J["老实例吞吐下降<br/>≈100ms"]
+    I --> K["新旧实例并存<br/>同步完成后下线老的"]
+    J --> K</pre></p>
+<h3 id="4-6-画像与预测-数据驱动-不要求模型结构知识">4.6 画像与预测：数据驱动，不要求模型结构知识</h3>
+<ul>
+<li><strong>画像（profiling）</strong>：按「请求长度 × TP2/TP4/TP8 × 800–1980MHz（步长 200MHz）」扫一遍，少量负载档位测到最大吞吐后插值；因为功耗对负载非线性，在相邻测点出现功耗陡升处<strong>补采点</strong>；平均预测准确率 &gt;98%。</li>
+<li><strong>画像产物</strong>：一个函数 <code>(负载, 请求长度, 并行度, 频率) → (能耗, TTFT, TBT)</code>，不需要任何模型结构先验。</li>
+<li><strong>复用</strong>：每模型一份画像，存全局仓库，部署时缓存到集群本地，层级内共享。</li>
+<li><strong>输出长度预测</strong>：BERT-base + 两层全连接 + softmax，取 CLS 隐状态做短/中/长三分类，用 SQuAD / WildChat-1M / OpenOrca / coding / LMSYS-Chat-1M 微调，准确率 <strong>81%</strong>。</li>
+<li><strong>负载预测</strong>：基于历史周模式的模板法（轻量、可解释）。</li>
+</ul>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>预测对象</th>
+<th>方法</th>
+<th>准确率</th>
+<th>错了会怎样</th>
+<th>兜底</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>输出长度</td>
+<td>BERT 分类器（短/中/长）</td>
+<td>81%</td>
+<td>高估 → 进更强池（费电）；低估 → 进弱池（掉 SLO）</td>
+<td>emergency 四步</td>
+</tr>
+<tr>
+<td>请求负载</td>
+<td>历史周模板</td>
+<td>未单列</td>
+<td>突发时池不够</td>
+<td>emergency 四步 + 下轮扩容</td>
+</tr>
+<tr>
+<td>能耗/性能</td>
+<td>实测画像 + interp1d</td>
+<td>&gt;98%</td>
+<td>配置评估偏差</td>
+<td>保守余量（各层假设下层最高性能）</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>关键洞察</strong>：
+- 「81% 的分类准确率」在别的系统里是弱项，在这里被敏感性实验证明是可接受的：误分类率 40%（Dyn-60%）只让能耗 +25%、TTFT +12.3%。原因是系统能<strong>快速检测并重配</strong>，错误不会长期驻留。
+- 这给读者的启示是：<strong>在线系统的预测精度不必追求极致，只要「错得可检测、错得可纠正」</strong>。这与离线建模追求高准确率是完全不同的工程标准。</p>
+<hr />
+<h2 id="五-评估-数字说明了什么-没说明什么">五、评估：数字说明了什么，没说明什么</h2>
+<h3 id="5-1-实验设置与对照组设计">5.1 实验设置与对照组设计</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>系统</th>
+<th>分池</th>
+<th>动态实例数</th>
+<th>动态并行度</th>
+<th>动态频率</th>
+<th>定位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SinglePool</strong></td>
+<td>否</td>
+<td>否</td>
+<td>否</td>
+<td>否</td>
+<td>实践基线（全跑 TP8@最高频）</td>
+</tr>
+<tr>
+<td><strong>MultiPool</strong></td>
+<td>是（静态）</td>
+<td>否</td>
+<td>否</td>
+<td>否</td>
+<td>证明「只分池」不够</td>
+</tr>
+<tr>
+<td><strong>ScaleInst</strong></td>
+<td>是</td>
+<td>是</td>
+<td>否</td>
+<td>否</td>
+<td>单旋钮消融（实例数）</td>
+</tr>
+<tr>
+<td><strong>ScaleShard</strong></td>
+<td>是</td>
+<td>否</td>
+<td>是</td>
+<td>否</td>
+<td>单旋钮消融（并行度）</td>
+</tr>
+<tr>
+<td><strong>ScaleFreq</strong></td>
+<td>是</td>
+<td>否</td>
+<td>否</td>
+<td>是</td>
+<td>单旋钮消融（频率）</td>
+</tr>
+<tr>
+<td><strong>DynamoLLM</strong></td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+<td>完整系统</td>
+</tr>
+</tbody>
+</table></div>
+<p>这组对照的价值在于：它把「分池」与「三旋钮」拆开验证，使「为什么必须协同」有了可归因的证据，而不是只对比一个黑盒。</p>
+<p>trace 使用三对：1 小时（开源，用于 §V-B）、1 天（自有集群生成，用于 §V-D）、1 周（用于 §V-E 仿真）。成本与碳用 1 周数据。</p>
+<h3 id="5-2-能耗与延迟-一个-方向相反-的结果">5.2 能耗与延迟：一个「方向相反」的结果</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>相对 SinglePool</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>能耗（fig7）</td>
+<td><strong>−35%</strong></td>
+<td>三旋钮协同；对比 ScaleFreq −19%、ScaleShard −6%、ScaleInst −2%、MultiPool <strong>+20%</strong></td>
+</tr>
+<tr>
+<td>P99 TTFT / TBT（fig8）</td>
+<td><strong>−5.3% / −11.0%</strong></td>
+<td>分池消除队头阻塞 + 多资源池</td>
+</tr>
+<tr>
+<td>P50 TTFT / TBT</td>
+<td><strong>+11.4% / +7.6%</strong></td>
+<td>在 SLO 余量内主动跑低性能模式，中位延迟变差</td>
+</tr>
+<tr>
+<td>集群功耗 P50 / P99（fig9）</td>
+<td><strong>−43% / −9%</strong></td>
+<td>平均功耗大幅下降，峰值只小幅下降</td>
+</tr>
+</tbody>
+</table></div>
+<p>注意 MultiPool 能耗 <strong>+20%</strong>：分池本身不省电，反而因为「每池都按峰值配置、且恒跑最高性能」而更费电。这一条很重要，它说明「切分请求」只是获得调节能力的前提，<strong>真正省电来自切分之后的差异化配置</strong>。</p>
+<p>延迟的方向相反（P99 改善、P50 变差）也是同一逻辑：系统把「SLO 余量」当成可支取的资源，用中位延迟换取能耗。这在工程上可接受的前提是——<strong>用户感知的是尾延迟，而中位延迟的富余本来就存在</strong>。</p>
+<p><pre class="mermaid">flowchart TD
+    subgraph ONLY["只分池"]
+        A["MultiPool"] --> A1["能耗 +20%<br/>每池按峰值且恒跑最高频"]
+    end
+    subgraph ONE["单旋钮动态"]
+        B["ScaleInst"] --> B1["能耗 -2%<br/>建实例开销在关键路径"]
+        C["ScaleShard"] --> C1["能耗 -6%"]
+        D["ScaleFreq"] --> D1["能耗 -19%<br/>仅频率一个维度"]
+    end
+    subgraph ALL["三旋钮协同"]
+        E["DynamoLLM"] --> E1["能耗 -35%<br/>P99 改善 P50 变差"]
+    end
+    ONLY --> F["结论：分池只是获得调节能力的前提"]
+    ONE --> G["结论：单旋钮覆盖面不足"]
+    ALL --> H["结论：覆盖异构性才拿到大头收益"]</pre></p>
+<h3 id="5-3-敏感性-三个-边界条件">5.3 敏感性：三个「边界条件」</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>敏感性维度</th>
+<th>实验设置</th>
+<th>结果</th>
+<th>边界含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>分类准确率</strong>（fig12）</td>
+<td>人为注入误分类，Dyn-100% vs Dyn-60%</td>
+<td>能耗 <strong>+25%</strong>、TTFT <strong>+12.3%</strong></td>
+<td>预测器不必很强；系统自愈能力是关键</td>
+</tr>
+<tr>
+<td><strong>负载水平</strong>（fig13）</td>
+<td>泊松到达构造低/中/高负载</td>
+<td>节能 <strong>57% / 42% / 15%</strong></td>
+<td>高负载时余量耗尽，节能空间被压缩</td>
+</tr>
+<tr>
+<td><strong>池数量</strong>（fig14）</td>
+<td>2/4/6/9/12/16 池</td>
+<td>平均需 75.1/79.6/81.3/85.7/87.1/91.2 GPU</td>
+<td>池多则 TTFT 更好但碎片化更贵；选 9 池</td>
+</tr>
+</tbody>
+</table></div>
+<p>「高负载只省 15%」是最该被记住的数字：它界定了方法的适用区间——<strong>DynamoLLM 的收益与 SLO 余量正相关，负载越接近饱和，它越接近一个普通调度器</strong>。任何把它宣传成「高负载也省一半」的说法都超出论文证据。</p>
+<h3 id="5-4-长时与大规模-真实硬件-1-天-仿真-1-周">5.4 长时与大规模：真实硬件 1 天、仿真 1 周</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>实验</th>
+<th>规模</th>
+<th>结果</th>
+<th>证据等级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 天真实硬件（fig16）</td>
+<td>SinglePool 11 台（88×H100），DynamoLLM 动态台数</td>
+<td>全天能耗 <strong>−42%</strong>；峰时（动态功耗主导）与谷时（空闲功耗主导）都降</td>
+<td>真实运行，可信度最高</td>
+</tr>
+<tr>
+<td>1 周仿真（fig15）</td>
+<td>SinglePool 40 台（320×H100），离散时间仿真器</td>
+<td>Conversation <strong>−47%</strong>、Coding <strong>−56%</strong></td>
+<td>仿真，需注意模型假设</td>
+</tr>
+<tr>
+<td>成本（§V-F）</td>
+<td>一周实验</td>
+<td>服务器 40 → 24.6（<strong>38.5%</strong>），$1362.7/小时；电费再降最多 56% 但仅 $4.4/小时</td>
+<td>按当前 GPU VM 定价</td>
+</tr>
+<tr>
+<td>碳排（§V-F）</td>
+<td>CAISO 一周碳强度</td>
+<td>5t → 3.1t CO2，<strong>−38%</strong></td>
+<td>只算运营碳，不含内含碳</td>
+</tr>
+</tbody>
+</table></div>
+<p>两个细节值得注意：</p>
+<ul>
+<li><strong>Coding 的 −56% 高于 Conversation 的 −47%</strong>，原因不是 Coding 更容易优化，而是它的谷值深（峰值 34.6× 谷值），低负载时段多，可利用的低频/低并行窗口更多。这反向印证了「收益与余量正相关」。</li>
+<li><strong>成本收益几乎全部来自「少用 GPU」，而不是「省电」</strong>：$1362.7 vs $4.4，差三个数量级。这提醒读者，论文的「61% 成本下降」本质是<strong>资源占用下降</strong>，电价在当前价位对总成本的杠杆极小。</li>
+</ul>
+<p><pre class="mermaid">flowchart LR
+    subgraph REAL["真实硬件"]
+        A["1 小时开源 trace<br/>12 台 H100 峰值基线"] --> A1["能耗 -35%"]
+        B["1 天 Conversation trace<br/>11 台 → 动态"] --> B1["能耗 -42%"]
+    end
+    subgraph SIM["仿真"]
+        C["1 周 Conversation<br/>40 台 320 卡"] --> C1["-47%"]
+        D["1 周 Coding<br/>谷值深 34.6 倍"] --> D1["-56%"]
+    end
+    subgraph COST["成本与碳"]
+        E["服务器数 40 → 24.6"] --> E1["成本 -38.5%<br/>$1362.7/h"]
+        F["能耗 -56%"] --> F1["电费 -$4.4/h"]
+        G["CAISO 碳强度映射"] --> G1["5t → 3.1t CO2<br/>-38%"]
+    end</pre></p>
+<hr />
+<h2 id="六-放进六篇清单里看-DynamoLLM-的位置">六、放进六篇清单里看：DynamoLLM 的位置</h2>
+<p>这篇与清单里其他五篇构成一条完整的「功率/能量约束 → 调度决策」链条，但落点各不相同。</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>论文</th>
+<th>约束来源</th>
+<th>被约束的对象</th>
+<th>决策粒度</th>
+<th>与 DynamoLLM 的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>TAPAS</strong>（ASPLOS'25）</td>
+<td>机架/集群供电上限</td>
+<td>放置、路由、配置</td>
+<td>请求级 + 副本伸缩</td>
+<td>供给侧约束；DynamoLLM 是需求侧能效，两者可叠加：供电紧时 TAPAS 压容量，DynamoLLM 压每请求能耗</td>
+</tr>
+<tr>
+<td><strong>SpotGPU/ASI</strong>（OSDI'26）</td>
+<td>生产资源紧张 + 抢占</td>
+<td>作业优先级、容器生命周期</td>
+<td>作业级</td>
+<td>生产调度视角；DynamoLLM 的「squash」与它的「弹射链」同属过载保护</td>
+</tr>
+<tr>
+<td><strong>GREEN</strong>（NSDI'25）</td>
+<td>碳强度时空差异</td>
+<td>作业时间移位 + 资源扩缩</td>
+<td>作业级（训练为主）</td>
+<td>用时间弹性换碳；DynamoLLM 用配置弹性换能耗，二者正交可组合</td>
+</tr>
+<tr>
+<td><strong>DynamoLLM</strong>（HPCA'25）</td>
+<td>延迟 SLO + 能耗</td>
+<td>实例数、并行度、频率</td>
+<td>请求类型级 + 实例级</td>
+<td>本文：把「形状」当旋钮</td>
+</tr>
+<tr>
+<td><strong>Nixie</strong>（OSDI'26）</td>
+<td>交互响应</td>
+<td>GPU 切换与显存状态</td>
+<td>请求/模型级</td>
+<td>关注「切换成本」的另一面：显存状态迁移；与 DynamoLLM 的重切分开销同源问题</td>
+</tr>
+<tr>
+<td><strong>Kareus</strong>（OSDI'26）</td>
+<td>降频后的通信/计算配比</td>
+<td>通信与计算的排布</td>
+<td>集合通信级</td>
+<td>把「降频」推到通信层；DynamoLLM 只在实例粒度降频，未触及通信排布</td>
+</tr>
+</tbody>
+</table></div>
+<p>三组对照最值得记：</p>
+<ol>
+<li><strong>GREEN vs DynamoLLM</strong>：都在「省」，但 GREEN 省的是一天中「什么时候跑」，DynamoLLM 省的是「怎么跑」。前者需要作业可延迟，后者需要 SLO 有余量。<strong>两者叠加的收益不能简单相加</strong>，因为 GREEN 把负载移到低碳时段后，正好可能移到高负载时段，压缩了 DynamoLLM 的余量。</li>
+<li><strong>TAPAS vs DynamoLLM</strong>：TAPAS 的约束是<strong>外部供电上限</strong>（硬容量），DynamoLLM 的约束是<strong>内部 SLO</strong>（软性能）。前者决定「最多能用多少卡」，后者决定「这些卡怎么用最省」。真实集群里两者同时存在，因此联合优化是开放问题。</li>
+<li><strong>Nixie/Kareus vs DynamoLLM</strong>：后两篇把「切换/降频」的代价推到更底层（显存状态、通信排布）。DynamoLLM 在实例级承认这些代价并试图削减，但没有进入 GPU 内部或通信层——这是它的边界，也是后续可做的工作。</li>
+</ol>
+<p><pre class="mermaid">flowchart TD
+    subgraph SUPPLY["供给侧约束"]
+        T["TAPAS<br/>供电上限 → 放置与容量"]
+        S["SpotGPU<br/>资源紧张 → 优先级与生命周期"]
+    end
+    subgraph CARBON["碳约束"]
+        G["GREEN<br/>碳强度时空差 → 时间移位"]
+    end
+    subgraph EFF["能效约束"]
+        D["DynamoLLM<br/>SLO 内 → 实例数/并行度/频率"]
+        N["Nixie<br/>交互响应 → 显存状态切换"]
+        K["Kareus<br/>降频 → 通信与计算排布"]
+    end
+    T -->|"可用卡数上限"| D
+    S -->|"抢占与过载保护"| D
+    G -->|"负载时段迁移"| D
+    D -->|"实例级降频边界"| N
+    D -->|"未触及通信层"| K</pre></p>
+<p><strong>关键洞察</strong>：
+- 六篇里只有 DynamoLLM 把「配置形状」当作一等公民，其余多把配置当作「约束下的结果」。这意味着<strong>它的方法与具体硬件/供应商解耦，迁移成本最低</strong>。
+- 但它也最依赖「SLO 有余量」这一前提。在真正饱和的集群里，它的收益会退化到 15%，届时应由 TAPAS/SpotGPU 类方法接管。</p>
+<hr />
+<h2 id="七-工程启示-对两机六卡能做什么-不能做什么">七、工程启示：对两机六卡能做什么、不能做什么</h2>
+<p>本项目的硬边界是 2 台服务器 × 3 张 RTX 3090（共 6 卡）。直接复现 DynamoLLM 有三处不可能，但也有三处可迁移。</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>论文要素</th>
+<th>原始条件</th>
+<th>六卡条件</th>
+<th>可迁移性</th>
+<th>替代做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单机 8×H100 + TP8</td>
+<td>8 卡同机 NVLink</td>
+<td>3 卡/机，无 TP8 档</td>
+<td><strong>不可直接复现</strong></td>
+<td>退化为 TP1/TP2/TP3 三档，验证「异构画像」是否仍存在</td>
+</tr>
+<tr>
+<td>600W 级 GPU 的频率调节</td>
+<td>H100 800–1980MHz</td>
+<td>RTX 3090 频率范围不同，且消费级卡功耗墙行为差异大</td>
+<td><strong>部分可做</strong></td>
+<td>先量「锁频是否生效」「调频耗时是否仍是 50–80ms」</td>
+</tr>
+<tr>
+<td>生产 trace（1h/1d/1w）</td>
+<td>Azure 真实负载</td>
+<td>可用开源 1h trace；更长的需自造</td>
+<td><strong>可用公开数据</strong></td>
+<td>用开源 1h trace + 合成负载做缩放验证</td>
+</tr>
+<tr>
+<td>三层控制器</td>
+<td>集群/池/实例</td>
+<td>6 卡只能分 2–3 池</td>
+<td><strong>可做简化版</strong></td>
+<td>单机 3 卡做「池」、跨机做「集群」，验证节律是否仍成立</td>
+</tr>
+<tr>
+<td>重切分的图匹配</td>
+<td>TP4→TP8 等组合</td>
+<td>只有 TP1/TP2/TP3</td>
+<td><strong>可做小规模</strong></td>
+<td>TP1↔TP2、TP2↔TP3 的搬权重开销可测，验证「少搬」原则</td>
+</tr>
+<tr>
+<td>碳排映射</td>
+<td>CAISO 碳强度</td>
+<td>国内电网碳强度公开度低</td>
+<td><strong>可用近似</strong></td>
+<td>用年度平均碳强度或公开区域数据，明确标注为近似</td>
+</tr>
+</tbody>
+</table></div>
+<p>如果要在六卡上做一个<strong>最小可信实验</strong>，我会这样设计：</p>
+<ol>
+<li><strong>先做「画像异构性」的存在性验证</strong>（不需要功率计也能做一半）：同一模型、9 类请求长度、TP1/TP2/TP3 三档，测每类的延迟与 GPU 能耗（用 NVML 板卡功率积分）。要验证的命题是：<strong>不同请求类型的最优配置确实不同，且差距显著</strong>（对应论文的 0.79 vs 13.21 Wh）。</li>
+<li><strong>再做「降频是否值得」的单变量实验</strong>：固定 TP，锁 2–3 个频率点，测「功率下降幅度 vs 执行时间上升幅度」，算出 Wh 是否真的下降。这一步能直接复现论文「最低功耗配置 ≠ 最低能耗配置」的反直觉结论。</li>
+<li><strong>最后做「分层节律」的验证</strong>：用 5 秒/5 分钟/30 分钟三个节律各跑一次，测控制面自身开销占比。要验证的是：<strong>调频开销（50–80ms 级）在多卡小集群里是否仍不可忽略</strong>。</li>
+<li><strong>明确不做</strong>：不追求复现 52%/38% 的绝对值——那是 320 卡规模 + 生产 trace 的结果，六卡上的数字只能说明「方向是否成立」，不能说明「幅度是否成立」。</li>
+</ol>
+<p><pre class="mermaid">flowchart TD
+    A["六卡资源 2机×3卡"] --> B{"能否复现 TP8?"}
+    B -->|"否"| C["退化为 TP1/TP2/TP3"]
+    C --> D["验证1 画像异构性是否存在"]
+    D --> E{"不同请求最优配置是否不同?"}
+    E -->|"是"| F["验证2 锁频是否真降 Wh"]
+    E -->|"否"| G["停止：机制在消费级卡上不成立"]
+    F --> H{"Wh 是否下降?"}
+    H -->|"是"| I["验证3 三层节律的控制面开销"]
+    H -->|"否"| J["记录负结果：功耗墙行为不同"]
+    I --> K["结论限定：方向成立，幅度不复现"]</pre></p>
+<p><strong>关键洞察</strong>：
+- 论文里最「可搬」的不是框架，而是<strong>那条判断链</strong>：请求形状 → 阶段主导 → 敏感旋钮 → 最优配置。这条链在 3 卡上依然成立，只是档位更少。
+- 最「不可搬」的是<strong>幅度</strong>。所有百分比都绑定在 8×H100 + 320 卡 + Azure trace 的组合上，跨硬件引用这些数字属于超出证据范围。</p>
+<hr />
+<h2 id="八-局限与审稿视角">八、局限与审稿视角</h2>
+<p>从审稿人角度，这篇的软肋集中在四处：</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>局限</th>
+<th>具体表现</th>
+<th>影响</th>
+<th>论文自身的处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>依赖 SLO 余量</strong></td>
+<td>高负载下节能降到 15%</td>
+<td>方法在饱和集群中退化</td>
+<td>论文如实报告，但未讨论「无余量」场景</td>
+</tr>
+<tr>
+<td><strong>仿真与真实硬件的证据不对称</strong></td>
+<td>1 周结果来自仿真器；1 天结果才在真实硬件</td>
+<td>大规模结论的置信度低于小规模</td>
+<td>明确区分 §V-D（真实）与 §V-E（仿真）</td>
+</tr>
+<tr>
+<td><strong>只算 GPU 能耗</strong></td>
+<td>不含服务器其他部件</td>
+<td>系统级节能被低估或高估均有可能</td>
+<td>引用「GPU 占整机 &gt;60%」作为相关性依据</td>
+</tr>
+<tr>
+<td><strong>不含内含碳</strong></td>
+<td>只做运营碳</td>
+<td>「可持续」叙述不完整</td>
+<td>明确说明跑在既有数据中心，把内含碳列为未来工作</td>
+</tr>
+<tr>
+<td><strong>预测器精度中等</strong></td>
+<td>81% 分类准确率</td>
+<td>依赖自愈机制兜底</td>
+<td>用敏感性实验证明可接受</td>
+</tr>
+<tr>
+<td><strong>重切分开销为实测但组合有限</strong></td>
+<td>表 VI 只覆盖 8 卡内的 6 种组织</td>
+<td>更大规模组合需外推</td>
+<td>给出 τ 归一化，便于换算</td>
+</tr>
+</tbody>
+</table></div>
+<p>还有两个「叙述层」的问题值得警惕：</p>
+<ul>
+<li><strong>「首个」的边界</strong>：论文称首个 LLM 推理能源管理框架，这在「同时调实例数+并行度+频率」的意义上成立；但若把「LLM 服务能效」放宽到「单模型 DVFS」「请求路由」等，已有不少工作。读的时候要把「首个」限定在它的定义内。</li>
+<li><strong>「52% 平均」的统计口径</strong>：平均是对多个场景/trace 的平均，不是单次实验的最好值。引用时应说「服务级平均」，而不是「最高可省 52%」。</li>
+</ul>
+<hr />
+<h2 id="九-如果要继续往下读-读哪里">九、如果要继续往下读，读哪里</h2>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>目的</th>
+<th>建议路径</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>只想抓方法骨架</td>
+<td>§III 三条 Insight → §IV 开头四原则 → §IV-B 三层节律</td>
+<td>这三段构成「为什么这么设计」的完整闭环</td>
+</tr>
+<tr>
+<td>想做工程复现</td>
+<td>§IV-A 画像方法 → §IV-C 三类开销削减 → §V-A 实验设置</td>
+<td>这三段给出可执行的参数与对照设计</td>
+</tr>
+<tr>
+<td>想找后续研究缺口</td>
+<td>§V-C 敏感性（高负载仅 15%）→ §V-F 内含碳 → §VI 相关工作最后一段</td>
+<td>三个明确的开放方向</td>
+</tr>
+<tr>
+<td>想与本项目选题对齐</td>
+<td>§III-C 功耗比例性 → §IV-B 节律 → 本报告第七节</td>
+<td>直接对应「六卡能验证什么」</td>
+</tr>
+</tbody>
+</table></div>
+<p>最后留一个我认为最值得追问的问题：<strong>DynamoLLM 假设「下层跑最高性能配置」来简化上层计算，这个保守假设在高负载时会让上层过度扩容吗？</strong> 论文没有专门做这个消融，但它恰好是六卡小集群上最容易观察到的现象——资源越少，保守假设的代价越明显。</p>
+<hr />
+<h2 id="十-一页速记">十、一页速记</h2>
+<ul>
+<li><strong>一句话</strong>：把 LLM 请求按形状分池，再用三层控制器按不同节律分别调「实例数 / 并行度 / 频率」，在 SLO 内把能耗压下来。</li>
+<li><strong>三个数字</strong>：0.79 Wh（SS 最优） vs 13.21 Wh（LL 最优），差 16.7 倍；调一次频 50–80ms vs 一次 decode 20ms；建一个实例 6–8 分钟。</li>
+<li><strong>三个反直觉</strong>：最低功耗 ≠ 最低能耗；分池本身不省电（MultiPool +20%）；P99 变好但 P50 变差。</li>
+<li><strong>两个边界</strong>：收益与 SLO 余量正相关（高负载只剩 15%）；只算 GPU 能耗、只算运营碳。</li>
+<li><strong>一个可迁移的判断链</strong>：请求形状 → 主导阶段 → 敏感旋钮 → 最优配置。这条链比框架本身更值得带走。</li>
+</ul>
+    </article>
+  </main>
+</div>
+
+<script src="https://fastly.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+(function(){
+  var body=document.body, doc=document;
+
+  /* ---- 主题（5 套护眼） ---- */
+  var themeSel=doc.getElementById('theme');
+  function applyTheme(t){
+    body.setAttribute('data-theme',t);
+    if(themeSel) themeSel.value=t;
+  }
+  try{ applyTheme(localStorage.getItem('arTheme')||'light'); }catch(e){ applyTheme('light'); }
+  if(themeSel) themeSel.addEventListener('change',function(){
+    applyTheme(this.value);
+    try{ localStorage.setItem('arTheme',this.value); }catch(e){}
+  });
+
+  /* ---- 字号 A− / A+ ---- */
+  var fsBtn=doc.getElementById('fs');
+  var rootStyle=doc.documentElement.style;
+  function setFs(v){
+    var cl=parseFloat(getComputedStyle(doc.documentElement).getPropertyValue('--fs'))||16;
+    cl=Math.max(13,Math.min(22,cl+v));
+    rootStyle.setProperty('--fs',cl+'px');
+    try{ localStorage.setItem('arFs',cl); }catch(e){}
+  }
+  try{
+    var savedFs=parseFloat(localStorage.getItem('arFs'));
+    if(savedFs) rootStyle.setProperty('--fs',savedFs+'px');
+  }catch(e){}
+  if(fsBtn){
+    fsBtn.addEventListener('click',function(ev){
+      var b=ev.target.closest('button'); if(!b) return;
+      setFs(parseInt(b.dataset.f,10)||0);
+    });
+  }
+
+  /* ---- 目录显示/隐藏 ---- */
+  var navBtn=doc.getElementById('navbtn');
+  if(navBtn) navBtn.addEventListener('click',function(){
+    body.classList.toggle('nav-off');
+    this.classList.toggle('on',!body.classList.contains('nav-off'));
+  });
+
+  /* ---- 目录：当前章节高亮 ---- */
+  var links=Array.prototype.slice.call(doc.querySelectorAll('nav a'));
+  var secs=Array.prototype.slice.call(doc.querySelectorAll('.content h2[id],.content h3[id]'));
+  var spy=function(){
+    var pos=window.scrollY+140, cur=null;
+    secs.forEach(function(s){ if(s.offsetTop<=pos) cur=s.id; });
+    links.forEach(function(a){
+      a.classList.toggle('active', a.getAttribute('href')==='#'+cur);
+    });
+  };
+  window.addEventListener('scroll',spy,{passive:true});
+  setTimeout(spy,200);
+
+  /* ---- 阅读进度条 ---- */
+  var bar=doc.getElementById('bar');
+  function prog(){
+    var h=doc.documentElement, max=h.scrollHeight-h.clientHeight;
+    bar.style.width=(max>0?(window.scrollY/max*100):0)+'%';
+  }
+  window.addEventListener('scroll',prog,{passive:true});
+  prog();
+
+  /* ---- Mermaid ---- */
+  if(window.mermaid){
+    try{
+      mermaid.initialize({startOnLoad:true,theme:'neutral',securityLevel:'loose',
+        flowchart:{htmlLabels:true,curve:'basis'}});
+      mermaid.run();
+    }catch(e){ console.warn('mermaid render failed:',e); }
+  } else {
+    console.warn('mermaid CDN 未加载，图表以代码形式显示');
+  }
+})();
+</script>
+</body>
+</html>

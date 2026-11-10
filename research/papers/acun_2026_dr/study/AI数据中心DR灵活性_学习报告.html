@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 数据中心参与电网需求响应的功率灵活性研究 —— 中文学习报告</title>
+<script>
+window.MathJax = {tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},
+  options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}, startup:{typeset:true}};
+</script>
+<script id="MathJax-script" async src="https://fastly.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+:root{
+  /* ===== 基础色 ===== */
+  --bg:#ffffff; --panel:#fafbfc; --card:#ffffff; --line:#e6e8eb; --line2:#eceff2;
+  --ink:#1f2328; --ink2:#57606a; --ink3:#666f7a; --ph:#8d959e; --heading:#24313f;
+  --accent:#2b6cb0; --onaccent:#ffffff;
+  --hover:#eef2f7; --active:#e6f0fb; --btnhover:#f1f5f9;
+  --headerbg:rgba(255,255,255,.94); --colheadbg:rgba(255,255,255,.96);
+  --headbg1:#fbfdff; --headbg2:#ffffff; --secline:#eef1f4;
+  /* ===== 表格 / 插图 ===== */
+  --thbg:#f5f7f9; --trhover:#fafcff; --best:#0f766e;
+  --figbg:#ffffff; --figfilter:none;
+  /* ===== 高亮与笔记 ===== */
+  --src:#fde68a; --srcb:#f59e0b; --tgt:#cfe8ff; --tgtb:#3b82f6;
+  --pin:#d1fae5; --pinb:#10b981; --note:#ffe0ee; --noteb:#ec4899;
+  --notebg:#fff6fa; --notering:#f9a8d4; --badgebg:#fce7f3; --badgeink:#9d174d;
+  --ring:#fbcfe8; --flash:#fff3bf; --linkhover:#eaf2fb;
+  /* ===== 其它 ===== */
+  --xdim:#c2c8cf; --danger:#b42318; --dangerbg:#fee2e2; --dangerink:#ffffff;
+  --toastbg:#1f2328; --toastink:#ffffff; --hintkey:#fbbf24;
+  --swborder:rgba(0,0,0,.15); --shadow:rgba(15,20,25,.05); --shadow2:rgba(15,20,25,.14);
+  --lbbg:rgba(15,20,25,.86);
+  --fs:16px; --lh:1.85; --navw:246px; --notew:0px;
+  --nfont:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+}
+/* ================= 主题：切换 body[data-theme] 即整套换色 ================= */
+/* VSCode Dark+ 风格深色 */
+body[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#1e1e1e; --panel:#252526; --card:#252526; --line:#3a3d41; --line2:#333639;
+  --ink:#e6e6e6; --ink2:#b0b8c1; --ink3:#8d949c; --ph:#6e767f; --heading:#d4dbe3;
+  --accent:#4ea1ff; --onaccent:#0a1220;
+  --hover:#2a2d2e; --active:#123a5c; --btnhover:#333639;
+  --headerbg:rgba(30,30,30,.94); --colheadbg:rgba(30,30,30,.96);
+  --headbg1:#232426; --headbg2:#1e1e1e; --secline:#343739;
+  --thbg:#2d2d30; --trhover:#2a2d2e; --best:#5ee08a;
+  --figbg:#eef1f4; --figfilter:brightness(.95) contrast(1.02);
+  --src:rgba(245,158,11,.34); --srcb:#f0a72c; --tgt:rgba(90,168,255,.32); --tgtb:#5aa8ff;
+  --pin:rgba(16,185,129,.30); --pinb:#34d399; --note:rgba(244,114,182,.32); --noteb:#f472b6;
+  --notebg:#2c2029; --notering:#b0507c; --badgebg:#4d2036; --badgeink:#ffc2dc;
+  --ring:#b0507c; --flash:rgba(250,204,21,.30); --linkhover:#22344a;
+  --xdim:#6e767f; --danger:#ff7b72; --dangerbg:#4a221f; --dangerink:#2b0c0a;
+  --toastbg:#eceff3; --toastink:#14181d; --hintkey:#b45309;
+  --swborder:rgba(255,255,255,.28); --shadow:rgba(0,0,0,.4); --shadow2:rgba(0,0,0,.55);
+  --lbbg:rgba(0,0,0,.9);
+}
+/* 靛青夜（比纯深色更柔，蓝调低刺激） */
+body[data-theme="indigo"]{
+  color-scheme:dark;
+  --bg:#11172b; --panel:#171f38; --card:#1a2340; --line:#2e3a5f; --line2:#28324f;
+  --ink:#dfe6f7; --ink2:#a9b6d8; --ink3:#8593b8; --ph:#6d7ba0; --heading:#cdd8f2;
+  --accent:#7aa2f7; --onaccent:#0a1020;
+  --hover:#1e2947; --active:#243b6b; --btnhover:#25314f;
+  --headerbg:rgba(17,23,43,.94); --colheadbg:rgba(17,23,43,.96);
+  --headbg1:#18203a; --headbg2:#11172b; --secline:#2a3454;
+  --thbg:#202b4a; --trhover:#1d2745; --best:#7ee787;
+  --figbg:#eaeef6; --figfilter:brightness(.95) contrast(1.02);
+  --src:rgba(250,204,21,.32); --srcb:#e0af68; --tgt:rgba(122,162,247,.32); --tgtb:#7aa2f7;
+  --pin:rgba(52,211,153,.28); --pinb:#41d19a; --note:rgba(244,114,182,.30); --noteb:#f0a0c8;
+  --notebg:#2a2140; --notering:#a2609a; --badgebg:#43244a; --badgeink:#ffc9e8;
+  --ring:#a2609a; --flash:rgba(224,175,104,.30); --linkhover:#233559;
+  --xdim:#6d7ba0; --danger:#ff8080; --dangerbg:#44202c; --dangerink:#2b0c0a;
+  --toastbg:#e8edf8; --toastink:#131a2c; --hintkey:#b45309;
+  --swborder:rgba(255,255,255,.28); --shadow:rgba(0,0,0,.4); --shadow2:rgba(0,0,0,.55);
+  --lbbg:rgba(4,8,18,.92);
+}
+/* 护眼绿（豆沙绿） */
+body[data-theme="green"]{
+  --bg:#c9e8cd; --panel:#d6efd9; --card:#e2f5e4; --line:#a5cfaa; --line2:#bbdcbf;
+  --ink:#122c18; --ink2:#37533d; --ph:#5d7d64; --ink3:#3d5f45; --heading:#173d24;
+  --accent:#0f5f33; --onaccent:#ffffff;
+  --hover:#bce2c1; --active:#a8dcb0; --btnhover:#cdead0;
+  --headerbg:rgba(201,232,205,.95); --colheadbg:rgba(201,232,205,.97);
+  --headbg1:#d9f1dc; --headbg2:#cfeed3; --secline:#b3d9b8;
+  --thbg:#bfe3c4; --trhover:#d9f2dc; --best:#0a6b39;
+  --figbg:#ffffff; --figfilter:none;
+  --src:#ffe08a; --srcb:#c98a00; --tgt:#b8d7f7; --tgtb:#1d5fc4;
+  --pin:#93dcae; --pinb:#0b7a45; --note:#ffcfe3; --noteb:#c02a63;
+  --notebg:#eaf7ec; --notering:#e39bbd; --badgebg:#ffe0ee; --badgeink:#8d1449;
+  --ring:#e39bbd; --flash:#fff0a8; --linkhover:#d3ecf6;
+  --xdim:#7a9c81; --danger:#a01b13; --dangerbg:#f7d7d4; --dangerink:#ffffff;
+  --toastbg:#122c18; --toastink:#e9f7ec; --hintkey:#ffd166;
+  --swborder:rgba(0,0,0,.2); --shadow:rgba(20,50,28,.10); --shadow2:rgba(20,50,28,.2);
+  --lbbg:rgba(10,30,16,.88);
+}
+/* 米黄纸（暖褐低蓝光，长时间阅读友好） */
+body[data-theme="sepia"]{
+  --bg:#f4ecd8; --panel:#faf4e4; --card:#fffaf0; --line:#dccfb2; --line2:#e6dcc4;
+  --ink:#372f22; --ink2:#5f5443; --ink3:#6a5f4c; --ph:#8b7f68; --heading:#463a28;
+  --accent:#8a5220; --onaccent:#fffaf0;
+  --hover:#ece2ca; --active:#e6d8b8; --btnhover:#f0e7d2;
+  --headerbg:rgba(244,236,216,.95); --colheadbg:rgba(244,236,216,.97);
+  --headbg1:#fbf5e6; --headbg2:#f4ecd8; --secline:#e3d8bd;
+  --thbg:#eee3c9; --trhover:#fbf6ea; --best:#0d6b47;
+  --figbg:#ffffff; --figfilter:none;
+  --src:#ffe08a; --srcb:#c07800; --tgt:#c3dcf5; --tgtb:#1f5fb8;
+  --pin:#b6e3c6; --pinb:#12784b; --note:#ffd4e4; --noteb:#c22a66;
+  --notebg:#fdf1e6; --notering:#e0a3ba; --badgebg:#fbe3ec; --badgeink:#8f1b4c;
+  --ring:#e6b6c6; --flash:#ffeea8; --linkhover:#e8dfc6;
+  --xdim:#a89a80; --danger:#a32017; --dangerbg:#f6dcd6; --dangerink:#fffaf0;
+  --toastbg:#372f22; --toastink:#fffaf0; --hintkey:#e9b949;
+  --swborder:rgba(0,0,0,.2); --shadow:rgba(70,58,40,.10); --shadow2:rgba(70,58,40,.2);
+  --lbbg:rgba(40,32,20,.88);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  font-size:var(--fs);line-height:var(--lh);-webkit-font-smoothing:antialiased}
+
+/* ---------- 顶部 ---------- */
+header{position:sticky;top:0;z-index:40;background:var(--headerbg);
+  backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--line)}
+.hwrap{max-width:1500px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:15px;letter-spacing:.2px;white-space:nowrap}
+.brand small{display:block;font-weight:400;color:var(--ink2);font-size:11.5px;letter-spacing:0}
+.tools{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--card);padding:6px 11px;font-size:12.5px;color:var(--ink2);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--accent);color:var(--onaccent)}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 11px;font-size:12.5px;
+  color:var(--ink2);cursor:pointer}
+.btn.on{background:var(--accent);color:var(--onaccent);border-color:var(--accent)}
+#theme{border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:8px;
+  padding:6px 8px;font:inherit;font-size:12.5px;cursor:pointer}
+#bar{height:2px;background:var(--accent);width:0;transition:width .1s linear}
+
+/* ---------- 布局 ---------- */
+.shell{max-width:1760px;margin:0 auto;padding:24px;display:grid;
+  grid-template-columns:var(--navw) minmax(0,1fr) var(--notew);gap:0}
+body.notes-on{--notew:392px}
+body.nav-off{--navw:0px}
+/* 显式列定位：目录隐藏（display:none）后正文不会滑到宽度 0 的第一列 */
+nav{grid-column:1}
+main{grid-column:2;min-width:0}
+aside.notes{grid-column:3}
+body.nav-off nav{display:none}
+nav{position:sticky;top:74px;align-self:start;max-height:calc(100vh - 100px);overflow:auto;
+  border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:12px;margin-right:26px}
+nav h4{margin:2px 0 8px;font-size:12px;color:var(--ink2);letter-spacing:.08em;text-transform:uppercase}
+nav a{display:block;text-decoration:none;color:var(--ink);padding:5px 8px;border-radius:7px;line-height:1.35}
+nav a:hover{background:var(--hover)}
+nav a.t2{font-size:13.5px;font-weight:600;margin-top:4px}
+nav a.t3{font-size:12.5px;padding-left:18px;color:var(--ink2)}
+nav a.active{background:var(--active);color:var(--accent)}
+nav .ten{display:block;font-size:10.5px;color:var(--ink3);font-weight:400}
+
+/* ---------- 论文头 ---------- */
+.paper{border:1px solid var(--line);border-radius:14px;padding:22px 26px;margin-bottom:20px;
+  background:linear-gradient(180deg,var(--headbg1),var(--headbg2))}
+.paper h1{margin:0 0 4px;font-size:25px;line-height:1.3}
+.paper .h1zh{margin:0 0 12px;font-size:17px;color:var(--accent);font-weight:600}
+.paper .m{font-size:13px;color:var(--ink2);margin:3px 0}
+.chips{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 11px;font-size:12px;color:var(--ink2)}
+.kpi{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kpi div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card)}
+.kpi b{display:block;font-size:19px;color:var(--accent)}
+.kpi span{font-size:11.5px;color:var(--ink2)}
+
+/* ---------- 双栏正文 ---------- */
+.colhead{position:sticky;top:57px;z-index:30;display:grid;grid-template-columns:1fr 1fr;gap:0 30px;
+  background:var(--colheadbg);border-bottom:1px solid var(--line);padding:8px 0;margin-bottom:6px}
+.colhead div{font-size:12px;color:var(--ink2);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.doc{display:grid;grid-template-columns:1fr 1fr;gap:0 30px;align-items:start}
+.cell{padding:2px 0}
+.cell.en{border-right:1px dashed var(--line2);padding-right:26px}
+.cell.zh{padding-left:2px}
+.doc p{margin:.35em 0 .9em}
+.cell.zh p{line-height:1.95}
+.full{grid-column:1/-1}
+h2{font-size:19px;margin:26px 0 6px;padding-top:8px}
+h3{font-size:15.5px;margin:18px 0 4px;color:var(--heading)}
+.cell.zh h2,.cell.zh h3{color:var(--accent)}
+.sec{border-top:2px solid var(--secline);margin-top:10px}
+.cap p{font-size:13px;color:var(--ink2);margin:.2em 0 1.1em}
+ul{margin:.3em 0 1em;padding-left:1.25em}
+li{margin:.25em 0}
+
+/* ---------- 句子高亮 ---------- */
+.s{border-radius:4px;padding:1px 1px;transition:background .12s,box-shadow .12s;cursor:pointer}
+.s.hl-src{background:var(--src);box-shadow:inset 0 -2px 0 var(--srcb)}
+.s.hl-tgt{background:var(--tgt);box-shadow:inset 0 -2px 0 var(--tgtb)}
+.s.pin:not(.noted){background:var(--pin)!important;box-shadow:inset 0 -2px 0 var(--pinb)!important}
+body.nohl .s{cursor:auto}
+body.nohl .s.hl-src,body.nohl .s.hl-tgt{background:transparent;box-shadow:none}
+
+/* ---------- 笔记标记（双击） ---------- */
+.s.noted{background:var(--note)!important;box-shadow:inset 0 -2px 0 var(--noteb)!important}
+.s.noted.pin{box-shadow:inset 0 -2px 0 var(--pinb),inset 0 -7px 0 -5px var(--noteb)!important}
+.s.noted::after{content:"笔记 " attr(data-nc);font-size:10px;color:var(--badgeink);background:var(--badgebg);
+  border:1px solid var(--notering);border-radius:4px;padding:0 4px;margin:0 2px 0 4px;
+  vertical-align:2px;white-space:nowrap;font-weight:600}
+.s.noted.hl-src{outline:2px solid var(--srcb);outline-offset:1px}
+.s.noted.hl-tgt{outline:2px solid var(--tgtb);outline-offset:1px}
+.annot{position:relative}
+.annot.noted{outline:2px solid var(--notering);outline-offset:2px;border-radius:12px;background:var(--notebg)}
+.annot.noted::after{content:"笔记 " attr(data-nc);position:absolute;top:4px;right:6px;font-size:10px;
+  color:var(--badgeink);background:var(--badgebg);border:1px solid var(--notering);border-radius:999px;padding:1px 7px;
+  font-weight:600;z-index:3}
+@keyframes flashbg{0%{background:var(--flash)}100%{background:transparent}}
+.flash{animation:flashbg 1.4s ease-out}
+
+/* ---------- 笔记栏：边注式，永远对齐所批注元素的那一行 ---------- */
+aside.notes{display:none}
+body.notes-on aside.notes{display:block;position:relative;margin-left:24px}
+.ncard{position:absolute;left:0;right:0;background:var(--card);border:1px solid var(--line);
+  border-left:3px solid var(--noteb);border-radius:10px;padding:8px 22px 8px 10px;
+  box-shadow:0 1px 3px var(--shadow);transition:top .18s ease,box-shadow .15s}
+.ncard.act{box-shadow:0 0 0 2px var(--ring)}
+/* 笔记正文与论文正文同字号，随 A−/A+ 一起缩放；--nfont 作为「默认字体」的可回归值 */
+.nbody{--nfont:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue','PingFang SC',
+  'Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  font-family:var(--nfont);
+  font-size:var(--fs);line-height:1.75;word-break:break-word;cursor:text;outline:0;min-height:22px}
+.nbody.ph::before{content:'点这里写笔记…';color:var(--ph);font-size:.85em}
+.nbody ol,.nbody ul{margin:.35em 0;padding-left:1.5em}
+.nbody li{margin:.15em 0}
+.nbody a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;word-break:break-all;
+  cursor:pointer}
+.nbody a:hover{background:var(--linkhover)}
+/* 图片与文字同行，光标 + 退格键即可删除 */
+.nbody img{display:inline-block;vertical-align:middle;max-width:100%;max-height:150px;
+  margin:2px 1px;border-radius:5px;border:1px solid var(--line)}
+.nbody img::selection{background:var(--ring)}
+.nx{position:absolute;top:2px;right:4px;width:18px;height:18px;line-height:17px;text-align:center;
+  border-radius:50%;color:var(--xdim);cursor:pointer;font-size:13px;user-select:none}
+.nx:hover{background:var(--dangerbg);color:var(--danger)}
+/* ---------- 笔记格式工具条（只在当前笔记上显示） ---------- */
+.ntb{display:none;gap:3px;align-items:center;flex-wrap:wrap;margin:0 0 6px;padding-bottom:5px;
+  border-bottom:1px dashed var(--line)}
+.ncard.act .ntb{display:flex}
+.ntb select{font:inherit;font-size:11px;padding:1px 2px;border:1px solid var(--line);border-radius:5px;
+  background:var(--card);color:var(--ink2);max-width:82px}
+.ntb button{width:23px;height:22px;padding:0;border:1px solid var(--line);border-radius:5px;background:var(--card);
+  color:var(--ink2);cursor:pointer;font-size:11.5px;line-height:1}
+.ntb button:hover{background:var(--btnhover);color:var(--ink)}
+.ntb button.on{background:var(--accent);color:var(--onaccent);border-color:var(--accent)}
+.ntb button.wide{width:auto;padding:0 6px;font-size:11px}
+.ntb .sep{width:1px;height:15px;background:var(--line);margin:0 2px}
+.ntb .sw{width:15px;height:15px;border-radius:3px;border:1px solid var(--swborder);cursor:pointer}
+.ntb .sw:hover{transform:scale(1.15)}
+.ntb .sw.on{outline:2px solid var(--ink);outline-offset:1px}
+.ntb input[type=color]{width:22px;height:22px;padding:0;border:1px solid var(--line);border-radius:5px;
+  background:var(--card);cursor:pointer}
+.ncard time{display:block;font-size:10px;color:var(--ph);margin-top:4px}
+#ntoast{position:fixed;right:18px;bottom:18px;z-index:70;background:var(--toastbg);color:var(--toastink);font-size:12px;
+  padding:7px 12px;border-radius:8px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:300px}
+#ntoast.on{opacity:.93}
+#ntoast.err{background:var(--danger);color:var(--dangerink)}
+
+/* ---------- 图 / 公式 / 表 ---------- */
+figure{margin:14px 0 6px;text-align:center;background:var(--figbg);border:1px solid var(--line);border-radius:12px;padding:12px}
+figure img{max-width:100%;height:auto;cursor:zoom-in;filter:var(--figfilter)}
+.eqbox{position:relative;margin:6px 0 14px;padding:8px 44px 8px 14px;background:var(--panel);
+  border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+.eqbody{font-size:15px}
+.eqno{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--ink2)}
+.tablebox{margin:2px 0 18px;overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:12.5px;background:var(--card)}
+th,td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:center;white-space:nowrap}
+th{background:var(--thbg);font-weight:600;color:var(--heading)}
+th small,td small{display:block;color:var(--ink2);font-size:10.5px;font-weight:400}
+td.l,th.l{text-align:left}
+tbody tr:hover{background:var(--trhover)}
+.best{color:var(--best);font-weight:700}
+.refs{grid-column:1/-1;margin:22px 0 40px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:10px 16px}
+.refs summary{cursor:pointer;font-size:13.5px;color:var(--ink2);font-weight:600}
+.refs ol{font-size:12px;color:var(--ink2);line-height:1.7}
+
+/* ---------- 单栏模式 ---------- */
+body.only-en .doc,body.only-zh .doc{grid-template-columns:1fr}
+body.only-en .colhead,body.only-zh .colhead{grid-template-columns:1fr}
+body.only-en .cell.zh,body.only-en .colhead div:nth-child(2){display:none}
+body.only-zh .cell.en,body.only-zh .colhead div:nth-child(1){display:none}
+body.only-en .cell.en{border-right:0;padding-right:0}
+
+/* ---------- 灯箱 ---------- */
+#lb{position:fixed;inset:0;background:var(--lbbg);display:none;z-index:99;
+  align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+#lb.on{display:flex}
+#lb img{max-width:96%;max-height:94%;background:var(--figbg);border-radius:8px}
+.hint{position:fixed;right:18px;bottom:18px;z-index:50;background:var(--toastbg);color:var(--toastink);font-size:12px;
+  padding:8px 12px;border-radius:8px;opacity:.9;max-width:290px;line-height:1.6}
+.hint b{color:var(--hintkey)}
+@media (max-width:1180px){
+  .shell{grid-template-columns:var(--navw) minmax(0,1fr);padding:16px}
+  nav{position:static;max-height:300px;margin-right:16px}
+  .cell.en{padding-right:18px}
+  .doc,.colhead{gap:0 20px}
+  body.notes-on{--notew:0px}
+  body.notes-on aside.notes{position:fixed;top:57px;right:0;bottom:0;width:min(360px,94vw);
+    margin:0;overflow:auto;padding:12px;background:var(--panel);border-left:1px solid var(--line);
+    z-index:60;box-shadow:-10px 0 28px var(--shadow2)}
+  body.notes-on .ncard{position:static;margin-bottom:10px}
+}
+@media (max-width:820px){
+  .doc,.colhead{grid-template-columns:1fr}
+  .cell.en{border-right:0;padding-right:0;border-bottom:1px dashed var(--line2)}
+}
+/* ===== academic-report 单栏报告适配层（叠在牛来核心视觉之上） ===== */
+
+/* 正文单栏容器：居中限宽，替代牛来的双栏 .doc */
+.content{max-width:980px;margin:0 auto;padding:0 6px 80px}
+.content h2{font-size:19px;margin:28px 0 10px;padding-top:10px;border-top:2px solid var(--secline);color:var(--heading)}
+.content h3{font-size:15.5px;margin:20px 0 8px;color:var(--accent)}
+.content p{margin:.6em 0 1em}
+.content a{color:var(--accent)}
+.content strong{font-weight:600}
+
+/* 行内代码与代码块 */
+.content code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.85em;
+  background:var(--codebg);padding:1px 5px;border-radius:4px;color:var(--ink)}
+.content pre{background:var(--codebg);border:1px solid var(--line);border-radius:10px;
+  padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.6}
+.content pre code{background:none;padding:0}
+
+/* Mermaid 图：白底居中卡片 */
+.content pre.mermaid{background:#fff;text-align:center;color:#333;padding:18px 8px;margin:16px 0}
+
+/* 引用块（关键原文引用：英文原句斜体 + 中文） */
+.content blockquote{
+  margin:14px 0;padding:10px 16px;background:var(--quotebg,#f7f8fa);
+  border-left:4px solid var(--quoteline,#c9ddf2);border-radius:0 10px 10px 0;color:var(--ink2)}
+.content blockquote p{margin:.4em 0}
+.content blockquote p:first-child{font-style:italic}
+.content blockquote p:nth-child(2){margin-top:10px;color:var(--ink)}
+
+/* 表格：圆角容器 + hover 行（牛来 .tablebox 已定义边框圆角，此处补行内细节） */
+.content .tablebox{margin:2px 0 18px;overflow-x:auto}
+.content table{font-size:13px;background:var(--card)}
+.content th,.content td{padding:7px 10px}
+.content td.l,.content th.l{text-align:left}
+.content .best{color:var(--best);font-weight:700}
+
+/* 列表 */
+.content ul,.content ol{margin:.5em 0 1em;padding-left:1.6em}
+.content li{margin:.3em 0}
+
+/* 深浅主题下的局部变量补充 */
+body[data-theme="dark"]{--codebg:#262b33;--quotebg:#23272f;--quoteline:#3d5a7a}
+body[data-theme="indigo"]{--codebg:#1c2542;--quotebg:#1a233d;--quoteline:#3d5288}
+body[data-theme="green"]{--codebg:#d8efdb;--quotebg:#ddefe0;--quoteline:#8fc298}
+body[data-theme="sepia"]{--codebg:#efe7d2;--quotebg:#f1ead8;--quoteline:#cbb48a}
+
+/* 打印 */
+@media print{
+  header,nav{display:none !important}
+  .shell{display:block;padding:0}
+  .content h2{page-break-before:always}
+  a{text-decoration:none;color:inherit}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <div class="brand">AI 数据中心参与电网需求响应的功率灵活性研究 —— 中文学习报告
+      <small>AI 学术论文中文学习报告 · academic-report</small></div>
+    <div class="tools">
+      <button class="btn on" id="navbtn" title="展开 / 隐藏左侧目录">☰ 目录</button>
+      <div class="seg" id="fs">
+        <button data-f="-1">A−</button><button data-f="1">A+</button>
+      </div>
+      <select id="theme" title="配色主题（护眼）">
+        <option value="light">☀︎ 白底</option>
+        <option value="dark">◐ 深色 VSCode</option>
+        <option value="indigo">☾ 靛青夜</option>
+        <option value="green">◉ 护眼绿</option>
+        <option value="sepia">▤ 米黄纸</option>
+      </select>
+    </div>
+  </div>
+  <div id="bar"></div>
+</header>
+
+<div class="shell">
+  <nav id="toc"><h4>目录 Contents</h4><a class="t2" href="#报告元信息">报告元信息</a><a class="t2" href="#核心指标速览">核心指标速览</a><a class="t2" href="#1--研究背景与问题动机">1. 研究背景与问题动机</a><a class="t3" href="#1-1-为什么-AI-数据中心成了电网的-大负荷">1.1 为什么 AI 数据中心成了电网的"大负荷"</a><a class="t3" href="#1-2-什么是需求响应-Demand-Response--DR">1.2 什么是需求响应（Demand Response, DR）</a><a class="t3" href="#1-3-数据中心为什么是-DR-的-优质资源">1.3 数据中心为什么是 DR 的"优质资源"</a><a class="t3" href="#1-4-本文要回答的三个问题与贡献">1.4 本文要回答的三个问题与贡献</a><a class="t2" href="#2--背景-两类真实-DR-项目的数学定义">2. 背景：两类真实 DR 项目的数学定义</a><a class="t3" href="#2-1-调频备用-RSR-Regulation-Service-Reserves">2.1 调频备用 RSR（Regulation Service Reserves）</a><a class="t3" href="#2-2-紧急需求响应-EDR-Emergency-Demand-Response">2.2 紧急需求响应 EDR（Emergency Demand Response）</a><a class="t3" href="#2-3-RSR-与-EDR-的本质差异对比">2.3 RSR 与 EDR 的本质差异对比</a><a class="t2" href="#3--建模-把-经济账-与-QoS-账-放进同一个优化">3. 建模：把"经济账"与"QoS 账"放进同一个优化</a><a class="t3" href="#3-1-广义成本目标函数">3.1 广义成本目标函数</a><a class="t3" href="#3-2-QoS-度量-相对慢度-而非绝对延迟">3.2 QoS 度量：相对慢度（而非绝对延迟）</a><a class="t3" href="#3-3-优化器选择-从梯度下降到模拟退火-SA">3.3 优化器选择：从梯度下降到模拟退火（SA）</a><a class="t3" href="#3-4-FlexDC-Sim-一个轻量-开源的数据中心-DR-模拟器">3.4 FlexDC-Sim：一个轻量、开源的数据中心 DR 模拟器</a><a class="t2" href="#4--工作负载刻画-GPU-上的功率-性能实测">4. 工作负载刻画：GPU 上的功率–性能实测</a><a class="t3" href="#4-1-实测设置">4.1 实测设置</a><a class="t3" href="#4-2-功率-性能-profile-表-论文-Table-1-精读">4.2 功率–性能 profile 表（论文 Table 1 精读）</a><a class="t3" href="#4-3-五条工作负载轨迹-论文-Table-2-精读">4.3 五条工作负载轨迹（论文 Table 2 精读）</a><a class="t2" href="#5--实验结果-灵活性-经济性与跟踪行为">5. 实验结果：灵活性、经济性与跟踪行为</a><a class="t3" href="#5-1-功率投标-Power-Bids">5.1 功率投标（Power Bids）</a><a class="t3" href="#5-2-能源成本节省-Energy-Cost-Savings">5.2 能源成本节省（Energy Cost Savings）</a><a class="t3" href="#5-3-功率跟踪-两个控制旋钮的分工">5.3 功率跟踪：两个控制旋钮的分工</a><a class="t2" href="#6--综合讨论-把结果串成一条因果链">6. 综合讨论：把结果串成一条因果链</a><a class="t2" href="#7--工程启示与个人思考">7. 工程启示与个人思考</a><a class="t3" href="#7-1-对数据中心运营者-AI-Infra-视角">7.1 对数据中心运营者（AI Infra 视角）</a><a class="t3" href="#7-2-对电网-市场设计侧">7.2 对电网/市场设计侧</a><a class="t3" href="#7-3-方法论上的可迁移点">7.3 方法论上的可迁移点</a><a class="t2" href="#8--论文局限性与可延伸方向">8. 论文局限性与可延伸方向</a><a class="t2" href="#9--一页纸总结">9. 一页纸总结</a><a class="t2" href="#参考文献-节选自原文-共-19-条">参考文献（节选自原文，共 19 条）</a></nav>
+  <main>
+    <div class="paper">
+  <h1>AI 数据中心参与电网需求响应的功率灵活性研究 —— 中文学习报告</h1>
+  <div class="h1zh">AI 学术论文中文学习报告 · academic-report</div>
+  <div class="m"><b>论文标题</b>：Investigating Power Consumption Flexibility of AI Data Centers for Demand Response Participation（探究 AI 数据中心参与需求响应的功率消耗灵活性）</div><div class="m"><b>作者团队</b>：Fatih Acun、Can Hankendi、Ethan Levine、Hudson Reynolds、Joshua Bardwick、Ayse K. Coskun</div><div class="m"><b>所属机构</b>：Boston University（波士顿大学）Electrical and Computer Engineering 系，PEAC Lab</div><div class="m"><b>发表会议</b>：The 17th ACM International Conference on Future and Sustainable Energy Systems（E-Energy '26），2026 年 6 月 22–25 日，加拿大 Banff</div><div class="m"><b>文献类型</b>：会议短文（5 pages），DOI: 10.1145/3744255.3798112，CC BY 4.0 开放许可</div><div class="m"><b>开源产出</b>：FlexDC-Sim 轻量数据中心 DR 模拟器：https://github.com/peaclab/flexdc-sim</div><div class="m"><b>资助来源</b>：美国国家科学基金会（NSF）DESC 计划，Award No. 2450111</div><div class="m"><b>研究范式</b>：真实硬件功率–性能 profile（Chameleon Cloud，4×NVIDIA P100）+ 可扩展数据中心 DR 仿真优化框架</div><div class="m"><b>一句话主旨</b>：在满足 AI 作业 QoS 的前提下，AI 数据中心能向电网提供占其平均功率 18%–55% 的调频灵活性，紧急场景下可削峰最高约 20%。</div>
+  <div class="kpi"><div><b>18% – 55%（即备用容量 R 的投标区间）</b><span>RSR 调频灵活性区间（相对平均功率 P̄）</span></div><div><b>最高约 20% 的功率削减</b><span>EDR 紧急削峰能力（相对基线 P_base）</span></div><div><b>6% – 34%</b><span>EDR 能源成本节省（相对 NoDR）</span></div><div><b>17% – 54%（训练负载持续高于推理）</b><span>RSR 能源成本节省（相对 NoDR）</span></div></div>
+</div>
+    <article class="content" id="content">
+<h1 id="AI-数据中心参与电网需求响应的功率灵活性研究----中文学习报告">AI 数据中心参与电网需求响应的功率灵活性研究 —— 中文学习报告</h1>
+<blockquote>
+<p>本报告基于论文 <em>Investigating Power Consumption Flexibility of AI Data Centers for Demand Response Participation</em>（Acun et al., E-Energy '26, Boston University）自下而上精读而成。报告不追求"摘要式概括"，而是把问题背景、两类 DR 市场的数学定义、成本/QoS 联合建模、FlexDC-Sim 模拟器、工作负载刻画与实验结论逐层拆开，落到可指导工程实践的细度。</p>
+</blockquote>
+<h2 id="报告元信息">报告元信息</h2>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>论文标题</strong></td>
+<td>Investigating Power Consumption Flexibility of AI Data Centers for Demand Response Participation（探究 AI 数据中心参与需求响应的功率消耗灵活性）</td>
+</tr>
+<tr>
+<td><strong>作者团队</strong></td>
+<td>Fatih Acun、Can Hankendi、Ethan Levine、Hudson Reynolds、Joshua Bardwick、Ayse K. Coskun</td>
+</tr>
+<tr>
+<td><strong>所属机构</strong></td>
+<td>Boston University（波士顿大学）Electrical and Computer Engineering 系，PEAC Lab</td>
+</tr>
+<tr>
+<td><strong>发表会议</strong></td>
+<td>The 17th ACM International Conference on Future and Sustainable Energy Systems（E-Energy '26），2026 年 6 月 22–25 日，加拿大 Banff</td>
+</tr>
+<tr>
+<td><strong>文献类型</strong></td>
+<td>会议短文（5 pages），DOI: 10.1145/3744255.3798112，CC BY 4.0 开放许可</td>
+</tr>
+<tr>
+<td><strong>开源产出</strong></td>
+<td>FlexDC-Sim 轻量数据中心 DR 模拟器：https://github.com/peaclab/flexdc-sim</td>
+</tr>
+<tr>
+<td><strong>资助来源</strong></td>
+<td>美国国家科学基金会（NSF）DESC 计划，Award No. 2450111</td>
+</tr>
+<tr>
+<td><strong>研究范式</strong></td>
+<td>真实硬件功率–性能 profile（Chameleon Cloud，4×NVIDIA P100）+ 可扩展数据中心 DR 仿真优化框架</td>
+</tr>
+<tr>
+<td><strong>一句话主旨</strong></td>
+<td>在满足 AI 作业 QoS 的前提下，AI 数据中心能向电网提供占其平均功率 18%–55% 的调频灵活性，紧急场景下可削峰最高约 20%。</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="核心指标速览">核心指标速览</h2>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>数值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RSR 调频灵活性区间（相对平均功率 P̄）</strong></td>
+<td><strong>18% – 55%</strong>（即备用容量 R 的投标区间）</td>
+</tr>
+<tr>
+<td><strong>EDR 紧急削峰能力（相对基线 P_base）</strong></td>
+<td><strong>最高约 20%</strong> 的功率削减</td>
+</tr>
+<tr>
+<td><strong>EDR 能源成本节省（相对 NoDR）</strong></td>
+<td><strong>6% – 34%</strong></td>
+</tr>
+<tr>
+<td><strong>RSR 能源成本节省（相对 NoDR）</strong></td>
+<td><strong>17% – 54%</strong>（训练负载持续高于推理）</td>
+</tr>
+<tr>
+<td><strong>RSR 跟踪误差约束</strong></td>
+<td>Prob[ε(t) &gt; 0.3] &lt; 10%（90% 时间误差须低于 0.3）</td>
+</tr>
+<tr>
+<td><strong>仿真规模</strong></td>
+<td>1,000 台服务器；节点配 4× NVIDIA P100 GPU</td>
+</tr>
+<tr>
+<td><strong>刻画的 AI 作业</strong></td>
+<td>4 类推理（ResNet-50 / GPT-2 / Llama-7B / BLOOM-560M）+ 4 类训练，共 8 条功率–性能曲线</td>
+</tr>
+<tr>
+<td><strong>美国 AI 数据中心功率展望</strong></td>
+<td>2025 年达约 5 GW，2030 年预计超过 50 GW</td>
+</tr>
+<tr>
+<td><strong>QoS 保证口径</strong></td>
+<td>每类作业 90 分位 QoS 阈值在所有投标方案下均被满足</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="1--研究背景与问题动机">1. 研究背景与问题动机</h2>
+<h3 id="1-1-为什么-AI-数据中心成了电网的-大负荷">1.1 为什么 AI 数据中心成了电网的"大负荷"</h3>
+<p>论文开篇把问题放在一个快速膨胀的功率坐标里：数据中心是支撑越来越大 AI 工作负载（尤其是超大语言模型 LLM 的训练与推理）的关键基础设施。由于 LLM 训练与推理都极度能耗密集、且大量使用 GPU，数据中心的功率需求持续急剧上升。</p>
+<blockquote>
+<p><em>"Recent estimates suggest U.S. AI-related data center capacity is reaching 5 GW by 2025 and exceeding 50 GW by 2030."</em></p>
+<p>近期估计显示，美国与 AI 相关的数据中心容量将在 2025 年达到约 5 GW，并在 2030 年超过 50 GW。</p>
+</blockquote>
+<p>5 GW → 50 GW 是一个十年十倍量级的扩张。这种规模不仅是"用电多"，更关键的是其<strong>负荷规模与功率波动模式对电网提出了异乎寻常的要求</strong>，直接威胁电网稳定性。</p>
+<p><pre class="mermaid">flowchart LR
+    subgraph DRIVER["驱动侧：AI 负载膨胀"]
+        A1["LLM 训练<br/>GPU 密集"] --> A2["LLM 推理<br/>服务化高并发"]
+        A2 --> A3["数据中心容量<br/>2025: 5GW → 2030: >50GW"]
+    end
+    subgraph GRID["受电侧：电网压力"]
+        B1["峰谷差拉大"] --> B2["备用容量紧张"]
+        B2 --> B3["ISO 调用需求侧灵活性"]
+    end
+    A3 --> B3
+    B3 --> C["需求响应 DR<br/>让负荷随电网信号调节"]</pre></p>
+<h3 id="1-2-什么是需求响应-Demand-Response--DR">1.2 什么是需求响应（Demand Response, DR）</h3>
+<p>为维持电网安全可靠运行，独立系统运营商（Independent System Operator, ISO）通过<strong>需求响应（DR）</strong>项目，号召电力用户根据不同事件和客户类型调整自己的用电。DR 的方向不是单向的"节电"：</p>
+<ul>
+<li><strong>削负荷</strong>：在用电高峰时段降低功率消耗；</li>
+<li><strong>增负荷</strong>：当发电过剩、需要吸收多余电力时，反而提高用电。</li>
+</ul>
+<p>论文列举了三类典型 DR 项目：动态定价（dynamic pricing）、调频备用（Regulation Service Reserves, RSR）、紧急需求响应（Emergency Demand Response, EDR）。</p>
+<h3 id="1-3-数据中心为什么是-DR-的-优质资源">1.3 数据中心为什么是 DR 的"优质资源"</h3>
+<p>数据中心是 DR 的强候选对象，原因有二：它们<strong>消耗功率巨大</strong>，并且能够通过两类手段<strong>快速调整需求</strong>：</p>
+<ol>
+<li><strong>硬件功率封顶（hardware power capping）</strong>：直接限制 GPU/服务器功耗上限；</li>
+<li><strong>功率感知调度（power-aware scheduling）</strong>：迁移/排队作业以达成功率目标。</li>
+</ol>
+<p>此前研究已经用"作业迁移 + 本地发电"来调节数据中心用电，也有 QoS 感知的 DR 方法在跟随 DR 功率目标的同时约束作业性能。但论文一针见血地指出研究空白：</p>
+<blockquote>
+<p><em>"Although data center DR is gaining attention, most studies focus on CPU-based resources; integrating GPU-based AI workloads into DR programs remains underexplored."</em></p>
+<p>尽管数据中心 DR 正受到关注，但大多数研究聚焦于基于 CPU 的资源；把基于 GPU 的 AI 工作负载纳入 DR 项目仍未被充分探索。</p>
+</blockquote>
+<h3 id="1-4-本文要回答的三个问题与贡献">1.4 本文要回答的三个问题与贡献</h3>
+<p>本文把"真实硬件测出来的功率–性能曲线"与"可扩展的数据中心 DR 仿真框架"结合，核心贡献有三条：</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>贡献点</th>
+<th>具体内容</th>
+<th>对应回答的问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>EDR/RSR 灵活性演示</strong></td>
+<td>在满足 AI 工作负载 QoS 要求的前提下，证明 AI 数据中心有能力参与 EDR 与 RSR 两类真实 DR 项目</td>
+<td>"AI 数据中心到底能不能 flex？"</td>
+</tr>
+<tr>
+<td><strong>区分推理 vs 训练</strong></td>
+<td>系统考察 DR 功率约束对 AI 推理作业与训练作业的不同影响</td>
+<td>"两类负载谁更能 flex？代价是什么？"</td>
+</tr>
+<tr>
+<td><strong>GPU 功率–性能刻画</strong></td>
+<td>表征流行 AI 工作负载在 GPU 系统上的功率–性能行为（实测 profile）</td>
+<td>"flex 的物理边界在哪？"</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>关键洞察</strong>：
+- 洞察 1：研究空白不在"数据中心能否 DR"，而在"GPU/AI 负载能否 DR"——CPU 时代的结论不能直接外推到 GPU，因为训练作业长、不可抢占、与短作业推理的调度弹性完全不同。
+- 洞察 2：论文的方法论定位是"把经济激励（ISO 付钱）与运行约束（QoS 不退化）统一进一个优化目标"，而不是单纯做功率控制实验。
+- 洞察 3：5 页短文的价值集中在"定量边界"——18%–55%、最高 20%、6%–54% 这些数字是全文的硬核产出。</p>
+<hr />
+<h2 id="2--背景-两类真实-DR-项目的数学定义">2. 背景：两类真实 DR 项目的数学定义</h2>
+<p>要理解数据中心如何"投标"和"被考核"，必须先把 RSR 与 EDR 两个市场的规则翻译成公式。这是后文成本模型与优化投标的基础。</p>
+<h3 id="2-1-调频备用-RSR-Regulation-Service-Reserves">2.1 调频备用 RSR（Regulation Service Reserves）</h3>
+<p>RSR 用于让 ISO 在<strong>高时间分辨率</strong>下维持电网有功平衡。它通过向参与的需求侧资源广播"调频信号（regulation signal）"来协调供需。以 PJM 为例，调频信号分两种：</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>信号类型</th>
+<th>节奏</th>
+<th>适合的负荷</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RegA（传统型 traditional）</strong></td>
+<td>变化较平缓、较慢，每 2 秒更新一次</td>
+<td>爬坡敏捷性有限的负荷，可较稳地跟随平滑信号</td>
+</tr>
+<tr>
+<td><strong>RegD（动态型 dynamic）</strong></td>
+<td>变化快、动态性强，每 2 秒更新一次</td>
+<td>能快速、精确调节功率的负荷，才能跟上 RegD</td>
+</tr>
+</tbody>
+</table></div>
+<p>参与 RSR 前，参与者需要在日前/小时前市场向 ISO 提交两个投标量：平均功率 $\bar{P}$ 与<strong>备用容量 $R$</strong>。$R$ 承诺的是"我能在平均功率 $\bar{P}$ 上下多大范围内调制自己的功率"。实时运行时，参与者必须跟随一个功率目标：</p>
+<p>$$
+P_{target}(t) = \bar{P} + y(t)\, R, \quad y(t)\in[-1,1] \tag{1}
+$$</p>
+<p>其中 $y(t)$ 是归一化调频信号。跟踪精度用<strong>归一化跟踪误差</strong>衡量：</p>
+<p>$$
+\epsilon(t) = \frac{|P(t) - P_{target}(t)|}{R} \tag{2}
+$$</p>
+<p>论文把跟踪约束写成<strong>概率形式</strong>（而非每一刻都必须命中）：</p>
+<p>$$
+\text{Prob}\big[\epsilon(t) > 0.3\big] < 10\% \tag{3}
+$$</p>
+<p>含义：归一化跟踪误差 $\epsilon$ 至少 90% 的时间必须保持在 0.3 以下。经济结算上，参与者因提供备用容量 $R$ 而获得激励，同时因平均跟踪误差 $\bar{\epsilon}$ 被惩罚：</p>
+<p>$$
+M_{RSR} = \big(\Pi_P \bar{P} - \Pi_R R + \Pi_\epsilon R \bar{\epsilon}\big) \times T \tag{4}
+$$</p>
+<p>其中 $T$ 是 RSR 持续时长，$\Pi_P, \Pi_R, \Pi_\epsilon$ 是价格系数。注意符号：$-\Pi_R R$ 表示"你报的备用容量越大，被付给你的钱越多（成本项越负）"；$+\Pi_\epsilon R \bar{\epsilon}$ 表示"跟得越差，罚得越多"。</p>
+<p><pre class="mermaid">flowchart TD
+    subgraph BID["日前投标"]
+        B1["投标平均功率 P̄"] --> B2["投标备用容量 R"]
+    end
+    subgraph RT["实时跟随"]
+        C1["ISO 广播 y(t)<br/>RegA 缓 / RegD 快"] --> C2["计算目标 P_target = P̄ + y(t)·R"]
+        C2 --> C3["实测 P(t)"]
+        C3 --> C4["误差 ε = |P(t)-P_target|/R"]
+        C4 --> C5["考核 Prob(ε>0.3)<10%"]
+    end
+    B1 --> C2
+    B2 --> C2
+    C5 --> D["结算 M_RSR =<br/>(ΠP·P̄ - ΠR·R + Πe·R·ε̄)·T"]</pre></p>
+<h3 id="2-2-紧急需求响应-EDR-Emergency-Demand-Response">2.2 紧急需求响应 EDR（Emergency Demand Response）</h3>
+<p>EDR 在需求接近或超过可用供电/输电容量时启用，目的是保电网可靠。参与者要相对一个<strong>基线 $P_{base}$</strong> 削减功率，并按削减量获得补偿。对数据中心而言，$P_{base}$ 被定义为"无任何功率约束下正常运行时的平均功率"。事件期间的经济成本为：</p>
+<p>$$
+M_{EDR} = \big(\Pi_P \bar{P} - \Pi_I (P_{base} - \bar{P})\big) \times T \tag{5}
+$$</p>
+<p>其中 $\bar{P}$ 是 EDR 事件期间数据中心的平均功率，$\Pi_I$ 是削减补偿价格系数。$(P_{base} - \bar{P})$ 就是被削减掉的功率——削减越多，补偿越多（成本项越负）。</p>
+<h3 id="2-3-RSR-与-EDR-的本质差异对比">2.3 RSR 与 EDR 的本质差异对比</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>RSR 调频备用</th>
+<th>EDR 紧急响应</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>触发时机</strong></td>
+<td>常态高频，持续平衡电网（每 2 秒一个信号点）</td>
+<td>紧急事件，短时保供（峰荷/容量紧张时）</td>
+</tr>
+<tr>
+<td><strong>功率动作方向</strong></td>
+<td><strong>双向</strong>：随 $y(t)\in[-1,1]$ 在 $\bar{P}$ 上下波动</td>
+<td><strong>单向</strong>：只要求从基线 $P_{base}$ 往下削</td>
+</tr>
+<tr>
+<td><strong>核心投标量</strong></td>
+<td>两个：$\bar{P}$ 与备用容量 $R$</td>
+<td>一个：事件期间平均功率 $\bar{P}$（直接对应可削减量）</td>
+</tr>
+<tr>
+<td><strong>考核方式</strong></td>
+<td>跟踪精度（概率误差门槛）+ 结算惩罚</td>
+<td>削减量大小（按削减量补偿）</td>
+</tr>
+<tr>
+<td><strong>对数据中心的能力要求</strong></td>
+<td><strong>快速、可双向调节、爬坡敏捷</strong>（尤其 RegD）</td>
+<td><strong>短时可深度降功率</strong>，不要求频繁上下波动</td>
+</tr>
+<tr>
+<td><strong>灵活性含义</strong></td>
+<td>$R$ 越大越值钱，但要跟得上信号</td>
+<td>$(P_{base}-\bar{P})$ 越大补偿越多</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>关键洞察</strong>：
+- 洞察 1：RSR 本质是"卖调频服务"——数据中心变成一个跟随高频信号的"虚拟储能/可调负荷"，考核的是<strong>跟踪精度</strong>；EDR 是"卖紧急容量"——一次性答应"出事时我能少用多少电"，考核的是<strong>削减深度</strong>。
+- 洞察 2：RSR 里 $R$ 的投标是把"双向调节能力"货币化的关键变量，后文结果显示训练负载正是靠报出大 $R$ 赚到更多钱。
+- 洞察 3：把跟踪误差写成概率约束（90% 时间 &lt; 0.3）而非逐点硬约束，是工程上的现实选择——电网信号本身有噪声，逐点命中既不可能也无必要。</p>
+<hr />
+<h2 id="3--建模-把-经济账-与-QoS-账-放进同一个优化">3. 建模：把"经济账"与"QoS 账"放进同一个优化</h2>
+<h3 id="3-1-广义成本目标函数">3.1 广义成本目标函数</h3>
+<p>论文扩展了 AQA（Adaptive Policy with QoS Assurance，Zhang et al. 2022）的成本模型。AQA 原本只面向 RSR；本文把它拓宽到同时覆盖 EDR 与 RSR。广义成本函数定义为：</p>
+<p>$$
+C = M + \beta \sum_{j} \text{SoftPlus}\!\Big(\rho\big(\Pr[Q_j > Q_j^{th}] - \delta_j\big)\Big) \tag{6}
+$$</p>
+<p>约束为：</p>
+<p>$$
+\Pr[Q_j > Q_j^{th}] \le \delta_j, \quad \forall j\in[1,2,...,J] \tag{7}
+$$</p>
+<p>逐项拆解：</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>含义</th>
+<th>工程解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$M$</td>
+<td>EDR 或 RSR 项目的经济成本（式 4 或式 5）</td>
+<td>要尽量小（即多拿补偿、少花电费）</td>
+</tr>
+<tr>
+<td>$Q_j$</td>
+<td>第 $j$ 类作业的 QoS 退化程度</td>
+<td>用相对执行时间慢度刻画，见式 (8)</td>
+</tr>
+<tr>
+<td>$Q_j^{th}$</td>
+<td>第 $j$ 类作业的 QoS 阈值</td>
+<td>业务上能接受的最大退化</td>
+</tr>
+<tr>
+<td>$\Pr[Q_j>Q_j^{th}]$</td>
+<td>QoS 越限的概率</td>
+<td>长时间尺度上"慢得不可接受"的概率</td>
+</tr>
+<tr>
+<td>$\delta_j$</td>
+<td>越限概率的允许上限</td>
+<td>类似 SLA 违约概率预算</td>
+</tr>
+<tr>
+<td>$\text{SoftPlus}(x)=\ln(1+e^x)$</td>
+<td>软激活函数</td>
+<td>平滑放大 QoS 约束被违反的程度，使优化器对违约敏感但可导</td>
+</tr>
+<tr>
+<td>$\beta$</td>
+<td>QoS 惩罚权重</td>
+<td>经济利益与性能损失之间的权衡系数</td>
+</tr>
+<tr>
+<td>$\rho$</td>
+<td>缩放系数</td>
+<td>调节 SoftPlus 对违约量的敏感度</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="3-2-QoS-度量-相对慢度-而非绝对延迟">3.2 QoS 度量：相对慢度（而非绝对延迟）</h3>
+<p>论文把 $Q_j$ 定义为一个<strong>相对指标</strong>：</p>
+<p>$$
+Q_j = \frac{T_j^{so} - T_j^{min}}{T_j^{min}} \tag{8}
+$$</p>
+<p>其中 $T_j^{min}$ 是无排队、无功率封顶时第 $j$ 类作业的最短执行时间；$T_j^{so}$ 是 sojourn time（驻留时间）= 排队时间 + 执行时间之和。</p>
+<p>这个定义非常关键：<strong>QoS 退化是相对"理想最快速度"的倍率</strong>，而不是绝对毫秒数。它的好处是能公平比较训练作业（本来就跑几千秒）和推理作业（几十秒）——大家都用"被拖慢了百分之多少"来衡量，而不是用绝对时间。</p>
+<blockquote>
+<p><em>"Although training workloads may appear to have stricter QoS constraints in Table 2, they effectively have more relaxed deadlines under our relative execution-time-based QoS definition."</em></p>
+<p>尽管训练负载在表 2 中看似有更严格的 QoS 阈值，但在本文基于相对执行时间的 QoS 定义下，它们实际上拥有更宽松的截止期。</p>
+</blockquote>
+<h3 id="3-3-优化器选择-从梯度下降到模拟退火-SA">3.3 优化器选择：从梯度下降到模拟退火（SA）</h3>
+<p>AQA 原本提供梯度下降优化，但论文指出它有两个硬伤：梯度计算依赖<strong>仅限 RSR 场景的解析估计</strong>，且包含一堆对工作负载特性（功耗、QoS 阈值）敏感的经验参数。为摆脱这种敏感性并扩大适用面，本文改用<strong>模拟退火（Simulated Annealing, SA）</strong>：</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>AQA 原方法：梯度下降</th>
+<th>本文：模拟退火 SA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>是否需要梯度</strong></td>
+<td>需要，且依赖 RSR 专属解析式</td>
+<td>不需要梯度信息</td>
+</tr>
+<tr>
+<td><strong>适用场景</strong></td>
+<td>仅 RSR</td>
+<td>同时覆盖 RSR 与 EDR</td>
+</tr>
+<tr>
+<td><strong>参数敏感性</strong></td>
+<td>含大量经验参数，随负载特性漂移</td>
+<td>通过随机扰动探索参数空间，鲁棒性更强</td>
+</tr>
+<tr>
+<td><strong>搜索机制</strong></td>
+<td>沿梯度方向下降</td>
+<td>随机扰动 + 温度驱动的冷却调度</td>
+</tr>
+<tr>
+<td><strong>收敛性</strong></td>
+<td>易陷局部最优</td>
+<td>冷却调度设计得当时，理论上保证收敛到全局最优</td>
+</tr>
+</tbody>
+</table></div>
+<p>SA 的核心思想：高温阶段<strong>探索（exploration）</strong>大范围随机试错，随"温度"下降逐渐转为<strong>开发（exploitation）</strong>，在当前最优点附近精修。</p>
+<p><pre class="mermaid">flowchart TD
+    subgraph OBJ["优化目标 min C"]
+        M["经济成本 M<br/>(RSR: 式4 / EDR: 式5)"] --> SUM["总成本 C"]
+        Q["QoS 惩罚项<br/>β·Σ SoftPlus(ρ(P[Q>Qth]-δ))"] --> SUM
+    end
+    SUM --> OPT["优化器：模拟退火 SA"]
+    OPT -->|"随机扰动参数"| P1["候选投标: P̄, R / 功率封顶策略"]
+    P1 --> SIM["FlexDC-Sim 仿真评估"]
+    SIM -->|"新 C 更优?"| ACC{"接受?"}
+    ACC -->|"是"| KEEP["保留新解"]
+    ACC -->|"否, 按概率概率接受劣解"| KEEP2["以一定概率接受<br/>跳出局部最优"]
+    KEEP --> COOL["温度下降"]
+    KEEP2 --> COOL
+    COOL -->|"未收敛"| P1
+    COOL -->|"收敛"| BEST["输出最优投标 + 运行时策略"]</pre></p>
+<h3 id="3-4-FlexDC-Sim-一个轻量-开源的数据中心-DR-模拟器">3.4 FlexDC-Sim：一个轻量、开源的数据中心 DR 模拟器</h3>
+<p>论文设计并开源了 FlexDC-Sim，用于建模和评估 DR 参与期间数据中心的运行时控制。它端到端地建模数据中心运行：作业调度、作业执行进度、功率管理，并把 DR 项目需求转换成<strong>显式的、随时间变化的功率目标</strong>。</p>
+<p><pre class="mermaid">flowchart TD
+    subgraph INPUT["输入配置"]
+        I1["数据中心规模<br/>服务器数 N"]
+        I2["硬件特性<br/>(空闲功率等)"]
+        I3["各作业功率-性能 profile<br/>(真实硬件实测)"]
+    end
+    subgraph CORE["FlexDC-Sim 内部"]
+        JT["作业表 job table<br/>作业轨迹 + QoS 指标"]
+        NT["节点表 node table<br/>节点执行进度 + 实时功耗"]
+        JT --> SCHED["作业调度器"]
+        NT --> PWR["功率管理器"]
+        SCHED --> EXEC["作业执行推进<br/>(按 profile 模拟进度/功耗)"]
+        PWR --> EXEC
+    end
+    subgraph DR["DR 接入层"]
+        DR1["RSR: P_target(t)=P̄+y(t)R"]
+        DR2["EDR: 削峰目标"]
+    end
+    subgraph CTRL["运行时策略 AQA"]
+        K1["旋钮1: 调整活跃服务器数<br/>(idle / activate)"]
+        K2["旋钮2: 对运行作业等比例功率封顶"]
+        K1 --> K2
+    end
+    DR1 --> PWR
+    DR2 --> PWR
+    EXEC --> PWR
+    K1 -.->|"先调"| PWR
+    K2 -.->|"仍不达标再调"| PWR
+    PWR --> REP["作业级/节点级/集群级<br/>性能与功耗报告"]</pre></p>
+<p>设计要点：</p>
+<ul>
+<li><strong>两个核心数据结构</strong>：作业表（记录作业轨迹与 QoS 指标）+ 节点表（记录节点上的作业执行进度与全程功耗）。这使得报告能下钻到作业、节点、集群三个层级。</li>
+<li><strong>功率–性能 profile 驱动</strong>：模拟器不依赖理论公式，而是用真实硬件测出来的曲线来"重演"功率受限下的执行行为，从而准确复现执行进度。</li>
+<li><strong>通用性</strong>：只要提供功率–性能 profile，同一框架既支持 CPU 集群，也支持 GPU 系统；用户可自定义数据中心规模、硬件特性、任意作业的 profile。</li>
+<li><strong>运行时策略可插拔</strong>：本研究采用 AQA 的策略——先估算应保持活跃/应闲置的服务器数量，再对运行作业施加功率封顶，使集群功率对齐 DR 目标。功率封顶方法是"把所有运行中作业按各自功率区间<strong>等比例</strong>下压"。</li>
+</ul>
+<hr />
+<h2 id="4--工作负载刻画-GPU-上的功率-性能实测">4. 工作负载刻画：GPU 上的功率–性能实测</h2>
+<h3 id="4-1-实测设置">4.1 实测设置</h3>
+<p>为获得真实的功率–性能特性，论文做了一项<strong>离线 profiling 研究</strong>：每个应用在一系列功率封顶值下执行，平台是 Chameleon Cloud（裸金属访问），节点配备 <strong>4 块 NVIDIA P100 GPU</strong>。裸金属权限允许通过 <code>nvidia-smi power-limit</code> 接口直接对 GPU 封顶（该接口默认需要 admin 权限）。</p>
+<ul>
+<li><strong>推理作业</strong>：用批处理式（batch-style）作业，在可控执行窗口内获得稳定、可重复的功耗与性能测量。</li>
+<li><strong>训练作业</strong>：动辄跑数小时，因此只截取<strong>足够代表性的短片段</strong>来刻画其功率–性能行为，避免 profiling 本身代价过高。</li>
+</ul>
+<h3 id="4-2-功率-性能-profile-表-论文-Table-1-精读">4.2 功率–性能 profile 表（论文 Table 1 精读）</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>类别</th>
+<th>作业类型</th>
+<th>$T_{min}$(s)</th>
+<th>$T_{max}$(s)</th>
+<th>$p_{min}$(W)</th>
+<th>$p_{max}$(W)</th>
+<th>满封顶慢度比 $T_{max}/T_{min}$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>推理</strong></td>
+<td>ResNet-50</td>
+<td>25</td>
+<td>190</td>
+<td>199</td>
+<td>618</td>
+<td><strong>7.6×</strong></td>
+</tr>
+<tr>
+<td><strong>推理</strong></td>
+<td>GPT-2</td>
+<td>28</td>
+<td>180</td>
+<td>198</td>
+<td>732</td>
+<td><strong>6.4×</strong></td>
+</tr>
+<tr>
+<td><strong>推理</strong></td>
+<td>Llama-7B</td>
+<td>36</td>
+<td>360</td>
+<td>202</td>
+<td>702</td>
+<td><strong>10.0×</strong></td>
+</tr>
+<tr>
+<td><strong>推理</strong></td>
+<td>BLOOM-560M</td>
+<td>44</td>
+<td>386</td>
+<td>202</td>
+<td>698</td>
+<td><strong>8.8×</strong></td>
+</tr>
+<tr>
+<td><strong>训练</strong></td>
+<td>ResNet-50</td>
+<td>337</td>
+<td>1321</td>
+<td>199</td>
+<td>755</td>
+<td><strong>3.9×</strong></td>
+</tr>
+<tr>
+<td><strong>训练</strong></td>
+<td>GPT-2</td>
+<td>1185</td>
+<td>4592</td>
+<td>201</td>
+<td>763</td>
+<td><strong>3.9×</strong></td>
+</tr>
+<tr>
+<td><strong>训练</strong></td>
+<td>Llama-7B</td>
+<td>1242</td>
+<td>4921</td>
+<td>200</td>
+<td>742</td>
+<td><strong>4.0×</strong></td>
+</tr>
+<tr>
+<td><strong>训练</strong></td>
+<td>BLOOM-560M</td>
+<td>1104</td>
+<td>4202</td>
+<td>202</td>
+<td>726</td>
+<td><strong>3.8×</strong></td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>表中 $T_{min}/T_{max}$ 分别是在最大功率 $p_{max}$ / 最小功率 $p_{min}$ 下的执行时间。最后一列"满封顶慢度比"为学习报告据 $T_{max}/T_{min}$ 推算。</p>
+</blockquote>
+<p>这张表藏着全文最深刻的定量对比，需要逐行解读：</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>观察维度</th>
+<th>推理作业</th>
+<th>训练作业</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>执行时长量级</strong></td>
+<td>几十秒（25–44 s 最快）</td>
+<td>上千秒（337–1242 s 最快），训练是推理的 <strong>30–35 倍</strong></td>
+</tr>
+<tr>
+<td><strong>满功率到空功率的慢度</strong></td>
+<td>被拖慢 <strong>6.4–10 倍</strong></td>
+<td>被拖慢仅 <strong>3.8–4.0 倍</strong></td>
+</tr>
+<tr>
+<td><strong>功率区间</strong></td>
+<td>节点功耗约 198–732 W</td>
+<td>节点功耗约 199–763 W，两者功率区间几乎一致</td>
+</tr>
+<tr>
+<td><strong>物理含义</strong></td>
+<td>短作业一旦深封顶，时间惩罚的"倍率"很大</td>
+<td>长作业即使深封顶，相对慢度倍率反而温和</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>关键洞察（定量推导，理解全文结论的钥匙）</strong>：
+- 洞察 1：代入式 (8)，把功率压到 $p_{min}$ 时的 Q 值为 $Q = (T_{max}-T_{min})/T_{min} = T_{max}/T_{min}-1$。
+- 洞察 2：<strong>训练作业恰好"贴着 QoS 阈值但不越界"</strong>。以 $W_{train}\text{-}LU$ 轨迹为例，所有训练作业 $Q_{th}=3$，而满封顶时 $Q \approx 2.8$–$3.0$，全部 ≤ 3。也就是说——<strong>训练作业可以一路压到最低功耗，仍满足 QoS</strong>，这就是它们能报大备用容量 $R$ 的物理根据。
+- 洞察 3：<strong>推理作业满封顶必然越界</strong>。以 $W_{inf}\text{-}LU$ 为例，ResNet-50 满封顶 $Q=6.6 > Q_{th}=5$；Llama-7B 满封顶 $Q=9 > Q_{th}=4$。它们<strong>不能压到最低功耗</strong>，可用的功率下调区间被 QoS 阈值"拦腰截断"，所以灵活性天然更小。
+- 洞察 4：这解释了论文那句看似矛盾的话——"训练看似 QoS 阈值更严，实则更宽松"。严格的是阈值数字（3 vs 5），但训练作业的功率–性能曲线斜率恰好平缓（慢度比仅 4×），给 QoS 留足了余量；推理曲线斜率陡（慢度比 6–10×），余量反而被吃光。</p>
+<p><pre class="mermaid">flowchart LR
+    subgraph INFER["推理作业：短 + 曲线陡"]
+        I1["执行 25-44s"] --> I2["满封顶慢 6-10×"]
+        I2 --> I3["Q 直接冲破 Q_th<br/>只能部分下压功率"]
+        I3 --> I4["灵活性 R 小"]
+    end
+    subgraph TRAIN["训练作业：长 + 曲线缓"]
+        T1["执行 337-1242s"] --> T2["满封顶仅慢 ~4×"]
+        T2 --> T3["Q ≈ 2.8-3.0 ≤ Q_th=3<br/>可一路压到最低功耗"]
+        T3 --> T4["灵活性 R 大"]
+    end</pre></p>
+<h3 id="4-3-五条工作负载轨迹-论文-Table-2-精读">4.3 五条工作负载轨迹（论文 Table 2 精读）</h3>
+<p>论文构造了 5 条作业轨迹，覆盖不同利用率、不同 QoS 阈值、混合 GPU 数：</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>轨迹</th>
+<th>利用率</th>
+<th>GPU 数</th>
+<th>ResNet $Q_{th}$</th>
+<th>GPT-2 $Q_{th}$</th>
+<th>Llama $Q_{th}$</th>
+<th>BLOOM $Q_{th}$</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$W_{inf}\text{-}LU$</td>
+<td>60%</td>
+<td>4</td>
+<td>5</td>
+<td>4.5</td>
+<td>4</td>
+<td>3.5</td>
+<td>推理、低利用率</td>
+</tr>
+<tr>
+<td>$W_{inf}\text{-}HU$</td>
+<td>80%</td>
+<td>4</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>推理、高利用率</td>
+</tr>
+<tr>
+<td>$W_{train}\text{-}LU$</td>
+<td>60%</td>
+<td>4</td>
+<td>3</td>
+<td>3</td>
+<td>3</td>
+<td>3</td>
+<td>训练、低利用率</td>
+</tr>
+<tr>
+<td>$W_{train}\text{-}HU$</td>
+<td>80%</td>
+<td>4</td>
+<td>4</td>
+<td>4</td>
+<td>4</td>
+<td>4</td>
+<td>训练、高利用率</td>
+</tr>
+<tr>
+<td>$W_{train}\text{-}multi$</td>
+<td>70%</td>
+<td>4/8*</td>
+<td>3</td>
+<td>4</td>
+<td>4</td>
+<td>3</td>
+<td>训练、混合 GPU 规模</td>
+</tr>
+</tbody>
+</table></div>
+<p>* ResNet/Llama 作业用 4 块 GPU；GPT-2 与 BLOOM 用 8 块 GPU。</p>
+<p><strong>利用率（utilization）定义</strong>：正在跑作业的节点占全部节点的比例。作业到达服从<strong>泊松过程</strong>。为达到目标利用率 $\eta$，每类作业 $j$ 的到达率设为：</p>
+<p>$$
+\lambda_j = \frac{\eta N}{T_j^{min}\, s_j\, J} \tag{9}
+$$</p>
+<p>其中 $N$ 是服务器总数，$J$ 是作业类型总数，$s_j$ 是作业规模（该类作业单次提交占用的节点数）。生成器据此算出每类作业到达率并产出轨迹。</p>
+<hr />
+<h2 id="5--实验结果-灵活性-经济性与跟踪行为">5. 实验结果：灵活性、经济性与跟踪行为</h2>
+<p>实验规模为 <strong>1,000 台服务器</strong>，对表 2 的每条轨迹分别优化。RSR 同时评估 RegA（传统）与 RegD（动态）两种信号，优化器投标平均功率 $\bar{P}$ 与备用容量 $R$。</p>
+<h3 id="5-1-功率投标-Power-Bids">5.1 功率投标（Power Bids）</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>投标量</th>
+<th>规律</th>
+<th>论文证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>平均功率 $\bar{P}$（RSR）</strong></td>
+<td>主要由<strong>数据中心利用率</strong>驱动：利用率越高，$\bar{P}$ 越高；<strong>几乎不敏感于</strong>负载是推理还是训练；RegA 与 RegD 的选择对 $\bar{P}$ 影响也微乎其微</td>
+<td>图 2：各轨迹 $\bar{P}$ 投标随利用率抬升，推理/训练曲线接近</td>
+</tr>
+<tr>
+<td><strong>备用容量 $R$（RSR）</strong></td>
+<td><strong>训练作业提供的灵活性显著大于推理作业</strong>；归因于训练作业更长、更"可塑（malleable）"的执行结构</td>
+<td>图 3：训练轨迹 $R$ 投标远高于推理轨迹</td>
+</tr>
+<tr>
+<td><strong>平均功率 $\bar{P}$（EDR）</strong></td>
+<td>高利用率数据中心必须承诺更高的 $\bar{P}$；$\bar{P}$ 直接反映相对基线 $P_{base}$ 可实现的削减量</td>
+<td>图 4：$P_{base}$ 与 $\bar{P}$ 对比</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><em>"For the R bids, we observe that train workloads offer substantially greater flexibility than inference workloads. We relate this to their longer and more malleable execution structure of training jobs."</em></p>
+<p>对于备用容量 R 的投标，我们观察到训练工作负载提供的灵活性显著大于推理工作负载。我们将其归因于训练作业更长、更具可塑性的执行结构。</p>
+</blockquote>
+<p>全文最强的实证结论是：<strong>在所有 EDR 与 RSR 实验中，按每类作业 90 分位定义的 QoS 要求，在所提交的投标方案下均被满足</strong>。也就是说，18%–55% 的灵活性不是以牺牲 SLA 换来的。</p>
+<p><pre class="mermaid">flowchart TD
+    subgraph BIDS["投标决策树"]
+        Q{"负载类型?"} -->|"推理(短作业)"| R1["R 投标小<br/>深封顶会破 QoS"]
+        Q -->|"训练(长作业)"| R2["R 投标大<br/>可塑、深封顶仍保 QoS"]
+        U{"利用率高低?"} -->|"高利用率"| P1["P̄ 投标高<br/> baseline 本身就高"]
+        U -->|"低利用率"| P2["P̄ 投标低"]
+        R1 --> E["综合投标<br/>1000 台服务器优化"]
+        R2 --> E
+        P1 --> E
+        P2 --> E
+        E --> CHK{"90 分位 QoS 达标?"}
+        CHK -->|"是"| OK["投标有效: 18%-55% RSR 灵活性<br/>EDR 最高削 ~20%"]</pre></p>
+<h3 id="5-2-能源成本节省-Energy-Cost-Savings">5.2 能源成本节省（Energy Cost Savings）</h3>
+<p>以"NoDR（不参与 DR）"为基线，统计每条轨迹的节省百分比：</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>DR 项目</th>
+<th>成本节省区间</th>
+<th>驱动因素</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>EDR</strong></td>
+<td><strong>6% – 34%</strong></td>
+<td>直接对应从 $P_{base}$ 往下削减的幅度（图 4 的削减量越大，节省越多）</td>
+</tr>
+<tr>
+<td><strong>RSR</strong></td>
+<td><strong>17% – 54%</strong></td>
+<td>显著高于 EDR；两种 RSR 信号下，<strong>训练负载因 $R$ 投标大而持续获得更高成本节省</strong></td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><em>"In the RSR program, savings are substantially higher, spanning 17% to 54%. Across both RSR signal types, training workloads consistently achieve greater cost reductions, driven by their large R bids."</em></p>
+<p>在 RSR 项目中，节省要高得多，区间为 17%–54%。在两种 RSR 信号下，训练工作负载都因其大额 R 投标而持续实现更高的成本削减。</p>
+</blockquote>
+<p><strong>关键洞察</strong>：
+- 洞察 1：RSR 比 EDR 更赚钱（17%–54% vs 6%–34%），因为 RSR 是"卖持续调频服务"，补偿按时间 $T$ 累计、且与 $R$ 成正比；EDR 是"偶尔卖一次紧急容量"，频次低。
+- 洞察 2："flexibility"与"钱"之间是直接映射——$R$ 投标越大，RSR 收入越高。训练负载的工程价值（可深压功率）被市场定价为更高的经济回报。</p>
+<h3 id="5-3-功率跟踪-两个控制旋钮的分工">5.3 功率跟踪：两个控制旋钮的分工</h3>
+<p>功率跟踪靠两个<strong>按顺序施加</strong>的控制旋钮：</p>
+<ol>
+<li><strong>旋钮 1</strong>：调整活跃服务器数量（闲置/唤醒节点）；</li>
+<li><strong>旋钮 2</strong>：对正在运行的作业施加功率封顶。</li>
+</ol>
+<p>结果显示，两个旋钮的<strong>有效性与使用频率强烈依赖工作负载特性</strong>：</p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>负载类型</th>
+<th>调度周转</th>
+<th>能否抢占</th>
+<th>主用旋钮</th>
+<th>跟踪行为（图 6，传统信号 1 小时）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>训练数据中心</strong></td>
+<td>训练作业长，无法频繁调度周转</td>
+<td><strong>不支持抢占（preemption）</strong></td>
+<td><strong>旋钮 2：功率封顶</strong></td>
+<td>前 500 秒活跃节点数基本稳定，功率下降完全来自功率封顶</td>
+</tr>
+<tr>
+<td><strong>推理数据中心</strong></td>
+<td>短作业，可频繁做调度决策</td>
+<td>作业短、自然结束快</td>
+<td><strong>旋钮 1：调整活跃服务器数</strong></td>
+<td>通过唤醒/闲置服务器来跟随功率目标，而非深封顶</td>
+</tr>
+</tbody>
+</table></div>
+<p><pre class="mermaid">flowchart TD
+    TARGET["DR 功率目标 P_target(t)"] --> NEED{"需要多少功率?"}
+    NEED --> S1["旋钮1: 先调活跃节点数<br/>idle 一批 / 唤醒一批"]
+    S1 --> JUDGE{"功率达标?"}
+    JUDGE -->|"已达标"| DONE["保持"]
+    JUDGE -->|"仍超标, 旋钮1已用尽"| S2["旋钮2: 对运行作业<br/>按比例功率封顶"]
+    S2 --> DONE
+    subgraph WHO["谁主要用哪个旋钮"]
+        TR["训练: 长作业不可抢占<br/>→ 旋钮2(功率封顶)为主"]
+        INF["推理: 短作业易调度<br/>→ 旋钮1(节点数)为主"]
+    end</pre></p>
+<blockquote>
+<p><em>"In the training data center, the long-running nature of training jobs prevents frequent scheduling turnover. Since preemption is not supported, power capping becomes the primary mechanism to reduce power. In contrast, the inference data center executes short jobs, enabling frequent scheduling decisions, and adjusting the number of active servers becomes the main control knob."</em></p>
+<p>在训练数据中心，训练作业的长时运行特性使其无法频繁调度周转；由于不支持抢占，功率封顶成为降功率的主要机制。相反，推理数据中心执行短作业、可频繁调度，调整活跃服务器数量便成为跟随功率目标的主要控制旋钮。</p>
+</blockquote>
+<hr />
+<h2 id="6--综合讨论-把结果串成一条因果链">6. 综合讨论：把结果串成一条因果链</h2>
+<p><pre class="mermaid">flowchart LR
+    A["GPU 作业功率-性能曲线<br/>(实测)"] --> B{"曲线斜率?"}
+    B -->|"缓: 训练满封顶仅慢~4×"| C["训练: 深压功率不破 QoS"]
+    B -->|"陡: 推理满封顶慢6-10×"| D["推理: 深压功率破 QoS"]
+    C --> E["训练可报大 R 投标"]
+    D --> F["推理只能报小 R"]
+    E --> G["RSR 成本节省更高<br/>17%-54%"]
+    F --> H["灵活性受限<br/>18% 附近"]
+    C --> I["跟踪靠功率封顶"]
+    D --> J["跟踪靠调度节点数"]
+    G --> K["结论: AI 数据中心<br/>提供 18%-55% 灵活性<br/>且满足 90 分位 QoS"]</pre></p>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>命题</th>
+<th>论文证据</th>
+<th>可信度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AI 数据中心可在保 QoS 下参与真实 DR</td>
+<td>两类项目、5 条轨迹、90 分位 QoS 全部达标</td>
+<td>高（仿真 + 真实 profile）</td>
+</tr>
+<tr>
+<td>训练负载比推理负载更"灵活"</td>
+<td>$R$ 投标训练 &gt;&gt; 推理；成本节省训练持续更高</td>
+<td>高，且有定量曲线解释</td>
+</tr>
+<tr>
+<td>$\bar{P}$ 主要由利用率决定，与负载类型无关</td>
+<td>图 2 推理/训练曲线接近</td>
+<td>高</td>
+</tr>
+<tr>
+<td>RSR 比 EDR 经济回报更高</td>
+<td>17%–54% vs 6%–34%</td>
+<td>高</td>
+</tr>
+<tr>
+<td>控制旋钮分工由作业时长/可抢占性决定</td>
+<td>图 6 训练节点数平稳、推理靠节点数</td>
+<td>高</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="7--工程启示与个人思考">7. 工程启示与个人思考</h2>
+<h3 id="7-1-对数据中心运营者-AI-Infra-视角">7.1 对数据中心运营者（AI Infra 视角）</h3>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>启示</th>
+<th>具体可行动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>按负载构成决定 DR 报价策略</strong></td>
+<td>训练占比高的集群应积极报大 $R$ 参与 RSR（调频），把"长作业可慢"的特性变现；推理为主的集群更适合参与 EDR 或报较小 $R$，避免深封顶击穿延迟 SLA。</td>
+</tr>
+<tr>
+<td><strong>QoS 要用相对慢度、而非绝对延迟来设计 SLA</strong></td>
+<td>式 (8) 的相对慢度定义让训练/推理可统一考核。运营方应把 SLA 从"P99 延迟 &lt; X ms"扩展出一条"相对理想完成时间的慢度预算"，为功率弹性预留合同空间。</td>
+</tr>
+<tr>
+<td><strong>两套控制旋钮要有分工默认</strong></td>
+<td>长作业/不可抢占集群默认先动"功率封顶"，短作业/弹性调度集群默认先动"节点闲置/唤醒"；颠倒顺序会导致该快时快不起来。</td>
+</tr>
+<tr>
+<td><strong>建立离线 profile 库是前提</strong></td>
+<td>FlexDC-Sim 证明：只要有真实硬件的功率–性能曲线，就能仿真。AI Infra 团队应为每类常驻训练/推理任务常态化采集 $p$–$t$ 曲线，作为 DR 投标的数字孪生底座。</td>
+</tr>
+<tr>
+<td><strong>硬件能力是门槛</strong></td>
+<td>GPU 直接功率封顶依赖 <code>nvidia-smi power-limit</code> 与 admin/裸金属权限。在多租户云环境里，这种细粒度封顶权限本身就是一种稀缺资源，需要在架构上预留。</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="7-2-对电网-市场设计侧">7.2 对电网/市场设计侧</h3>
+<ul>
+<li>RSR 的概率跟踪考核（90% 时间 $\epsilon<0.3$）给了数据中心这种"有噪声、但总量可观"的资源入场空间；RegD 对爬坡速度要求高，GPU 集群能否真正吃满 RegD（而非只跟 RegA），论文只做了边际差异分析，仍是开放问题。</li>
+<li>EDR 最高约 20% 的削峰，在 50 GW 级 AI 负荷上意味着 10 GW 量级的紧急可调容量——这正是电网最缺的顶峰资源。</li>
+</ul>
+<h3 id="7-3-方法论上的可迁移点">7.3 方法论上的可迁移点</h3>
+<ol>
+<li><strong>"实测 profile + 离散事件仿真 + 无梯度优化"是一套可复用范式</strong>：当目标函数没有干净解析式、约束又混杂经济项与概率 QoS 项时，模拟退火比梯度下降更省心、更鲁棒。</li>
+<li><strong>把经济结算公式写进目标函数</strong>，而不是事后算账——这让"报多少 $R$"成为优化器自然吐出的决策变量，而非人工拍脑袋。</li>
+<li><strong>开源 FlexDC-Sim</strong> 是论文最大的工程遗产之一：后续工作可以直接在它上面换自己的 profile 与调度策略，不必重造仿真轮子。</li>
+</ol>
+<hr />
+<h2 id="8--论文局限性与可延伸方向">8. 论文局限性与可延伸方向</h2>
+<div class="tablebox"><table>
+<thead>
+<tr>
+<th>局限</th>
+<th>说明</th>
+<th>可延伸方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>硬件代际偏旧</strong></td>
+<td>profiling 用的是 4×NVIDIA P100（2017 代），与当下 A100/H100/B200 的功耗墙、芯片级 power capping 粒度差异巨大</td>
+<td>用现代 GPU 重测 $p$–$t$ 曲线；考察芯片级（单卡）与机架级（整机柜）封顶的不同灵活性</td>
+</tr>
+<tr>
+<td><strong>只到 1,000 台服务器仿真</strong></td>
+<td>真实超大规模 AI 集群是数万到数十万卡，聚合效应与网络/存储功耗未建模</td>
+<td>扩到万卡级，纳入网络、冷却、UPS 损耗（PUE）对灵活性的稀释</td>
+</tr>
+<tr>
+<td><strong>推理用批处理作业</strong></td>
+<td>论文自己承认推理用 batch-style 以获得可重复测量；真实在线推理是交互式、有 SLA 尾延迟约束的请求流</td>
+<td>把交互式推理（token 级首 token 延迟、吞吐/延迟权衡）纳入 DR 模型</td>
+</tr>
+<tr>
+<td><strong>不支持作业抢占</strong></td>
+<td>训练数据中心无法中途暂停/迁移作业，限制了旋钮 1 的使用</td>
+<td>引入可抢占训练（checkpoint/恢复）后，训练集群能否也靠调度获得灵活性？这是高价值开放问题</td>
+</tr>
+<tr>
+<td><strong>RegD 结论偏弱</strong></td>
+<td>论文只说 RegA/RegD 对 $\bar{P}$ 影响"边际"，但 RegD 要求每 2 秒快速双向调节，GPU 功率封顶的响应延迟是否跟得上，未做敏感性分析</td>
+<td>专门做 2 秒级爬坡能力测试，回答"AI 数据中心到底能不能吃 RegD"</td>
+</tr>
+<tr>
+<td><strong>模型/作业规模有限</strong></td>
+<td>推理最大只到 Llama-7B，训练也是中小模型；千亿 MoE 训练的显存/通信约束会改变功率–性能形态</td>
+<td>扩展到 MoE、大规模分布式训练（数据/张量并行）下的灵活性</td>
+</tr>
+<tr>
+<td><strong>无真实市场价格</strong></td>
+<td>价格系数 $\Pi_P,\Pi_R,\Pi_\epsilon$ 取经验值，未接 PJM 真实出清价格</td>
+<td>用真实市场价格重做经济测算，给出美元级收益</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="9--一页纸总结">9. 一页纸总结</h2>
+<blockquote>
+<p><em>"AI workloads can provide significant demand-side flexibility, between 18% and 55% of their average power consumption, while still meeting their QoS requirements during DR participation."</em></p>
+<p>在参与 DR 期间，AI 工作负载能够提供占其平均功率 18%–55% 的显著需求侧灵活性，同时仍满足其 QoS 要求。</p>
+</blockquote>
+<ul>
+<li><strong>问题</strong>：AI 数据中心（GPU）十年十倍扩功率（5 GW→50 GW），给电网带来稳定性压力；而此前 DR 研究几乎只看 CPU 集群。</li>
+<li><strong>方法</strong>：实测 8 类 AI 作业（4 推理 + 4 训练）在 P100 上的功率–性能曲线 → 开源 FlexDC-Sim 轻量仿真器 → 用模拟退火联合优化经济成本（RSR/EDR）与概率 QoS 约束。</li>
+<li><strong>两个 DR 市场</strong>：RSR 是双向调频（报 $\bar{P}$ 与 $R$，考核跟踪误差），EDR 是单向削峰（报相对 $P_{base}$ 的削减量）。</li>
+<li><strong>核心结论</strong>：AI 数据中心可提供 <strong>18%–55%</strong> 的 RSR 灵活性、EDR 削峰最高约 <strong>20%</strong>；对应成本节省 RSR <strong>17%–54%</strong>、EDR <strong>6%–34%</strong>，且全部满足 90 分位 QoS。</li>
+<li><strong>最深刻的洞察</strong>：训练负载更灵活，不是因为它 QoS 松，而是因为它的功率–性能曲线<strong>斜率平缓</strong>——满功率封顶也只慢约 4 倍，恰好压在 QoS 阈值内；推理曲线陡（慢 6–10 倍），深封顶必然破 SLA，所以只能报小灵活性。</li>
+<li><strong>控制哲学</strong>：长作业不可抢占 → 靠功率封顶跟踪；短作业易调度 → 靠节点闲置/唤醒跟踪。</li>
+</ul>
+<hr />
+<h2 id="参考文献-节选自原文-共-19-条">参考文献（节选自原文，共 19 条）</h2>
+<ol>
+<li>International Energy Agency. 2023. <em>Demand Response</em>.</li>
+<li>California Public Utilities Commission. 2024. <em>Emergency Load Reduction Program</em>.</li>
+<li>Chen et al. 2019. <em>EnergyQARE: QoS-Aware Data Center Participation in Smart Grid Regulation Service Reserve Provision</em>. ACM TOMPECS.</li>
+<li>EPRI. 2025. <em>Scaling Intelligence: The Exponential Growth of AI's Power Needs</em>.</li>
+<li>Granville, Krivanek, Rasson. 1994. <em>Simulated annealing: a proof of convergence</em>. IEEE TPAMI.</li>
+<li>He et al. 2016. <em>Deep Residual Learning for Image Recognition</em>. CVPR.</li>
+<li>Keahey et al. 2020. <em>Lessons Learned from the Chameleon Testbed</em>. USENIX ATC.</li>
+<li>Kirkpatrick, Gelatt, Vecchi. 1983. <em>Optimization by Simulated Annealing</em>. Science.</li>
+<li>Liu et al. 2013. <em>Data center demand response: avoiding the coincident peak via workload shifting and local generation</em>. SIGMETRICS.</li>
+<li>McLaughlin. 2025. <em>Big Tech's data center boom poses new risk to US grid operators</em>. Reuters.</li>
+<li>NYISO. 2023. <em>Emergency Demand Response Program (EDRP) Manual</em>.</li>
+<li>NVIDIA. 2024. <em>NVIDIA System Management Interface (nvidia-smi)</em>.</li>
+<li>PJM Interconnection. 2022. <em>PJM Manual 12: Balancing Operations</em>.</li>
+<li>PJM Interconnection. 2025. <em>Ancillary Services</em>.</li>
+<li>Radford et al. 2019. <em>Language Models are Unsupervised Multitask Learners</em> (GPT-2). OpenAI Blog.</li>
+<li>Le Scao et al. 2022. <em>BLOOM: A 176B-Parameter Open-Access Multilingual Language Model</em>. arXiv:2211.05100.</li>
+<li>Touvron et al. 2023. <em>LLaMA: Open and Efficient Foundation Language Models</em>. arXiv:2302.13971.</li>
+<li>US DOE FEMP. 2025. <em>Demand Response and Time-Variable Pricing Programs</em>.</li>
+<li>Zhang, Wilson, Paschalidis, Coskun. 2022. <em>HPC Data Center Participation in Demand Response: An Adaptive Policy With QoS Assurance</em>. IEEE Trans. Sustainable Computing.</li>
+</ol>
+    </article>
+  </main>
+</div>
+
+<script src="https://fastly.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+(function(){
+  var body=document.body, doc=document;
+
+  /* ---- 主题（5 套护眼） ---- */
+  var themeSel=doc.getElementById('theme');
+  function applyTheme(t){
+    body.setAttribute('data-theme',t);
+    if(themeSel) themeSel.value=t;
+  }
+  try{ applyTheme(localStorage.getItem('arTheme')||'light'); }catch(e){ applyTheme('light'); }
+  if(themeSel) themeSel.addEventListener('change',function(){
+    applyTheme(this.value);
+    try{ localStorage.setItem('arTheme',this.value); }catch(e){}
+  });
+
+  /* ---- 字号 A− / A+ ---- */
+  var fsBtn=doc.getElementById('fs');
+  var rootStyle=doc.documentElement.style;
+  function setFs(v){
+    var cl=parseFloat(getComputedStyle(doc.documentElement).getPropertyValue('--fs'))||16;
+    cl=Math.max(13,Math.min(22,cl+v));
+    rootStyle.setProperty('--fs',cl+'px');
+    try{ localStorage.setItem('arFs',cl); }catch(e){}
+  }
+  try{
+    var savedFs=parseFloat(localStorage.getItem('arFs'));
+    if(savedFs) rootStyle.setProperty('--fs',savedFs+'px');
+  }catch(e){}
+  if(fsBtn){
+    fsBtn.addEventListener('click',function(ev){
+      var b=ev.target.closest('button'); if(!b) return;
+      setFs(parseInt(b.dataset.f,10)||0);
+    });
+  }
+
+  /* ---- 目录显示/隐藏 ---- */
+  var navBtn=doc.getElementById('navbtn');
+  if(navBtn) navBtn.addEventListener('click',function(){
+    body.classList.toggle('nav-off');
+    this.classList.toggle('on',!body.classList.contains('nav-off'));
+  });
+
+  /* ---- 目录：当前章节高亮 ---- */
+  var links=Array.prototype.slice.call(doc.querySelectorAll('nav a'));
+  var secs=Array.prototype.slice.call(doc.querySelectorAll('.content h2[id],.content h3[id]'));
+  var spy=function(){
+    var pos=window.scrollY+140, cur=null;
+    secs.forEach(function(s){ if(s.offsetTop<=pos) cur=s.id; });
+    links.forEach(function(a){
+      a.classList.toggle('active', a.getAttribute('href')==='#'+cur);
+    });
+  };
+  window.addEventListener('scroll',spy,{passive:true});
+  setTimeout(spy,200);
+
+  /* ---- 阅读进度条 ---- */
+  var bar=doc.getElementById('bar');
+  function prog(){
+    var h=doc.documentElement, max=h.scrollHeight-h.clientHeight;
+    bar.style.width=(max>0?(window.scrollY/max*100):0)+'%';
+  }
+  window.addEventListener('scroll',prog,{passive:true});
+  prog();
+
+  /* ---- Mermaid ---- */
+  if(window.mermaid){
+    try{
+      mermaid.initialize({startOnLoad:true,theme:'neutral',securityLevel:'loose',
+        flowchart:{htmlLabels:true,curve:'basis'}});
+      mermaid.run();
+    }catch(e){ console.warn('mermaid render failed:',e); }
+  } else {
+    console.warn('mermaid CDN 未加载，图表以代码形式显示');
+  }
+})();
+</script>
+</body>
+</html>
